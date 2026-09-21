@@ -1,9 +1,45 @@
 package com.ers.util;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 public class JDBCUtil {
-    public Connection getConnection(){
-        return null;
+
+    private static final String DB_URL =
+            "jdbc:mysql://localhost:3306/DB_NAME";
+
+    private static final String DB_USERNAME =
+            System.getenv("DB_USERNAME");
+
+    private static final String DB_PASSWORD =
+            System.getenv("DB_PASSWORD");
+
+    public static Connection getConnection() throws SQLException {
+
+        return DriverManager.getConnection(
+                DB_URL,
+                DB_USERNAME,
+                DB_PASSWORD
+        );
     }
+    /*
+    public static void main(String[] args) {
+
+        try {
+            Connection connection = JDBCUtil.getConnection();
+
+            System.out.println("Database connected successfully!");
+
+            connection.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+     */
+
+
+
 }
