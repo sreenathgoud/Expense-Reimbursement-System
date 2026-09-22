@@ -10,6 +10,7 @@ public class UserController {
     public UserController(IUserService userService) {
         this.userService = userService;
     }
+
     public User addUser(User user) {
         return null;
     }

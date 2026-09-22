@@ -2,10 +2,11 @@ package com.ers.dao;
 
 import com.ers.model.User;
 
+import java.sql.SQLException;
 import java.util.List;
 
 public interface IUserDao {
-    User addUser(User user);
+    User addUser(User user) throws SQLException;
     boolean updateUser(User user);
     User getUserById(int userId);
     List<User> getAllUsers();
