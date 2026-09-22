@@ -7,7 +7,7 @@ import java.sql.SQLException;
 public class JDBCUtil {
 
     private static final String DB_URL =
-            "jdbc:mysql://localhost:3306/DB_NAME";
+            "jdbc:mysql://localhost:3306/expense_reimbursement_system";
 
     private static final String DB_USERNAME =
             System.getenv("DB_USERNAME");
