@@ -3,6 +3,7 @@ package com.ers.service;
 import com.ers.dao.IUserDao;
 import com.ers.model.User;
 
+import java.sql.SQLException;
 import java.util.List;
 
 public class UserServiceImpl implements IUserService{
@@ -11,13 +12,14 @@ public class UserServiceImpl implements IUserService{
         this.userDao=userDao;
     }
     @Override
-    public User addUser(User user) {
-        return null;
+    public User addUser(User user) throws SQLException {
+        return userDao.addUser(user);
     }
 
     @Override
     public boolean updateUser(User user) {
-        return false;
+
+        return userDao.updateUser(user);
     }
 
     @Override
@@ -27,12 +29,12 @@ public class UserServiceImpl implements IUserService{
 
     @Override
     public List<User> getAllUsers() {
-        return List.of();
+        return userDao.getAllUsers();
     }
 
     @Override
     public boolean deleteUserById(int userId) {
-        return false;
+        return userDao.deleteUserById(userId);
     }
 
     @Override
@@ -42,6 +44,6 @@ public class UserServiceImpl implements IUserService{
 
     @Override
     public boolean updateUserStatus(int userId, boolean active) {
-        return false;
+        return userDao.updateUserStatus(userId, active);
     }
 }
