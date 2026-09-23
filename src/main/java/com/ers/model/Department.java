@@ -3,9 +3,9 @@ package com.ers.model;
 public class Department {
     private int departmentId;
     private String departmentName;
-    private int managerId;
+    private Integer managerId;
 
-    public Department(String departmentName, int managerId) {
+    public Department(String departmentName, Integer managerId) {
         this.departmentName = departmentName;
         this.managerId = managerId;
     }
@@ -26,11 +26,11 @@ public class Department {
         this.departmentName = departmentName;
     }
 
-    public int getManagerId() {
+    public Integer getManagerId() {
         return managerId;
     }
 
-    public void setManagerId(int managerId) {
+    public void setManagerId(Integer managerId) {
         this.managerId = managerId;
     }
 

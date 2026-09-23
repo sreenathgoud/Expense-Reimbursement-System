@@ -14,23 +14,23 @@ public class DepartmentController {
     }
 
     public Department addDepartment(Department department) {
-        return null;
+        return departmentService.addDepartment(department);
     }
 
     public boolean updateDepartment(Department department) {
-        return false;
+        return departmentService.updateDepartment(department);
     }
 
     public Department getDepartmentById(int departmentId) {
-        return null;
+        return departmentService.getDepartmentById(departmentId);
     }
 
     public List<Department> getAllDepartments() {
-        return null;
+        return departmentService.getAllDepartments();
     }
 
     public boolean deleteDepartmentById(int departmentId) {
-        return false;
+        return departmentService.deleteDepartmentById(departmentId);
     }
 
     public List<Employee> getEmployeesByDepartmentId(int departmentId) {

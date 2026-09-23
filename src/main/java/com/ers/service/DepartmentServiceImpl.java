@@ -1,34 +1,41 @@
 package com.ers.service;
 
+import com.ers.dao.IDepartmentDao;
 import com.ers.model.Department;
 import com.ers.model.Employee;
 
 import java.util.List;
 
 public class DepartmentServiceImpl implements IDepartmentService{
+
+    private IDepartmentDao departmentDao;
+
+    public DepartmentServiceImpl(IDepartmentDao departmentDao) {
+        this.departmentDao = departmentDao;
+    }
     @Override
     public Department addDepartment(Department department) {
-        return null;
+       return departmentDao.addDepartment(department);
     }
 
     @Override
     public boolean updateDepartment(Department department) {
-        return false;
+        return departmentDao.updateDepartment(department);
     }
 
     @Override
     public Department getDepartmentById(int departmentId) {
-        return null;
+        return departmentDao.getDepartmentById(departmentId);
     }
 
     @Override
     public List<Department> getAllDepartments() {
-        return List.of();
+        return departmentDao.getAllDepartments();
     }
 
     @Override
     public boolean deleteDepartmentById(int departmentId) {
-        return false;
+        return departmentDao.deleteDepartmentById(departmentId);
     }
 
     @Override

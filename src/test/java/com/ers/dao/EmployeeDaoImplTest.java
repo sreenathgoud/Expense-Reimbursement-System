@@ -18,10 +18,10 @@ class EmployeeDaoImplTest {
                 new EmployeeDaoImpl(new JDBCUtil());
 
         Employee employee = new Employee(
-                2,
-                "Test Employee",
-                "test.employee@gmail.com",
-                1
+                3,
+                "king",
+                "king.employee@gmail.com",
+                6
         );
 
         // Act
@@ -39,13 +39,13 @@ class EmployeeDaoImplTest {
                 new EmployeeDaoImpl(new JDBCUtil());
 
         Employee employee = new Employee(
-                2,
+                3,
                 "Sreenath Updated",
                 "sreenath.updated@gmail.com",
-                1
+                6
         );
 
-        employee.setEmployeeId(6);
+        employee.setEmployeeId(10);
 
         // Act
         boolean actualResult =
@@ -61,7 +61,7 @@ class EmployeeDaoImplTest {
         IEmployeeDao employeeDao =
                 new EmployeeDaoImpl(new JDBCUtil());
 
-        int employeeId = 6;
+        int employeeId = 9;
 
         // Act
         Employee actualResult =
@@ -91,7 +91,7 @@ class EmployeeDaoImplTest {
         IEmployeeDao employeeDao =
                 new EmployeeDaoImpl(new JDBCUtil());
 
-        int employeeId = 6;
+        int employeeId = 9;
 
         // Act
         boolean actualResult =

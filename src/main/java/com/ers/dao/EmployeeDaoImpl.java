@@ -149,7 +149,7 @@ public class EmployeeDaoImpl implements IEmployeeDao {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return List.of();
+        return employees;
     }
 
     @Override
