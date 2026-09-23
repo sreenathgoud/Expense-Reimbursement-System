@@ -3,10 +3,7 @@ package com.ers.dao;
 import com.ers.model.User;
 import com.ers.util.JDBCUtil;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +18,7 @@ public class UserDaoImpl implements IUserDao{
 
         try (
                 Connection con = JDBCUtil.getConnection();
-                PreparedStatement ps = con.prepareStatement(sql)
+                PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
 
         ) {
 
@@ -33,6 +30,13 @@ public class UserDaoImpl implements IUserDao{
             int count = ps.executeUpdate();
 
             if (count > 0) {
+                try (ResultSet rs = ps.getGeneratedKeys()) {
+
+                    if (rs.next()) {
+                        user.setUserId(rs.getInt(1));
+                    }
+                }
+
                 System.out.println("User added successfully.");
                 return user;
             }
@@ -114,7 +118,7 @@ public class UserDaoImpl implements IUserDao{
             e.printStackTrace();
         }
 
-        return List.of();
+        return users;
     }
 
     @Override

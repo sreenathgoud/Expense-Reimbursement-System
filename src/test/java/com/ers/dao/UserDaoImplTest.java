@@ -20,8 +20,8 @@ class UserDaoImplTest {
             IUserDao userDao = new UserDaoImpl();
 
             User user = new User(
-                    "junituser",
-                    "test123",
+                    "junitusr",
+                    "test12",
                     "EMPLOYEE",
                     true,
                     LocalDateTime.now()
@@ -32,6 +32,7 @@ class UserDaoImplTest {
 
             // Assert
             Assertions.assertNotNull(actualResult);
+        Assertions.assertTrue(actualResult.getUserId() > 0);
         }
 
 
