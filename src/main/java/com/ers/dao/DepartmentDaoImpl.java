@@ -3,22 +3,37 @@ package com.ers.dao;
 import com.ers.model.Department;
 import com.ers.model.Employee;
 import com.ers.util.JDBCUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.mysql.cj.conf.PropertyKey.logger;
+
 public class DepartmentDaoImpl implements IDepartmentDao{
+    private static final Logger logger =
+            LoggerFactory.getLogger(DepartmentDaoImpl.class);
+    private final String addquery =
+            "INSERT INTO departments (department_name, manager_id) " +
+                    "VALUES (?, ?)";
+    private final String updateQuery =
+            "UPDATE departments SET department_name = ?, manager_id = ? " +
+                    "WHERE department_id = ?";
+    private final String getDepart =
+            "SELECT * FROM departments WHERE department_id = ?";
+    private final String allDept = "SELECT * FROM departments";
+   private final String removeQuery =
+            "DELETE FROM departments WHERE department_id = ?";
+
     @Override
     public Department addDepartment(Department department) {
-            String sql =
-                    "INSERT INTO departments (department_name, manager_id) " +
-                            "VALUES (?, ?)";
 
             try (
                     Connection con = JDBCUtil.getConnection();
                     PreparedStatement ps =
-                            con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
+                            con.prepareStatement(addquery, Statement.RETURN_GENERATED_KEYS)
             ) {
 
                 ps.setString(1, department.getDepartmentName());
@@ -37,8 +52,8 @@ public class DepartmentDaoImpl implements IDepartmentDao{
                             department.setDepartmentId(rs.getInt(1));
                         }
                     }
-
-                    System.out.println("Department added successfully.");
+                    logger.info("Department added successfully");
+//                    System.out.println("Department added successfully.");
                     return department;
                 }
 
@@ -50,13 +65,10 @@ public class DepartmentDaoImpl implements IDepartmentDao{
 
     @Override
     public boolean updateDepartment(Department department) {
-        String sql =
-                "UPDATE departments SET department_name = ?, manager_id = ? " +
-                        "WHERE department_id = ?";
 
         try (
                 Connection con = JDBCUtil.getConnection();
-                PreparedStatement ps = con.prepareStatement(sql)
+                PreparedStatement ps = con.prepareStatement(updateQuery)
         ) {
 
             ps.setString(1, department.getDepartmentName());
@@ -72,7 +84,8 @@ public class DepartmentDaoImpl implements IDepartmentDao{
             int count = ps.executeUpdate();
 
             if (count > 0) {
-                System.out.println("Department updated successfully");
+                logger.info("Department added successfully");
+//                System.out.println("Department updated successfully");
                 return true;
             }
 
@@ -85,12 +98,11 @@ public class DepartmentDaoImpl implements IDepartmentDao{
 
     @Override
     public Department getDepartmentById(int departmentId) {
-        String sql =
-                "SELECT * FROM departments WHERE department_id = ?";
+
 
         try (
                 Connection con = JDBCUtil.getConnection();
-                PreparedStatement ps = con.prepareStatement(sql)
+                PreparedStatement ps = con.prepareStatement(getDepart)
         ) {
 
             ps.setInt(1, departmentId);
@@ -126,11 +138,9 @@ public class DepartmentDaoImpl implements IDepartmentDao{
     public List<Department> getAllDepartments() {
         List<Department> departments = new ArrayList<>();
 
-        String sql = "SELECT * FROM departments";
-
         try (
                 Connection con = JDBCUtil.getConnection();
-                PreparedStatement ps = con.prepareStatement(sql);
+                PreparedStatement ps = con.prepareStatement(allDept);
                 ResultSet rs = ps.executeQuery()
         ) {
 
@@ -160,12 +170,10 @@ public class DepartmentDaoImpl implements IDepartmentDao{
 
     @Override
     public boolean deleteDepartmentById(int departmentId) {
-        String sql =
-                "DELETE FROM departments WHERE department_id = ?";
 
         try (
                 Connection con = JDBCUtil.getConnection();
-                PreparedStatement ps = con.prepareStatement(sql)
+                PreparedStatement ps = con.prepareStatement(removeQuery);
         ) {
 
             ps.setInt(1, departmentId);
@@ -173,7 +181,8 @@ public class DepartmentDaoImpl implements IDepartmentDao{
             int count = ps.executeUpdate();
 
             if (count > 0) {
-                System.out.println("Department deleted successfully");
+                logger.info("Department delete successfully");
+//                System.out.println("Department deleted successfully");
                 return true;
             }
 

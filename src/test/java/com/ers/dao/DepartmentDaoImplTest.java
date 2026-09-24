@@ -10,23 +10,23 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class DepartmentDaoImplTest {
 
-//    @Test
-//    void addDepartment() {
-//        IDepartmentDao departmentDao = new DepartmentDaoImpl();
-//
-//        Department department = new Department(
-//                "IT",
-//                null
-//        );
-//
-//        // Act
-//        Department actualResult =
-//                departmentDao.addDepartment(department);
-//
-//        // Assert
-//        Assertions.assertNotNull(actualResult);
-//        Assertions.assertTrue(actualResult.getDepartmentId() > 0);
-//    }
+    @Test
+    void addDepartment() {
+        IDepartmentDao departmentDao = new DepartmentDaoImpl();
+
+        Department department = new Department(
+                "IT",
+                null
+        );
+
+        // Act
+        Department actualResult =
+                departmentDao.addDepartment(department);
+
+        // Assert
+        Assertions.assertNotNull(actualResult);
+        Assertions.assertTrue(actualResult.getDepartmentId() > 0);
+    }
 
     @Test
     void updateDepartment() {

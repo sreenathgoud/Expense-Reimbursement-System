@@ -20,9 +20,9 @@ class UserDaoImplTest {
             IUserDao userDao = new UserDaoImpl();
 
             User user = new User(
-                    "junitusr",
-                    "test12",
-                    "EMPLOYEE",
+                    "karan",
+                    "karan@",
+                    "ADMIN",
                     true,
                     LocalDateTime.now()
             );

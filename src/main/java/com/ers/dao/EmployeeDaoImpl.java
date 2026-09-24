@@ -2,10 +2,14 @@ package com.ers.dao;
 
 import com.ers.model.Employee;
 import com.ers.util.JDBCUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.mysql.cj.conf.PropertyKey.logger;
 
 public class EmployeeDaoImpl implements IEmployeeDao {
     JDBCUtil jdbcUtil;
@@ -13,16 +17,28 @@ public class EmployeeDaoImpl implements IEmployeeDao {
         this.jdbcUtil=jdbcUtil;
     }
     //Crud operation will be done here
+    private static final Logger logger =
+            LoggerFactory.getLogger(EmployeeDaoImpl.class);
+    private final String addQuery =
+            "INSERT INTO employees(user_id, full_name, email, department_id) " +
+                    "VALUES (?, ?, ?, ?)";
+    private final String updateQuery =
+            "UPDATE employees " +
+                    "SET user_id = ?, full_name = ?, email = ?, department_id = ? " +
+                    "WHERE employee_id = ?";
+   private final String getQuery =
+            "SELECT * FROM employees WHERE employee_id = ?";
+   private final   String selectQuery = "SELECT * FROM employees";
+    private final String removeQuery =
+            "DELETE FROM employees WHERE employee_id = ?";
+
+
     @Override
     public Employee addEmployee(Employee employee) {
 
-        String sql =
-                "INSERT INTO employees(user_id, full_name, email, department_id) " +
-                        "VALUES (?, ?, ?, ?)";
-
         try (
                 Connection con = JDBCUtil.getConnection();
-                PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
+                PreparedStatement ps = con.prepareStatement(addQuery, Statement.RETURN_GENERATED_KEYS)
         ) {
 
             ps.setInt(1, employee.getUserId());
@@ -38,8 +54,8 @@ public class EmployeeDaoImpl implements IEmployeeDao {
                 if (rs.next()) {
                     employee.setEmployeeId(rs.getInt(1));
                 }
-
-                System.out.println("Employee added successfully.");
+                logger.info("employee added successfully");
+//                System.out.println("Employee added successfully.");
                  return employee;
             }
 
@@ -51,14 +67,10 @@ public class EmployeeDaoImpl implements IEmployeeDao {
 
     @Override
     public boolean updateEmployee(Employee employee) {
-        String sql =
-                "UPDATE employees " +
-                        "SET user_id = ?, full_name = ?, email = ?, department_id = ? " +
-                        "WHERE employee_id = ?";
 
         try (
                 Connection con = JDBCUtil.getConnection();
-                PreparedStatement ps = con.prepareStatement(sql)
+                PreparedStatement ps = con.prepareStatement(updateQuery)
         ) {
 
             ps.setInt(1, employee.getUserId());
@@ -70,7 +82,8 @@ public class EmployeeDaoImpl implements IEmployeeDao {
             int count = ps.executeUpdate();
 
             if (count > 0) {
-                System.out.println("Employee updated successfully.");
+                logger.info("User updated successfully");
+//                System.out.println("Employee updated successfully.");
                 return true;
             }
 
@@ -83,12 +96,10 @@ public class EmployeeDaoImpl implements IEmployeeDao {
 
     @Override
     public Employee getEmployeeById(int employeeId) {
-        String sql =
-                "SELECT * FROM employees WHERE employee_id = ?";
 
         try (
                 Connection con = JDBCUtil.getConnection();
-                PreparedStatement ps = con.prepareStatement(sql)
+                PreparedStatement ps = con.prepareStatement(getQuery)
         ) {
 
             ps.setInt(1, employeeId);
@@ -122,11 +133,9 @@ public class EmployeeDaoImpl implements IEmployeeDao {
     public List<Employee> getAllEmployees() {
         List<Employee> employees = new ArrayList<>();
 
-        String sql = "SELECT * FROM employees";
-
         try (
                 Connection con = JDBCUtil.getConnection();
-                PreparedStatement ps = con.prepareStatement(sql);
+                PreparedStatement ps = con.prepareStatement(selectQuery);
                 ResultSet rs = ps.executeQuery()
         ) {
 
@@ -154,12 +163,10 @@ public class EmployeeDaoImpl implements IEmployeeDao {
 
     @Override
     public boolean deleteEmployeeById(int employeeId) {
-        String sql =
-                "DELETE FROM employees WHERE employee_id = ?";
 
         try (
                 Connection con = JDBCUtil.getConnection();
-                PreparedStatement ps = con.prepareStatement(sql)
+                PreparedStatement ps = con.prepareStatement(removeQuery)
         ) {
 
             ps.setInt(1, employeeId);
@@ -167,7 +174,8 @@ public class EmployeeDaoImpl implements IEmployeeDao {
             int count = ps.executeUpdate();
 
             if (count > 0) {
-                System.out.println("Employee deleted successfully.");
+                logger.info("Employee deleted successfully");
+//                System.out.println("Employee deleted successfully.");
                 return true;
             }
 

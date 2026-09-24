@@ -2,23 +2,32 @@ package com.ers.dao;
 
 import com.ers.model.User;
 import com.ers.util.JDBCUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import static com.mysql.cj.conf.PropertyKey.logger;
 
 public class UserDaoImpl implements IUserDao{
+    private static final Logger logger =
+            LoggerFactory.getLogger(UserDaoImpl.class);
+    private final String insertQuery =
+            "INSERT INTO users (username, password, role, is_active) " +
+                    "VALUES (?, ?, ?, ?)";
+    private final String updateUserQuery =
+            "UPDATE users SET username = ?, password = ?, role = ?, is_active = ? " +
+                    "WHERE user_id = ?";
+    private final String selectuser = "SELECT * FROM users";
+    private final String removeUserQuery = "DELETE FROM users WHERE user_id = ?";
 
     @Override
     public User addUser(User user) throws SQLException {
-        String sql =
-                "INSERT INTO users (username, password, role, is_active) " +
-                        "VALUES (?, ?, ?, ?)";
-
         try (
                 Connection con = JDBCUtil.getConnection();
-                PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
+                PreparedStatement ps = con.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS)
 
         ) {
 
@@ -26,7 +35,8 @@ public class UserDaoImpl implements IUserDao{
             ps.setString(2, user.getPassword());
             ps.setString(3, user.getRole());
             ps.setBoolean(4, user.isActive());
-            System.out.println("Executing insert...");
+            logger.trace("Executing insert...");
+//            System.out.println("Executing insert...");
             int count = ps.executeUpdate();
 
             if (count > 0) {
@@ -36,13 +46,14 @@ public class UserDaoImpl implements IUserDao{
                         user.setUserId(rs.getInt(1));
                     }
                 }
-
-                System.out.println("User added successfully.");
+                logger.info("User added successfully");
+//                System.out.println("User added successfully.");
                 return user;
             }
 
         } catch (SQLException e) {
-            System.out.println("Insert failed!");
+            logger.error("Insert failed!");
+//            System.out.println("Insert failed!");
             e.printStackTrace();
         }
 
@@ -51,13 +62,9 @@ public class UserDaoImpl implements IUserDao{
 
     @Override
     public boolean updateUser(User user) {
-        String sql =
-                "UPDATE users SET username = ?, password = ?, role = ?, is_active = ? " +
-                        "WHERE user_id = ?";
-
         try (
                 Connection con = JDBCUtil.getConnection();
-                PreparedStatement ps = con.prepareStatement(sql)
+                PreparedStatement ps = con.prepareStatement(updateUserQuery)
         ) {
 
             ps.setString(1, user.getUserName());
@@ -69,7 +76,8 @@ public class UserDaoImpl implements IUserDao{
             int count = ps.executeUpdate();
 
             if (count > 0) {
-                System.out.println("User updated successfully");
+                logger.info("Database connection is open");
+//                System.out.println("User updated successfully");
                 return true;
             }
 
@@ -91,11 +99,9 @@ public class UserDaoImpl implements IUserDao{
     public List<User> getAllUsers() {
         List<User> users = new ArrayList<>();
 
-        String sql = "SELECT * FROM users";
-
         try (
                 Connection con = JDBCUtil.getConnection();
-                PreparedStatement ps = con.prepareStatement(sql);
+                PreparedStatement ps = con.prepareStatement(selectuser);
                 ResultSet rs = ps.executeQuery()
         ) {
 
@@ -123,22 +129,19 @@ public class UserDaoImpl implements IUserDao{
 
     @Override
     public boolean deleteUserById(int userId) {
-        String sql = "DELETE FROM users WHERE user_id = ?";
 
         try (
                 Connection con = JDBCUtil.getConnection();
-                PreparedStatement ps = con.prepareStatement(sql)
+                PreparedStatement ps = con.prepareStatement(removeUserQuery)
         ) {
 
             ps.setInt(1, userId);
-
             int count = ps.executeUpdate();
-
             if (count > 0) {
-                System.out.println("User deleted successfully");
+                logger.info("User deleted successfully");
+//                System.out.println("User deleted successfully");
                 return true;
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -165,7 +168,8 @@ public class UserDaoImpl implements IUserDao{
             int count = ps.executeUpdate();
 
             if (count > 0) {
-                System.out.println("User status updated successfully");
+                logger.info("User status updated successfully");
+//                System.out.println("User status updated successfully");
                 return true;
             }
 
@@ -182,14 +186,16 @@ public class UserDaoImpl implements IUserDao{
         User result = userDao.addUser(user);
 
         if (result != null) {
-            System.out.println("Add operation completed.");
+            logger.info("Add operation completed.");
+//            System.out.println("Add operation completed.");
         } else {
-            System.out.println("Add operation failed.");
+            logger.warn("Add operation failed.");
+//            System.out.println("Add operation failed.");
         }
 
         List<User> users = userDao.getAllUsers();
-
-        System.out.println("\n===== USERS =====");
+        logger.info("===== USERS =====");
+//        System.out.println("\n===== USERS =====");
 
         for (User u : users) {
             System.out.println(u);
