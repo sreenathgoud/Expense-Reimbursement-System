@@ -1,9 +1,11 @@
 package com.ers.dao;
 
 import com.ers.model.User;
+import com.ers.util.JDBCUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,8 +22,8 @@ class UserDaoImplTest {
             IUserDao userDao = new UserDaoImpl();
 
             User user = new User(
-                    "karan",
-                    "karan@",
+                    "sreenathtest",
+                    "karn@",
                     "ADMIN",
                     true,
                     LocalDateTime.now()
@@ -34,7 +36,32 @@ class UserDaoImplTest {
             Assertions.assertNotNull(actualResult);
         Assertions.assertTrue(actualResult.getUserId() > 0);
         }
+        @Test
+       void addUserWithConnectionTest() throws SQLException {
+    // Arrange
+    IUserDao userDao = new UserDaoImpl();
 
+    User user = new User(
+            "transactionuser",
+            "test123",
+            "EMPLOYEE",
+            true,
+            LocalDateTime.now()
+    );
+
+    Connection con = JDBCUtil.getConnection();
+    con.setAutoCommit(false);
+
+    // Act
+    User actualResult = userDao.addUser(user, con);
+
+    // Assert
+    Assertions.assertNotNull(actualResult);
+    Assertions.assertTrue(actualResult.getUserId() > 0);
+
+    con.rollback();
+    con.close();
+}
 
     @Test
     void updateUser() {
@@ -49,7 +76,7 @@ class UserDaoImplTest {
                 LocalDateTime.now()
         );
 
-        user.setUserId(1);   // existing user_id
+        user.setUserId(10);   // existing user_id
 
         // Act
         boolean actualResult = userDao.updateUser(user);
@@ -75,7 +102,7 @@ class UserDaoImplTest {
         // Arrange
         IUserDao userDao = new UserDaoImpl();
 
-        int userId = 1;   // existing user_id
+        int userId = 10;   // existing user_id
 
         // Act
         boolean actualResult = userDao.deleteUserById(userId);

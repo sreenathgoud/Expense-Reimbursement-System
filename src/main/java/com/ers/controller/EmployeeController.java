@@ -12,19 +12,20 @@ public class EmployeeController {
         this.employeeService = employeeService;
     }
 
-    public Employee addNewEmployee(){
-        return null;
+    public Employee addNewEmployee(Employee employee){
+        return employeeService.addEmployee(employee);
     }
     public boolean updateEmployee(Employee employee){
-        return false;
+        return employeeService.updateEmployee(employee);
     }
     public Employee getEmployeeById(int employeeId) {
-        return null;
+        return employeeService.getEmployeeById(employeeId);
     }
     public List<Employee> getAllEmployees() {
-        return List.of();
+        return employeeService.getAllEmployees();
+
     }
     public boolean deleteEmployeeById(int employeeId) {
-        return false;
+        return employeeService.deleteEmployeeById(employeeId);
     }
 }

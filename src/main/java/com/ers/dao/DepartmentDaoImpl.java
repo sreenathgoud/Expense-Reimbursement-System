@@ -10,8 +10,6 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.mysql.cj.conf.PropertyKey.logger;
-
 public class DepartmentDaoImpl implements IDepartmentDao{
     private static final Logger logger =
             LoggerFactory.getLogger(DepartmentDaoImpl.class);
@@ -26,7 +24,9 @@ public class DepartmentDaoImpl implements IDepartmentDao{
     private final String allDept = "SELECT * FROM departments";
    private final String removeQuery =
             "DELETE FROM departments WHERE department_id = ?";
-
+    private final String sql =
+            "UPDATE departments SET manager_id = ? " +
+                    "WHERE department_id = ?";
     @Override
     public Department addDepartment(Department department) {
 
@@ -93,6 +93,27 @@ public class DepartmentDaoImpl implements IDepartmentDao{
             e.printStackTrace();
         }
 
+        return false;
+    }
+
+    @Override
+    public boolean updateManagerId(int departmentId, int employeeId, Connection con) throws SQLException {
+        try (
+                PreparedStatement ps = con.prepareStatement(sql)
+        ) {
+
+            ps.setInt(1, employeeId);
+            ps.setInt(2, departmentId);
+
+            int count = ps.executeUpdate();
+
+            if (count > 0) {
+                logger.info(
+                        "Department manager updated successfully through transaction"
+                );
+                return true;
+            }
+        }
         return false;
     }
 

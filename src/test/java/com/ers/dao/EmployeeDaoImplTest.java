@@ -5,6 +5,8 @@ import com.ers.util.JDBCUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -18,7 +20,7 @@ class EmployeeDaoImplTest {
                 new EmployeeDaoImpl(new JDBCUtil());
 
         Employee employee = new Employee(
-                3,
+                9,
                 "king",
                 "king.employee@gmail.com",
                 6
@@ -32,7 +34,34 @@ class EmployeeDaoImplTest {
         Assertions.assertNotNull(actualResult);
     }
 
+    @Test
+    void addEmployeeWithConnectionTest() throws SQLException {
 
+        // Arrange
+        IEmployeeDao employeeDao =
+                new EmployeeDaoImpl(new JDBCUtil());
+
+        Employee employee = new Employee(
+                9,
+                "Transaction Employee",
+                "transactionemployee@gmail.com",
+                6
+        );
+
+        Connection con = JDBCUtil.getConnection();
+        con.setAutoCommit(false);
+
+        // Act
+        Employee actualResult =
+                employeeDao.addEmployee(employee, con);
+
+        // Assert
+        Assertions.assertNotNull(actualResult);
+        Assertions.assertTrue(actualResult.getEmployeeId() > 0);
+
+        con.rollback();
+        con.close();
+    }
     @Test
     void updateEmployee() {
         IEmployeeDao employeeDao =
@@ -91,7 +120,7 @@ class EmployeeDaoImplTest {
         IEmployeeDao employeeDao =
                 new EmployeeDaoImpl(new JDBCUtil());
 
-        int employeeId = 9;
+        int employeeId = 2;
 
         // Act
         boolean actualResult =

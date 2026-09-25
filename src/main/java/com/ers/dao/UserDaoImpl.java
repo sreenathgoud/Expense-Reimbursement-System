@@ -9,7 +9,6 @@ import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import static com.mysql.cj.conf.PropertyKey.logger;
 
 public class UserDaoImpl implements IUserDao{
     private static final Logger logger =
@@ -59,6 +58,42 @@ public class UserDaoImpl implements IUserDao{
 
         return null;
         }
+
+    @Override
+    public User addUser(User user, Connection con) throws SQLException {
+        try (
+                PreparedStatement ps =
+                        con.prepareStatement(
+                                insertQuery,
+                                Statement.RETURN_GENERATED_KEYS
+                        )
+        ) {
+
+            ps.setString(1, user.getUserName());
+            ps.setString(2, user.getPassword());
+            ps.setString(3, user.getRole());
+            ps.setBoolean(4, user.isActive());
+
+            logger.trace("Executing transaction insert...");
+
+            int count = ps.executeUpdate();
+
+            if (count > 0) {
+
+                try (ResultSet rs = ps.getGeneratedKeys()) {
+
+                    if (rs.next()) {
+                        user.setUserId(rs.getInt(1));
+                    }
+                }
+
+                logger.info("User added successfully through transaction");
+
+                return user;
+            }
+        }
+        return null;
+    }
 
     @Override
     public boolean updateUser(User user) {

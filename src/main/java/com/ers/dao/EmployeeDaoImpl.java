@@ -31,7 +31,9 @@ public class EmployeeDaoImpl implements IEmployeeDao {
    private final   String selectQuery = "SELECT * FROM employees";
     private final String removeQuery =
             "DELETE FROM employees WHERE employee_id = ?";
-
+   private final String addcon =
+            "INSERT INTO employees(user_id, full_name, email, department_id) " +
+                    "VALUES (?, ?, ?, ?)";
 
     @Override
     public Employee addEmployee(Employee employee) {
@@ -61,6 +63,36 @@ public class EmployeeDaoImpl implements IEmployeeDao {
 
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public Employee addEmployee(Employee employee, Connection con) throws SQLException {
+        try (
+                PreparedStatement ps =
+                        con.prepareStatement(addQuery, Statement.RETURN_GENERATED_KEYS)
+        ) {
+
+            ps.setInt(1, employee.getUserId());
+            ps.setString(2, employee.getFullName());
+            ps.setString(3, employee.getEmail());
+            ps.setInt(4, employee.getDepartmentId());
+
+            int count = ps.executeUpdate();
+
+            if (count > 0) {
+
+                try (ResultSet rs = ps.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        employee.setEmployeeId(rs.getInt(1));
+                    }
+                }
+
+                logger.info("Employee added successfully through transaction");
+
+                return employee;
+            }
         }
         return null;
     }

@@ -1,9 +1,12 @@
 package com.ers.dao;
 
 import com.ers.model.Department;
+import com.ers.util.JDBCUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -15,7 +18,7 @@ class DepartmentDaoImplTest {
         IDepartmentDao departmentDao = new DepartmentDaoImpl();
 
         Department department = new Department(
-                "IT",
+                "testing departement",
                 null
         );
 
@@ -27,7 +30,33 @@ class DepartmentDaoImplTest {
         Assertions.assertNotNull(actualResult);
         Assertions.assertTrue(actualResult.getDepartmentId() > 0);
     }
+    @Test
+    void updateManagerIdTest() throws SQLException, SQLException {
 
+        // Arrange
+        IDepartmentDao departmentDao =
+                new DepartmentDaoImpl();
+
+        int departmentId = 6;
+        int employeeId = 10;
+
+        Connection con = JDBCUtil.getConnection();
+        con.setAutoCommit(false);
+
+        // Act
+        boolean actualResult =
+                departmentDao.updateManagerId(
+                        departmentId,
+                        employeeId,
+                        con
+                );
+
+        // Assert
+        Assertions.assertTrue(actualResult);
+
+        con.rollback();
+        con.close();
+    }
     @Test
     void updateDepartment() {
         // Arrange
@@ -69,7 +98,7 @@ class DepartmentDaoImplTest {
         IDepartmentDao departmentDao = new DepartmentDaoImpl();
 
         // Use an existing department_id that can be deleted
-        int departmentId = 4;
+        int departmentId = 7;
 
         // Act
         boolean actualResult =
