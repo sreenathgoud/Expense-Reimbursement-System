@@ -12,18 +12,25 @@ public class ExpenseCategoryController {
         this.expenseCategoryService = expenseCategoryService;
     }
     public ExpenseCategory addExpenseCategory(ExpenseCategory expenseCategory) {
-        return null;
+        return expenseCategoryService.addExpenseCategory(
+                expenseCategory);
     }
     public boolean updateExpenseCategory(ExpenseCategory expenseCategory) {
-        return false;
+        return expenseCategoryService.updateExpenseCategory(
+                expenseCategory
+        );
     }
     public ExpenseCategory getExpenseCategoryById(int categoryId) {
-        return null;
+        return expenseCategoryService.getExpenseCategoryById(
+                categoryId
+        );
     }
     public List<ExpenseCategory> getAllExpenseCategories() {
-        return null;
+        return expenseCategoryService.getAllExpenseCategories();
     }
     public boolean deleteExpenseCategoryById(int categoryId) {
-        return false;
+        return expenseCategoryService.deleteExpenseCategoryById(
+                categoryId
+        );
     }
 }

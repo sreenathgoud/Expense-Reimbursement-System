@@ -21,6 +21,7 @@ public class UserDaoImpl implements IUserDao{
                     "WHERE user_id = ?";
     private final String selectuser = "SELECT * FROM users";
     private final String removeUserQuery = "DELETE FROM users WHERE user_id = ?";
+   private final String sql = "UPDATE users SET is_active = ? WHERE user_id = ?";
 
     @Override
     public User addUser(User user) throws SQLException {
@@ -190,7 +191,6 @@ public class UserDaoImpl implements IUserDao{
 
     @Override
     public boolean updateUserStatus(int userId, boolean active) {
-        String sql = "UPDATE users SET is_active = ? WHERE user_id = ?";
 
         try (
                 Connection con = JDBCUtil.getConnection();
