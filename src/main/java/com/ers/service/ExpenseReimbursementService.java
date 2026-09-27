@@ -1,20 +1,27 @@
 package com.ers.service;
 
+import ch.qos.logback.classic.Logger;
 import com.ers.dao.IDepartmentDao;
 import com.ers.dao.IEmployeeDao;
 import com.ers.dao.IUserDao;
 import com.ers.model.Employee;
 import com.ers.model.User;
 import com.ers.util.JDBCUtil;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 
 public class ExpenseReimbursementService {
 
-    private IUserDao userDao;
-    private IEmployeeDao employeeDao;
-    private IDepartmentDao departmentDao;
+    private static final Logger logger =
+            (Logger) LoggerFactory.getLogger(
+                    ExpenseReimbursementService.class
+            );
+
+    private final IUserDao userDao;
+    private final IEmployeeDao employeeDao;
+    private final IDepartmentDao departmentDao;
 
     public ExpenseReimbursementService(
             IUserDao userDao,
@@ -38,14 +45,27 @@ public class ExpenseReimbursementService {
             con = JDBCUtil.getConnection();
             con.setAutoCommit(false);
 
+            logger.info("Transaction started.");
+
             // 1. Add User
             User savedUser =
                     userDao.addUser(user, con);
 
             if (savedUser == null) {
+
                 con.rollback();
+
+                logger.warn(
+                        "User creation failed. Transaction rolled back."
+                );
+
                 return null;
             }
+
+            logger.info(
+                    "User created successfully. User ID={}",
+                    savedUser.getUserId()
+            );
 
             // Get generated user_id
             employee.setUserId(
@@ -60,9 +80,20 @@ public class ExpenseReimbursementService {
                     );
 
             if (savedEmployee == null) {
+
                 con.rollback();
+
+                logger.warn(
+                        "Employee creation failed. Transaction rolled back."
+                );
+
                 return null;
             }
+
+            logger.info(
+                    "Employee created successfully. Employee ID={}",
+                    savedEmployee.getEmployeeId()
+            );
 
             // 3. If Manager, update department manager
             if ("MANAGER".equals(user.getRole())) {
@@ -75,13 +106,28 @@ public class ExpenseReimbursementService {
                         );
 
                 if (!updated) {
+
                     con.rollback();
+
+                    logger.warn(
+                            "Department manager update failed. " +
+                                    "Transaction rolled back."
+                    );
+
                     return null;
                 }
+
+                logger.info(
+                        "Department manager updated successfully."
+                );
             }
 
             // COMMIT
             con.commit();
+
+            logger.info(
+                    "Transaction committed successfully."
+            );
 
             return savedEmployee;
 
@@ -89,24 +135,48 @@ public class ExpenseReimbursementService {
 
             // ROLLBACK
             try {
+
                 if (con != null) {
                     con.rollback();
+
+                    logger.warn(
+                            "Transaction rolled back due to SQL error."
+                    );
                 }
+
             } catch (SQLException rollbackException) {
-                rollbackException.printStackTrace();
+
+                logger.error(
+                        "Rollback failed.",
+                        rollbackException
+                );
             }
 
-            e.printStackTrace();
+            logger.error(
+                    "Error while creating user and employee.",
+                    e
+            );
+
             return null;
 
         } finally {
 
             try {
+
                 if (con != null) {
                     con.close();
+
+                    logger.info(
+                            "Database connection closed."
+                    );
                 }
+
             } catch (SQLException e) {
-                e.printStackTrace();
+
+                logger.error(
+                        "Error while closing database connection.",
+                        e
+                );
             }
         }
     }

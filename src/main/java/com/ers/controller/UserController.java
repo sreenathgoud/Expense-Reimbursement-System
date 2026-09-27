@@ -4,7 +4,8 @@ import ch.qos.logback.classic.Logger;
 import com.ers.model.User;
 import com.ers.service.IUserService;
 import org.slf4j.LoggerFactory;
-
+import com.ers.model.Employee;
+import com.ers.service.ExpenseReimbursementService;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,9 +18,11 @@ public class UserController {
 
     private final IUserService userService;
     private final Scanner scanner;
-
-    public UserController(IUserService userService) {
+    private final ExpenseReimbursementService
+            expenseReimbursementService;
+    public UserController(IUserService userService, ExpenseReimbursementService expenseReimbursementService) {
         this.userService = userService;
+        this.expenseReimbursementService = expenseReimbursementService;
         this.scanner = new Scanner(System.in);
     }
 
@@ -123,8 +126,13 @@ public class UserController {
         logger.info("Enter password:");
         String password = scanner.nextLine();
 
-        logger.info("Enter role:");
-        String role = scanner.nextLine().toUpperCase();
+        logger.info(
+                "Enter role (EMPLOYEE / MANAGER / " +
+                        "FINANCE_EXECUTIVE / ADMIN):"
+        );
+
+        String role =
+                scanner.nextLine().toUpperCase();
 
         User user = new User(
                 username,
@@ -134,18 +142,97 @@ public class UserController {
                 LocalDateTime.now()
         );
 
-        User result = addUser(user);
+        /*
+         * ADMIN does not need an employee record.
+         */
+        if ("ADMIN".equals(role)) {
+
+            User result =
+                    userService.addUser(user);
+
+            if (result != null) {
+
+                logger.info(
+                        "Admin user added successfully. User ID={}",
+                        result.getUserId()
+                );
+
+            } else {
+
+                logger.warn("Failed to add admin user.");
+            }
+
+            return;
+        }
+
+        /*
+         * EMPLOYEE, MANAGER and FINANCE_EXECUTIVE
+         * need an employee record.
+         */
+
+        logger.info("Enter full name:");
+        String fullName = scanner.nextLine();
+
+        logger.info("Enter email:");
+        String email = scanner.nextLine();
+
+        logger.info("Enter Department ID (enter 0 if none):");
+
+        int departmentId =
+                Integer.parseInt(scanner.nextLine());
+
+        /*
+         * Convert 0 to null because department_id
+         * is nullable in the database.
+         */
+        Integer department =
+                departmentId == 0 ? null : departmentId;
+
+        Employee employee =
+                new Employee(
+                        0,
+                        fullName,
+                        email,
+                        department
+                );
+
+        Employee result =
+                expenseReimbursementService
+                        .createUserAndEmployee(
+                                user,
+                                employee
+                        );
 
         if (result != null) {
 
             logger.info(
-                    "User added successfully. User ID={}",
-                    result.getUserId()
+                    "User and Employee created successfully."
             );
+
+            logger.info(
+                    "User ID={}",
+                    employee.getUserId()
+            );
+
+            logger.info(
+                    "Employee ID={}",
+                    result.getEmployeeId()
+            );
+
+            if ("MANAGER".equals(role)) {
+
+                logger.info(
+                        "Manager assigned to Department ID={}",
+                        departmentId
+                );
+            }
 
         } else {
 
-            logger.warn("Failed to add user.");
+            logger.warn(
+                    "User and Employee creation failed. " +
+                            "Transaction rolled back."
+            );
         }
     }
 

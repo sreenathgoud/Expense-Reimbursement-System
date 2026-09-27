@@ -1,17 +1,18 @@
 package com.ers.service;
 
+import ch.qos.logback.classic.Logger;
 import com.ers.dao.IReimbursementDao;
 import com.ers.model.Reimbursement;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 public class ReimbursementServiceImpl
         implements IReimbursementService {
 
     private static final Logger logger =
-            Logger.getLogger(
-                    ReimbursementServiceImpl.class.getName()
+            (Logger) LoggerFactory.getLogger(
+                    ReimbursementServiceImpl.class
             );
 
     private final IReimbursementDao reimbursementDao;
@@ -77,8 +78,8 @@ public class ReimbursementServiceImpl
         }
 
         logger.info(
-                "Reimbursement added successfully: ID="
-                        + result.getReimbursementId()
+                "Reimbursement added successfully: ID={}",
+                result.getReimbursementId()
         );
 
         return result;
@@ -139,8 +140,8 @@ public class ReimbursementServiceImpl
 
         if (result) {
             logger.info(
-                    "Reimbursement updated successfully: ID="
-                            + reimbursement.getReimbursementId()
+                    "Reimbursement updated successfully: ID={}",
+                    reimbursement.getReimbursementId()
             );
         }
 
@@ -163,9 +164,9 @@ public class ReimbursementServiceImpl
                 );
 
         if (reimbursement == null) {
-            logger.warning(
-                    "No reimbursement found with ID="
-                            + reimbursementId
+            logger.warn(
+                    "No reimbursement found with ID={}",
+                    reimbursementId
             );
         }
 
@@ -195,8 +196,8 @@ public class ReimbursementServiceImpl
 
         if (result) {
             logger.info(
-                    "Reimbursement deleted successfully: ID="
-                            + reimbursementId
+                    "Reimbursement deleted successfully: ID={}",
+                    reimbursementId
             );
         }
 
@@ -219,9 +220,9 @@ public class ReimbursementServiceImpl
                 );
 
         if (reimbursement == null) {
-            logger.warning(
-                    "No reimbursement found for claim ID="
-                            + claimId
+            logger.warn(
+                    "No reimbursement found for claim ID={}",
+                    claimId
             );
         }
 

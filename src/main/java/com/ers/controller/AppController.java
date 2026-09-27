@@ -13,7 +13,9 @@ import java.util.Scanner;
 public class AppController {
 
     private static final Logger logger =
-            (Logger) LoggerFactory.getLogger(AppController.class);
+            (Logger) LoggerFactory.getLogger(
+                    AppController.class
+            );
 
     private final Scanner scanner;
     private final User user;
@@ -22,15 +24,19 @@ public class AppController {
     private final UserController userController;
     private final EmployeeController employeeController;
     private final DepartmentController departmentController;
-    private final ExpenseCategoryController expenseCategoryController;
-    private final ExpenseClaimController expenseClaimController;
-    private final ClaimItemController claimItemController;
-    private final FinanceExecutiveController financeExecutiveController;
-    private final ReimbursementController reimbursementController;
+    private final ExpenseCategoryController
+            expenseCategoryController;
+    private final ExpenseClaimController
+            expenseClaimController;
+    private final ClaimItemController
+            claimItemController;
+    private final FinanceExecutiveController
+            financeExecutiveController;
+    private final ReimbursementController
+            reimbursementController;
 
-    // Employee claim controller
-    private final EmployeeClaimController employeeClaimController;
-
+    private final EmployeeClaimController
+            employeeClaimController;
 
     public AppController(
             Scanner scanner,
@@ -40,7 +46,6 @@ public class AppController {
         this.scanner = scanner;
         this.user = user;
         this.employee = employee;
-
 
         // =========================
         // USER
@@ -52,22 +57,25 @@ public class AppController {
         IUserService userService =
                 new UserServiceImpl(userDao);
 
-        userController =
-                new UserController(userService);
-
 
         // =========================
         // EMPLOYEE
         // =========================
 
         IEmployeeDao employeeDao =
-                new EmployeeDaoImpl(new JDBCUtil());
+                new EmployeeDaoImpl(
+                        new JDBCUtil()
+                );
 
         IEmployeeService employeeService =
-                new EmployeeServiceImpl(employeeDao);
+                new EmployeeServiceImpl(
+                        employeeDao
+                );
 
         employeeController =
-                new EmployeeController(employeeService);
+                new EmployeeController(
+                        employeeService
+                );
 
 
         // =========================
@@ -78,10 +86,38 @@ public class AppController {
                 new DepartmentDaoImpl();
 
         IDepartmentService departmentService =
-                new DepartmentServiceImpl(departmentDao);
+                new DepartmentServiceImpl(
+                        departmentDao
+                );
 
         departmentController =
-                new DepartmentController(departmentService);
+                new DepartmentController(
+                        departmentService
+                );
+
+
+        // =========================================
+        // USER + EMPLOYEE TRANSACTION SERVICE
+        // =========================================
+
+        ExpenseReimbursementService
+                expenseReimbursementService =
+                new ExpenseReimbursementService(
+                        userDao,
+                        employeeDao,
+                        departmentDao
+                );
+
+
+        // =========================
+        // USER CONTROLLER
+        // =========================
+
+        userController =
+                new UserController(
+                        userService,
+                        expenseReimbursementService
+                );
 
 
         // =========================
@@ -89,9 +125,12 @@ public class AppController {
         // =========================
 
         IExpenseCategoryDao expenseCategoryDao =
-                new ExpenseCategoryDaoImpl(new JDBCUtil());
+                new ExpenseCategoryDaoImpl(
+                        new JDBCUtil()
+                );
 
-        IExpenseCategoryService expenseCategoryService =
+        IExpenseCategoryService
+                expenseCategoryService =
                 new ExpenseCategoryServiceImpl(
                         expenseCategoryDao
                 );
@@ -107,9 +146,12 @@ public class AppController {
         // =========================
 
         IExpenseClaimDao expenseClaimDao =
-                new ExpenseClaimDaoImpl(new JDBCUtil());
+                new ExpenseClaimDaoImpl(
+                        new JDBCUtil()
+                );
 
-        IExpenseClaimService expenseClaimService =
+        IExpenseClaimService
+                expenseClaimService =
                 new ExpenseClaimServiceImpl(
                         expenseClaimDao
                 );
@@ -125,7 +167,9 @@ public class AppController {
         // =========================
 
         IClaimItemDao claimItemDao =
-                new ClaimItemDaoImpl(new JDBCUtil());
+                new ClaimItemDaoImpl(
+                        new JDBCUtil()
+                );
 
         IClaimItemService claimItemService =
                 new ClaimItemServiceImpl(
@@ -162,10 +206,14 @@ public class AppController {
         // FINANCE EXECUTIVE
         // =========================
 
-        IFinanceExecutiveDao financeExecutiveDao =
-                new FinanceExecutiveDaoImpl(new JDBCUtil());
+        IFinanceExecutiveDao
+                financeExecutiveDao =
+                new FinanceExecutiveDaoImpl(
+                        new JDBCUtil()
+                );
 
-        IFinanceExecutiveService financeExecutiveService =
+        IFinanceExecutiveService
+                financeExecutiveService =
                 new FinanceExecutiveServiceImpl(
                         financeExecutiveDao
                 );
@@ -181,9 +229,12 @@ public class AppController {
         // =========================
 
         IReimbursementDao reimbursementDao =
-                new ReimbursementDaoImpl(new JDBCUtil());
+                new ReimbursementDaoImpl(
+                        new JDBCUtil()
+                );
 
-        IReimbursementService reimbursementService =
+        IReimbursementService
+                reimbursementService =
                 new ReimbursementServiceImpl(
                         reimbursementDao
                 );
@@ -195,7 +246,8 @@ public class AppController {
 
 
         logger.info(
-                "All controllers and services initialized successfully."
+                "All controllers and services " +
+                        "initialized successfully."
         );
     }
 
@@ -219,7 +271,8 @@ public class AppController {
 
             displayMenu(role);
 
-            String choice = scanner.nextLine();
+            String choice =
+                    scanner.nextLine();
 
             try {
 
@@ -228,29 +281,33 @@ public class AppController {
                     case "EMPLOYEE":
 
                         running =
-                                handleEmployeeMenu(choice);
-
+                                handleEmployeeMenu(
+                                        choice
+                                );
                         break;
 
                     case "MANAGER":
 
                         running =
-                                handleManagerMenu(choice);
-
+                                handleManagerMenu(
+                                        choice
+                                );
                         break;
 
                     case "FINANCE_EXECUTIVE":
 
                         running =
-                                handleFinanceMenu(choice);
-
+                                handleFinanceMenu(
+                                        choice
+                                );
                         break;
 
                     case "ADMIN":
 
                         running =
-                                handleAdminMenu(choice);
-
+                                handleAdminMenu(
+                                        choice
+                                );
                         break;
 
                     default:
@@ -282,52 +339,104 @@ public class AppController {
 
     private void displayMenu(String role) {
 
-        logger.info("======================================");
-        logger.info("   EXPENSE REIMBURSEMENT SYSTEM");
-        logger.info("======================================");
+        logger.info(
+                "======================================"
+        );
+
+        logger.info(
+                "   EXPENSE REIMBURSEMENT SYSTEM"
+        );
+
+        logger.info(
+                "======================================"
+        );
 
         switch (role) {
 
             case "EMPLOYEE":
 
-                logger.info("1. Expense Claims");
+                logger.info(
+                        "1. Expense Claims"
+                );
+
                 logger.info("2. Exit");
 
                 break;
 
             case "MANAGER":
 
-                logger.info("1. Expense Claim Management");
-                logger.info("2. Claim Item Management");
+                logger.info(
+                        "1. Expense Claim Management"
+                );
+
+                logger.info(
+                        "2. Claim Item Management"
+                );
+
                 logger.info("3. Exit");
 
                 break;
 
             case "FINANCE_EXECUTIVE":
 
-                logger.info("1. Finance Executive");
-                logger.info("2. Reimbursement");
+                logger.info(
+                        "1. Finance Executive"
+                );
+
+                logger.info(
+                        "2. Reimbursement"
+                );
+
                 logger.info("3. Exit");
 
                 break;
 
             case "ADMIN":
 
-                logger.info("1. User Management");
-                logger.info("2. Employee Management");
-                logger.info("3. Department Management");
-                logger.info("4. Expense Category Management");
-                logger.info("5. Expense Claim Management");
-                logger.info("6. Claim Item Management");
-                logger.info("7. Finance Executive");
-                logger.info("8. Reimbursement");
+                logger.info(
+                        "1. User Management"
+                );
+
+                logger.info(
+                        "2. Employee Management"
+                );
+
+                logger.info(
+                        "3. Department Management"
+                );
+
+                logger.info(
+                        "4. Expense Category Management"
+                );
+
+                logger.info(
+                        "5. Expense Claim Management"
+                );
+
+                logger.info(
+                        "6. Claim Item Management"
+                );
+
+                logger.info(
+                        "7. Finance Executive"
+                );
+
+                logger.info(
+                        "8. Reimbursement"
+                );
+
                 logger.info("9. Exit");
 
                 break;
         }
 
-        logger.info("======================================");
-        logger.info("Enter your choice:");
+        logger.info(
+                "======================================"
+        );
+
+        logger.info(
+                "Enter your choice:"
+        );
     }
 
 
@@ -335,7 +444,8 @@ public class AppController {
     // EMPLOYEE MENU
     // ==========================================
 
-    private boolean handleEmployeeMenu(String choice) {
+    private boolean handleEmployeeMenu(
+            String choice) {
 
         switch (choice) {
 
@@ -373,7 +483,8 @@ public class AppController {
     // MANAGER MENU
     // ==========================================
 
-    private boolean handleManagerMenu(String choice) {
+    private boolean handleManagerMenu(
+            String choice) {
 
         switch (choice) {
 
@@ -421,7 +532,8 @@ public class AppController {
     // FINANCE EXECUTIVE MENU
     // ==========================================
 
-    private boolean handleFinanceMenu(String choice) {
+    private boolean handleFinanceMenu(
+            String choice) {
 
         switch (choice) {
 
@@ -469,7 +581,8 @@ public class AppController {
     // ADMIN MENU
     // ==========================================
 
-    private boolean handleAdminMenu(String choice) {
+    private boolean handleAdminMenu(
+            String choice) {
 
         switch (choice) {
 
