@@ -3,8 +3,9 @@ package com.ers.dao;
 import com.ers.model.Department;
 import com.ers.model.Employee;
 import com.ers.util.JDBCUtil;
-import org.slf4j.Logger;
+import ch.qos.logback.classic.Logger;
 import org.slf4j.LoggerFactory;
+
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -12,7 +13,7 @@ import java.util.List;
 
 public class DepartmentDaoImpl implements IDepartmentDao{
     private static final Logger logger =
-            LoggerFactory.getLogger(DepartmentDaoImpl.class);
+            (Logger) LoggerFactory.getLogger(DepartmentDaoImpl.class);
     private final String addquery =
             "INSERT INTO departments (department_name, manager_id) " +
                     "VALUES (?, ?)";

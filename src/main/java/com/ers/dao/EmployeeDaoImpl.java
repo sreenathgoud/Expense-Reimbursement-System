@@ -1,9 +1,10 @@
 package com.ers.dao;
 
+import ch.qos.logback.classic.Logger;
 import com.ers.model.Employee;
 import com.ers.util.JDBCUtil;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -18,7 +19,7 @@ public class EmployeeDaoImpl implements IEmployeeDao {
     }
     //Crud operation will be done here
     private static final Logger logger =
-            LoggerFactory.getLogger(EmployeeDaoImpl.class);
+            (Logger) LoggerFactory.getLogger(EmployeeDaoImpl.class);
     private final String addQuery =
             "INSERT INTO employees(user_id, full_name, email, department_id) " +
                     "VALUES (?, ?, ?, ?)";

@@ -16,13 +16,15 @@ public class UserDaoImpl implements IUserDao{
     private final String insertQuery =
             "INSERT INTO users (username, password, role, is_active) " +
                     "VALUES (?, ?, ?, ?)";
+    private final String getbyid = "SELECT * FROM users WHERE user_id = ?";
     private final String updateUserQuery =
             "UPDATE users SET username = ?, password = ?, role = ?, is_active = ? " +
                     "WHERE user_id = ?";
     private final String selectuser = "SELECT * FROM users";
     private final String removeUserQuery = "DELETE FROM users WHERE user_id = ?";
    private final String sql = "UPDATE users SET is_active = ? WHERE user_id = ?";
-
+    private final String getbyname  =
+            "SELECT * FROM users WHERE username = ?";
     @Override
     public User addUser(User user) throws SQLException {
         try (
@@ -128,6 +130,41 @@ public class UserDaoImpl implements IUserDao{
 
     @Override
     public User getUserById(int userId) {
+        try (
+                Connection con = JDBCUtil.getConnection();
+                PreparedStatement ps = con.prepareStatement(getbyid)
+        ) {
+
+            ps.setInt(1, userId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+
+                if (rs.next()) {
+
+                    User user = new User(
+                            rs.getString("username"),
+                            rs.getString("password"),
+                            rs.getString("role"),
+                            rs.getBoolean("is_active"),
+                            rs.getTimestamp("created_at")
+                                    .toLocalDateTime()
+                    );
+
+                    user.setUserId(
+                            rs.getInt("user_id")
+                    );
+
+                    return user;
+                }
+            }
+
+        } catch (SQLException e) {
+            logger.error(
+                    "Failed to get user by ID",
+                    e
+            );
+        }
+
         return null;
     }
 
@@ -186,6 +223,41 @@ public class UserDaoImpl implements IUserDao{
 
     @Override
     public User getUserByUsername(String username) {
+        try (
+                Connection con = JDBCUtil.getConnection();
+                PreparedStatement ps =
+                        con.prepareStatement(getbyname)
+        ) {
+
+            ps.setString(1, username);
+
+            try (ResultSet rs = ps.executeQuery()) {
+
+                if (rs.next()) {
+
+                    User user = new User(
+                            rs.getString("username"),
+                            rs.getString("password"),
+                            rs.getString("role"),
+                            rs.getBoolean("is_active"),
+                            rs.getTimestamp("created_at")
+                                    .toLocalDateTime()
+                    );
+
+                    user.setUserId(
+                            rs.getInt("user_id")
+                    );
+
+                    return user;
+                }
+            }
+
+        } catch (SQLException e) {
+            logger.error(
+                    "Failed to get user by username",
+                    e
+            );
+        }
         return null;
     }
 
