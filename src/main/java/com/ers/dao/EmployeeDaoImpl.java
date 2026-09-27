@@ -36,6 +36,8 @@ public class EmployeeDaoImpl implements IEmployeeDao {
             "INSERT INTO employees(user_id, full_name, email, department_id) " +
                     "VALUES (?, ?, ?, ?)";
 
+    private final String getByUserIdQuery =
+            "SELECT * FROM employees WHERE user_id = ?";
     @Override
     public Employee addEmployee(Employee employee) {
 
@@ -192,6 +194,45 @@ public class EmployeeDaoImpl implements IEmployeeDao {
             e.printStackTrace();
         }
         return employees;
+    }
+
+    @Override
+    public Employee getEmployeeByUserId(int userId) {
+        try (
+                Connection con = JDBCUtil.getConnection();
+                PreparedStatement ps = con.prepareStatement(getByUserIdQuery)
+        ) {
+
+            ps.setInt(1, userId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+
+                if (rs.next()) {
+
+                    Employee employee = new Employee(
+                            rs.getInt("user_id"),
+                            rs.getString("full_name"),
+                            rs.getString("email"),
+                            rs.getInt("department_id")
+                    );
+
+                    employee.setEmployeeId(
+                            rs.getInt("employee_id")
+                    );
+
+                    return employee;
+                }
+            }
+
+        } catch (SQLException e) {
+
+            logger.error(
+                    "Error while finding employee by user ID: {}",
+                    userId,
+                    e
+            );
+        }
+        return null;
     }
 
     @Override

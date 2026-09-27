@@ -10,5 +10,6 @@ public interface IEmployeeService {
     boolean updateEmployee(Employee employee);
     Employee getEmployeeById(int employeeId);
     List<Employee> getAllEmployees();
+    Employee getEmployeeByUserId(int userId);
     boolean deleteEmployeeById(int employeeId);
 }

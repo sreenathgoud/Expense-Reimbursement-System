@@ -2,6 +2,8 @@ package com.ers.controller;
 
 import ch.qos.logback.classic.Logger;
 import com.ers.dao.*;
+import com.ers.model.Employee;
+import com.ers.model.User;
 import com.ers.service.*;
 import com.ers.util.JDBCUtil;
 import org.slf4j.LoggerFactory;
@@ -14,6 +16,8 @@ public class AppController {
             (Logger) LoggerFactory.getLogger(AppController.class);
 
     private final Scanner scanner;
+    private final User user;
+    private final Employee employee;
 
     private final UserController userController;
     private final EmployeeController employeeController;
@@ -24,15 +28,23 @@ public class AppController {
     private final FinanceExecutiveController financeExecutiveController;
     private final ReimbursementController reimbursementController;
 
-    public AppController() {
+    // Employee claim controller
+    private final EmployeeClaimController employeeClaimController;
 
-        scanner = new Scanner(System.in);
 
-        /*
-         * =========================
-         * USER
-         * =========================
-         */
+    public AppController(
+            Scanner scanner,
+            User user,
+            Employee employee) {
+
+        this.scanner = scanner;
+        this.user = user;
+        this.employee = employee;
+
+
+        // =========================
+        // USER
+        // =========================
 
         IUserDao userDao =
                 new UserDaoImpl();
@@ -44,11 +56,9 @@ public class AppController {
                 new UserController(userService);
 
 
-        /*
-         * =========================
-         * EMPLOYEE
-         * =========================
-         */
+        // =========================
+        // EMPLOYEE
+        // =========================
 
         IEmployeeDao employeeDao =
                 new EmployeeDaoImpl(new JDBCUtil());
@@ -60,11 +70,9 @@ public class AppController {
                 new EmployeeController(employeeService);
 
 
-        /*
-         * =========================
-         * DEPARTMENT
-         * =========================
-         */
+        // =========================
+        // DEPARTMENT
+        // =========================
 
         IDepartmentDao departmentDao =
                 new DepartmentDaoImpl();
@@ -76,11 +84,9 @@ public class AppController {
                 new DepartmentController(departmentService);
 
 
-        /*
-         * =========================
-         * EXPENSE CATEGORY
-         * =========================
-         */
+        // =========================
+        // EXPENSE CATEGORY
+        // =========================
 
         IExpenseCategoryDao expenseCategoryDao =
                 new ExpenseCategoryDaoImpl(new JDBCUtil());
@@ -96,11 +102,9 @@ public class AppController {
                 );
 
 
-        /*
-         * =========================
-         * EXPENSE CLAIM
-         * =========================
-         */
+        // =========================
+        // EXPENSE CLAIM
+        // =========================
 
         IExpenseClaimDao expenseClaimDao =
                 new ExpenseClaimDaoImpl(new JDBCUtil());
@@ -116,11 +120,9 @@ public class AppController {
                 );
 
 
-        /*
-         * =========================
-         * CLAIM ITEM
-         * =========================
-         */
+        // =========================
+        // CLAIM ITEM
+        // =========================
 
         IClaimItemDao claimItemDao =
                 new ClaimItemDaoImpl(new JDBCUtil());
@@ -136,11 +138,29 @@ public class AppController {
                 );
 
 
-        /*
-         * =========================
-         * FINANCE EXECUTIVE
-         * =========================
-         */
+        // =========================
+        // EMPLOYEE CLAIM CONTROLLER
+        // =========================
+
+        if ("EMPLOYEE".equals(user.getRole())) {
+
+            employeeClaimController =
+                    new EmployeeClaimController(
+                            expenseClaimService,
+                            claimItemService,
+                            scanner,
+                            employee.getEmployeeId()
+                    );
+
+        } else {
+
+            employeeClaimController = null;
+        }
+
+
+        // =========================
+        // FINANCE EXECUTIVE
+        // =========================
 
         IFinanceExecutiveDao financeExecutiveDao =
                 new FinanceExecutiveDaoImpl(new JDBCUtil());
@@ -156,11 +176,9 @@ public class AppController {
                 );
 
 
-        /*
-         * =========================
-         * REIMBURSEMENT
-         * =========================
-         */
+        // =========================
+        // REIMBURSEMENT
+        // =========================
 
         IReimbursementDao reimbursementDao =
                 new ReimbursementDaoImpl(new JDBCUtil());
@@ -175,6 +193,7 @@ public class AppController {
                         reimbursementService
                 );
 
+
         logger.info(
                 "All controllers and services initialized successfully."
         );
@@ -185,151 +204,339 @@ public class AppController {
 
         boolean running = true;
 
+        String role = user.getRole();
+
         logger.info(
                 "Expense Reimbursement System started."
         );
 
+        logger.info(
+                "Logged-in role: {}",
+                role
+        );
+
         while (running) {
 
-            logger.info("======================================");
-            logger.info("   EXPENSE REIMBURSEMENT SYSTEM");
-            logger.info("======================================");
-            logger.info("1. User Management");
-            logger.info("2. Employee Management");
-            logger.info("3. Department Management");
-            logger.info("4. Expense Category Management");
-            logger.info("5. Expense Claim Management");
-            logger.info("6. Claim Item Management");
-            logger.info("7. Finance Executive");
-            logger.info("8. Reimbursement");
-            logger.info("9. Exit");
-            logger.info("======================================");
-            logger.info("Enter your choice:");
+            displayMenu(role);
 
             String choice = scanner.nextLine();
 
             try {
 
-                switch (choice) {
+                switch (role) {
 
-                    case "1":
+                    case "EMPLOYEE":
 
-                        logger.info(
-                                "Opening User Management."
-                        );
-
-                        userController.start();
+                        running =
+                                handleEmployeeMenu(choice);
 
                         break;
 
+                    case "MANAGER":
 
-                    case "2":
-
-                        logger.info(
-                                "Opening Employee Management."
-                        );
-
-                        employeeController.start();
+                        running =
+                                handleManagerMenu(choice);
 
                         break;
 
+                    case "FINANCE_EXECUTIVE":
 
-                    case "3":
-
-                        logger.info(
-                                "Opening Department Management."
-                        );
-
-                        departmentController.start();
+                        running =
+                                handleFinanceMenu(choice);
 
                         break;
 
+                    case "ADMIN":
 
-                    case "4":
-
-                        logger.info(
-                                "Opening Expense Category Management."
-                        );
-
-                        expenseCategoryController.start();
+                        running =
+                                handleAdminMenu(choice);
 
                         break;
-
-
-                    case "5":
-
-                        logger.info(
-                                "Opening Expense Claim Management."
-                        );
-
-                        expenseClaimController.start();
-
-                        break;
-
-
-                    case "6":
-
-                        logger.info(
-                                "Opening Claim Item Management."
-                        );
-
-                        claimItemController.start();
-
-                        break;
-
-
-                    case "7":
-
-                        logger.info(
-                                "Opening Finance Executive."
-                        );
-
-                        financeExecutiveController.start();
-
-                        break;
-
-
-                    case "8":
-
-                        logger.info(
-                                "Opening Reimbursement Management."
-                        );
-
-                        reimbursementController.start();
-
-                        break;
-
-
-                    case "9":
-
-                        running = false;
-
-                        logger.info(
-                                "Exiting Expense Reimbursement System."
-                        );
-
-                        break;
-
 
                     default:
 
                         logger.warn(
-                                "Invalid menu choice: {}",
-                                choice
+                                "Invalid user role: {}",
+                                role
                         );
+
+                        running = false;
                 }
 
             } catch (Exception e) {
 
                 logger.error(
-                        "Unexpected error in application.",
+                        "Unexpected application error.",
                         e
                 );
             }
         }
 
-        logger.info(
-                "Expense Reimbursement System stopped."
-        );
+        logger.info("User logged out.");
+    }
+
+
+    // ==========================================
+    // DISPLAY MENU
+    // ==========================================
+
+    private void displayMenu(String role) {
+
+        logger.info("======================================");
+        logger.info("   EXPENSE REIMBURSEMENT SYSTEM");
+        logger.info("======================================");
+
+        switch (role) {
+
+            case "EMPLOYEE":
+
+                logger.info("1. Expense Claims");
+                logger.info("2. Exit");
+
+                break;
+
+            case "MANAGER":
+
+                logger.info("1. Expense Claim Management");
+                logger.info("2. Claim Item Management");
+                logger.info("3. Exit");
+
+                break;
+
+            case "FINANCE_EXECUTIVE":
+
+                logger.info("1. Finance Executive");
+                logger.info("2. Reimbursement");
+                logger.info("3. Exit");
+
+                break;
+
+            case "ADMIN":
+
+                logger.info("1. User Management");
+                logger.info("2. Employee Management");
+                logger.info("3. Department Management");
+                logger.info("4. Expense Category Management");
+                logger.info("5. Expense Claim Management");
+                logger.info("6. Claim Item Management");
+                logger.info("7. Finance Executive");
+                logger.info("8. Reimbursement");
+                logger.info("9. Exit");
+
+                break;
+        }
+
+        logger.info("======================================");
+        logger.info("Enter your choice:");
+    }
+
+
+    // ==========================================
+    // EMPLOYEE MENU
+    // ==========================================
+
+    private boolean handleEmployeeMenu(String choice) {
+
+        switch (choice) {
+
+            case "1":
+
+                logger.info(
+                        "Opening Employee Expense Claims."
+                );
+
+                employeeClaimController.start();
+
+                break;
+
+            case "2":
+
+                logger.info(
+                        "Employee logged out."
+                );
+
+                return false;
+
+            default:
+
+                logger.warn(
+                        "Invalid employee menu choice: {}",
+                        choice
+                );
+        }
+
+        return true;
+    }
+
+
+    // ==========================================
+    // MANAGER MENU
+    // ==========================================
+
+    private boolean handleManagerMenu(String choice) {
+
+        switch (choice) {
+
+            case "1":
+
+                logger.info(
+                        "Opening Expense Claim Management."
+                );
+
+                expenseClaimController.start();
+
+                break;
+
+            case "2":
+
+                logger.info(
+                        "Opening Claim Item Management."
+                );
+
+                claimItemController.start();
+
+                break;
+
+            case "3":
+
+                logger.info(
+                        "Manager logged out."
+                );
+
+                return false;
+
+            default:
+
+                logger.warn(
+                        "Invalid manager menu choice: {}",
+                        choice
+                );
+        }
+
+        return true;
+    }
+
+
+    // ==========================================
+    // FINANCE EXECUTIVE MENU
+    // ==========================================
+
+    private boolean handleFinanceMenu(String choice) {
+
+        switch (choice) {
+
+            case "1":
+
+                logger.info(
+                        "Opening Finance Executive."
+                );
+
+                financeExecutiveController.start();
+
+                break;
+
+            case "2":
+
+                logger.info(
+                        "Opening Reimbursement."
+                );
+
+                reimbursementController.start();
+
+                break;
+
+            case "3":
+
+                logger.info(
+                        "Finance Executive logged out."
+                );
+
+                return false;
+
+            default:
+
+                logger.warn(
+                        "Invalid finance menu choice: {}",
+                        choice
+                );
+        }
+
+        return true;
+    }
+
+
+    // ==========================================
+    // ADMIN MENU
+    // ==========================================
+
+    private boolean handleAdminMenu(String choice) {
+
+        switch (choice) {
+
+            case "1":
+
+                userController.start();
+
+                break;
+
+            case "2":
+
+                employeeController.start();
+
+                break;
+
+            case "3":
+
+                departmentController.start();
+
+                break;
+
+            case "4":
+
+                expenseCategoryController.start();
+
+                break;
+
+            case "5":
+
+                expenseClaimController.start();
+
+                break;
+
+            case "6":
+
+                claimItemController.start();
+
+                break;
+
+            case "7":
+
+                financeExecutiveController.start();
+
+                break;
+
+            case "8":
+
+                reimbursementController.start();
+
+                break;
+
+            case "9":
+
+                logger.info(
+                        "Admin logged out."
+                );
+
+                return false;
+
+            default:
+
+                logger.warn(
+                        "Invalid admin menu choice: {}",
+                        choice
+                );
+        }
+
+        return true;
     }
 }

@@ -185,4 +185,15 @@ public class EmployeeServiceImpl implements IEmployeeService {
 
         return result;
     }
+    @Override
+    public Employee getEmployeeByUserId(int userId) {
+
+        if (userId <= 0) {
+            throw new IllegalArgumentException(
+                    "User ID must be greater than 0"
+            );
+        }
+
+        return employeeDao.getEmployeeByUserId(userId);
+    }
 }
