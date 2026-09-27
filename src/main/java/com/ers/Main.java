@@ -16,7 +16,7 @@ public class Main {
 
                 // Run JDBC connection test
                 JDBCUtil.testConnection();
-        UserEmployeeService service = new UserEmployeeService();
+//        UserEmployeeService service = new UserEmployeeService();
 
 
         IUserDao userDao = new UserDaoImpl();

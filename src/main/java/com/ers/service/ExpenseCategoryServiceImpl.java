@@ -4,78 +4,152 @@ import com.ers.dao.IExpenseCategoryDao;
 import com.ers.model.ExpenseCategory;
 
 import java.util.List;
+import java.util.logging.Logger;
 
-public class ExpenseCategoryServiceImpl implements IExpenseCategoryService{
-    private IExpenseCategoryDao expenseCategoryDao;
-    public ExpenseCategoryServiceImpl(IExpenseCategoryDao expenseCategoryDao){
-        this.expenseCategoryDao=expenseCategoryDao;
+public class ExpenseCategoryServiceImpl
+        implements IExpenseCategoryService {
+
+    private static final Logger logger =
+            Logger.getLogger(
+                    ExpenseCategoryServiceImpl.class.getName()
+            );
+
+    private final IExpenseCategoryDao expenseCategoryDao;
+
+    public ExpenseCategoryServiceImpl(
+            IExpenseCategoryDao expenseCategoryDao) {
+
+        this.expenseCategoryDao = expenseCategoryDao;
     }
+
     @Override
-    public ExpenseCategory addExpenseCategory(ExpenseCategory expenseCategory) {
-        // Business validation
+    public ExpenseCategory addExpenseCategory(
+            ExpenseCategory expenseCategory) {
+
+        // Validation
         if (expenseCategory == null) {
-            return null;
+            throw new IllegalArgumentException(
+                    "Expense category cannot be null."
+            );
         }
 
         if (expenseCategory.getCategory_name() == null ||
                 expenseCategory.getCategory_name().isBlank()) {
-            return null;
+            throw new IllegalArgumentException(
+                    "Category name is required."
+            );
         }
 
-        return expenseCategoryDao.addExpenseCategory(
-                expenseCategory
+        ExpenseCategory result =
+                expenseCategoryDao.addExpenseCategory(
+                        expenseCategory
+                );
+
+        if (result == null) {
+            throw new IllegalArgumentException(
+                    "Failed to add expense category."
+            );
+        }
+
+        logger.info(
+                "Expense category added successfully: "
+                        + expenseCategory.getCategory_name()
         );
+
+        return result;
     }
 
-
     @Override
-    public boolean updateExpenseCategory(ExpenseCategory expenseCategory) {
-        // Business validation
+    public boolean updateExpenseCategory(
+            ExpenseCategory expenseCategory) {
+
         if (expenseCategory == null) {
-            return false;
+            throw new IllegalArgumentException(
+                    "Expense category cannot be null."
+            );
         }
 
         if (expenseCategory.getCategory_id() <= 0) {
-            return false;
+            throw new IllegalArgumentException(
+                    "Invalid category ID."
+            );
         }
 
         if (expenseCategory.getCategory_name() == null ||
                 expenseCategory.getCategory_name().isBlank()) {
-            return false;
+            throw new IllegalArgumentException(
+                    "Category name is required."
+            );
         }
 
-        return expenseCategoryDao.updateExpenseCategory(
-                expenseCategory
-        );
+        boolean result =
+                expenseCategoryDao.updateExpenseCategory(
+                        expenseCategory
+                );
+
+        if (result) {
+            logger.info(
+                    "Expense category updated successfully: ID="
+                            + expenseCategory.getCategory_id()
+            );
+        }
+
+        return result;
     }
 
     @Override
-    public ExpenseCategory getExpenseCategoryById(int categoryId) {
-        // Business validation
+    public ExpenseCategory getExpenseCategoryById(
+            int categoryId) {
+
         if (categoryId <= 0) {
-            return null;
+            throw new IllegalArgumentException(
+                    "Invalid category ID."
+            );
         }
 
-        return expenseCategoryDao.getExpenseCategoryById(
-                categoryId
-        );
+        ExpenseCategory category =
+                expenseCategoryDao.getExpenseCategoryById(
+                        categoryId
+                );
+
+        if (category == null) {
+            logger.warning(
+                    "No expense category found with ID="
+                            + categoryId
+            );
+        }
+
+        return category;
     }
 
     @Override
     public List<ExpenseCategory> getAllExpenseCategories() {
+
         return expenseCategoryDao.getAllExpenseCategories();
     }
 
     @Override
-    public boolean deleteExpenseCategoryById(int categoryId) {
+    public boolean deleteExpenseCategoryById(
+            int categoryId) {
 
-            // Business validation
-            if (categoryId <= 0) {
-                return false;
-            }
-
-            return expenseCategoryDao.deleteExpenseCategoryById(
-                    categoryId
+        if (categoryId <= 0) {
+            throw new IllegalArgumentException(
+                    "Invalid category ID."
             );
+        }
+
+        boolean result =
+                expenseCategoryDao.deleteExpenseCategoryById(
+                        categoryId
+                );
+
+        if (result) {
+            logger.info(
+                    "Expense category deleted successfully: ID="
+                            + categoryId
+            );
+        }
+
+        return result;
     }
 }

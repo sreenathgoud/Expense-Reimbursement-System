@@ -4,10 +4,17 @@ import com.ers.dao.IExpenseClaimDao;
 import com.ers.model.ExpenseClaim;
 
 import java.util.List;
+import java.util.logging.Logger;
 
-public class ExpenseClaimServiceImpl implements IExpenseClaimService {
+public class ExpenseClaimServiceImpl
+        implements IExpenseClaimService {
 
-    private IExpenseClaimDao expenseClaimDao;
+    private static final Logger logger =
+            Logger.getLogger(
+                    ExpenseClaimServiceImpl.class.getName()
+            );
+
+    private final IExpenseClaimDao expenseClaimDao;
 
     public ExpenseClaimServiceImpl(
             IExpenseClaimDao expenseClaimDao) {
@@ -19,61 +26,104 @@ public class ExpenseClaimServiceImpl implements IExpenseClaimService {
     public ExpenseClaim addExpenseClaim(
             ExpenseClaim expenseClaim) {
 
-        // Business validation
+        // Validation
         if (expenseClaim == null) {
-            return null;
+            throw new IllegalArgumentException(
+                    "Expense claim cannot be null."
+            );
         }
 
         if (expenseClaim.getEmployeeId() <= 0) {
-            return null;
+            throw new IllegalArgumentException(
+                    "Invalid employee ID."
+            );
         }
 
         if (expenseClaim.getClaimAmount() <= 0) {
-            return null;
+            throw new IllegalArgumentException(
+                    "Claim amount must be greater than zero."
+            );
         }
 
         if (expenseClaim.getClaimDate() == null) {
-            return null;
+            throw new IllegalArgumentException(
+                    "Claim date is required."
+            );
         }
 
         if (expenseClaim.getStatus() == null ||
                 expenseClaim.getStatus().isBlank()) {
-            return null;
+            throw new IllegalArgumentException(
+                    "Claim status is required."
+            );
         }
 
-        return expenseClaimDao.addExpenseClaim(
-                expenseClaim
+        ExpenseClaim result =
+                expenseClaimDao.addExpenseClaim(
+                        expenseClaim
+                );
+
+        if (result == null) {
+            throw new IllegalArgumentException(
+                    "Failed to add expense claim."
+            );
+        }
+
+        logger.info(
+                "Expense claim added successfully: "
+                        + result.getClaimId()
         );
+
+        return result;
     }
 
     @Override
     public boolean updateExpenseClaim(
             ExpenseClaim expenseClaim) {
 
-        // Business validation
         if (expenseClaim == null) {
-            return false;
+            throw new IllegalArgumentException(
+                    "Expense claim cannot be null."
+            );
         }
 
         if (expenseClaim.getClaimId() <= 0) {
-            return false;
+            throw new IllegalArgumentException(
+                    "Invalid claim ID."
+            );
         }
 
         if (expenseClaim.getEmployeeId() <= 0) {
-            return false;
+            throw new IllegalArgumentException(
+                    "Invalid employee ID."
+            );
         }
 
         if (expenseClaim.getClaimAmount() <= 0) {
-            return false;
+            throw new IllegalArgumentException(
+                    "Claim amount must be greater than zero."
+            );
         }
 
         if (expenseClaim.getClaimDate() == null) {
-            return false;
+            throw new IllegalArgumentException(
+                    "Claim date is required."
+            );
         }
 
-        return expenseClaimDao.updateExpenseClaim(
-                expenseClaim
-        );
+        boolean result =
+                expenseClaimDao.updateExpenseClaim(
+                        expenseClaim
+                );
+
+        if (result) {
+            logger.info(
+                    "Expense claim updated successfully: ID="
+                            + expenseClaim.getClaimId()
+            );
+        }
+
+        return result;
     }
 
     @Override
@@ -81,12 +131,24 @@ public class ExpenseClaimServiceImpl implements IExpenseClaimService {
             int claimId) {
 
         if (claimId <= 0) {
-            return null;
+            throw new IllegalArgumentException(
+                    "Invalid claim ID."
+            );
         }
 
-        return expenseClaimDao.getExpenseClaimById(
-                claimId
-        );
+        ExpenseClaim claim =
+                expenseClaimDao.getExpenseClaimById(
+                        claimId
+                );
+
+        if (claim == null) {
+            logger.warning(
+                    "No expense claim found with ID="
+                            + claimId
+            );
+        }
+
+        return claim;
     }
 
     @Override
@@ -100,12 +162,24 @@ public class ExpenseClaimServiceImpl implements IExpenseClaimService {
             int claimId) {
 
         if (claimId <= 0) {
-            return false;
+            throw new IllegalArgumentException(
+                    "Invalid claim ID."
+            );
         }
 
-        return expenseClaimDao.deleteExpenseClaimById(
-                claimId
-        );
+        boolean result =
+                expenseClaimDao.deleteExpenseClaimById(
+                        claimId
+                );
+
+        if (result) {
+            logger.info(
+                    "Expense claim deleted successfully: ID="
+                            + claimId
+            );
+        }
+
+        return result;
     }
 
     @Override
@@ -113,7 +187,9 @@ public class ExpenseClaimServiceImpl implements IExpenseClaimService {
             int employeeId) {
 
         if (employeeId <= 0) {
-            return List.of();
+            throw new IllegalArgumentException(
+                    "Invalid employee ID."
+            );
         }
 
         return expenseClaimDao.getClaimsByEmployeeId(
@@ -125,24 +201,48 @@ public class ExpenseClaimServiceImpl implements IExpenseClaimService {
     public boolean submitClaim(int claimId) {
 
         if (claimId <= 0) {
-            return false;
+            throw new IllegalArgumentException(
+                    "Invalid claim ID."
+            );
         }
 
-        return expenseClaimDao.submitClaim(
-                claimId
-        );
+        boolean result =
+                expenseClaimDao.submitClaim(
+                        claimId
+                );
+
+        if (result) {
+            logger.info(
+                    "Expense claim submitted successfully: ID="
+                            + claimId
+            );
+        }
+
+        return result;
     }
 
     @Override
     public boolean approveClaim(int claimId) {
 
         if (claimId <= 0) {
-            return false;
+            throw new IllegalArgumentException(
+                    "Invalid claim ID."
+            );
         }
 
-        return expenseClaimDao.approveClaim(
-                claimId
-        );
+        boolean result =
+                expenseClaimDao.approveClaim(
+                        claimId
+                );
+
+        if (result) {
+            logger.info(
+                    "Expense claim approved successfully: ID="
+                            + claimId
+            );
+        }
+
+        return result;
     }
 
     @Override
@@ -151,17 +251,31 @@ public class ExpenseClaimServiceImpl implements IExpenseClaimService {
             String reason) {
 
         if (claimId <= 0) {
-            return false;
+            throw new IllegalArgumentException(
+                    "Invalid claim ID."
+            );
         }
 
         if (reason == null || reason.isBlank()) {
-            return false;
+            throw new IllegalArgumentException(
+                    "Rejection reason is required."
+            );
         }
 
-        return expenseClaimDao.rejectClaim(
-                claimId,
-                reason
-        );
+        boolean result =
+                expenseClaimDao.rejectClaim(
+                        claimId,
+                        reason
+                );
+
+        if (result) {
+            logger.info(
+                    "Expense claim rejected: ID="
+                            + claimId
+            );
+        }
+
+        return result;
     }
 
     @Override
@@ -169,7 +283,9 @@ public class ExpenseClaimServiceImpl implements IExpenseClaimService {
             String status) {
 
         if (status == null || status.isBlank()) {
-            return List.of();
+            throw new IllegalArgumentException(
+                    "Claim status is required."
+            );
         }
 
         return expenseClaimDao.getClaimsByStatus(

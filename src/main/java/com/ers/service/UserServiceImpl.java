@@ -5,45 +5,205 @@ import com.ers.model.User;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.logging.Logger;
 
-public class UserServiceImpl implements IUserService{
-    private IUserDao userDao;
-    public UserServiceImpl(IUserDao userDao){
-        this.userDao=userDao;
+public class UserServiceImpl implements IUserService {
+
+    private static final Logger logger =
+            Logger.getLogger(UserServiceImpl.class.getName());
+
+    private final IUserDao userDao;
+
+    public UserServiceImpl(IUserDao userDao) {
+        this.userDao = userDao;
     }
+
     @Override
     public User addUser(User user) throws SQLException {
-        return userDao.addUser(user);
+
+        // Validation
+        if (user == null) {
+            throw new IllegalArgumentException(
+                    "User cannot be null."
+            );
+        }
+
+        if (user.getUserName() == null ||
+                user.getUserName().isBlank()) {
+            throw new IllegalArgumentException(
+                    "Username is required."
+            );
+        }
+
+        if (user.getPassword() == null ||
+                user.getPassword().isBlank()) {
+            throw new IllegalArgumentException(
+                    "Password is required."
+            );
+        }
+
+        if (!isValidRole(user.getRole())) {
+            throw new IllegalArgumentException(
+                    "Invalid user role."
+            );
+        }
+
+        User result = userDao.addUser(user);
+
+        if (result == null) {
+            throw new IllegalArgumentException(
+                    "Failed to add user."
+            );
+        }
+
+        logger.info(
+                "User added successfully: "
+                        + user.getUserName()
+        );
+
+        return result;
     }
 
     @Override
     public boolean updateUser(User user) {
 
-        return userDao.updateUser(user);
+        if (user == null) {
+            throw new IllegalArgumentException(
+                    "User cannot be null."
+            );
+        }
+
+        if (user.getUserId() <= 0) {
+            throw new IllegalArgumentException(
+                    "Invalid user ID."
+            );
+        }
+
+        if (user.getUserName() == null ||
+                user.getUserName().isBlank()) {
+            throw new IllegalArgumentException(
+                    "Username is required."
+            );
+        }
+
+        if (user.getPassword() == null ||
+                user.getPassword().isBlank()) {
+            throw new IllegalArgumentException(
+                    "Password is required."
+            );
+        }
+
+        if (!isValidRole(user.getRole())) {
+            throw new IllegalArgumentException(
+                    "Invalid user role."
+            );
+        }
+
+        boolean result = userDao.updateUser(user);
+
+        if (result) {
+            logger.info(
+                    "User updated successfully: ID="
+                            + user.getUserId()
+            );
+        }
+
+        return result;
     }
 
     @Override
     public User getUserById(int userId) {
-        return null;
+
+        if (userId <= 0) {
+            throw new IllegalArgumentException(
+                    "Invalid user ID."
+            );
+        }
+
+        User user = userDao.getUserById(userId);
+
+        if (user == null) {
+            logger.warning(
+                    "No user found with ID=" + userId
+            );
+        }
+
+        return user;
     }
 
     @Override
     public List<User> getAllUsers() {
+
         return userDao.getAllUsers();
     }
 
     @Override
     public boolean deleteUserById(int userId) {
-        return userDao.deleteUserById(userId);
+
+        if (userId <= 0) {
+            throw new IllegalArgumentException(
+                    "Invalid user ID."
+            );
+        }
+
+        boolean result =
+                userDao.deleteUserById(userId);
+
+        if (result) {
+            logger.info(
+                    "User deleted successfully: ID="
+                            + userId
+            );
+        }
+
+        return result;
     }
 
     @Override
     public User getUserByUsername(String username) {
-        return null;
+
+        if (username == null ||
+                username.isBlank()) {
+            throw new IllegalArgumentException(
+                    "Username is required."
+            );
+        }
+
+        return userDao.getUserByUsername(username);
     }
 
     @Override
-    public boolean updateUserStatus(int userId, boolean active) {
-        return userDao.updateUserStatus(userId, active);
+    public boolean updateUserStatus(
+            int userId,
+            boolean active) {
+
+        if (userId <= 0) {
+            throw new IllegalArgumentException(
+                    "Invalid user ID."
+            );
+        }
+
+        boolean result =
+                userDao.updateUserStatus(
+                        userId,
+                        active
+                );
+
+        if (result) {
+            logger.info(
+                    "User status updated successfully: ID="
+                            + userId
+            );
+        }
+
+        return result;
+    }
+
+    private boolean isValidRole(String role) {
+
+        return "EMPLOYEE".equals(role)
+                || "MANAGER".equals(role)
+                || "FINANCE_EXECUTIVE".equals(role)
+                || "ADMIN".equals(role);
     }
 }
