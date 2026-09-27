@@ -48,6 +48,52 @@ class ExpenseCategoryServiceImplTest {
     }
 
     @Test
+    void addExpenseCategoryNull() {
+
+        // Arrange
+        IExpenseCategoryDao expenseCategoryDaoMock =
+                Mockito.mock(IExpenseCategoryDao.class);
+
+        ExpenseCategoryServiceImpl expenseCategoryService =
+                new ExpenseCategoryServiceImpl(
+                        expenseCategoryDaoMock
+                );
+
+        // Act & Assert
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> expenseCategoryService.addExpenseCategory(null)
+        );
+    }
+
+    @Test
+    void addExpenseCategoryInvalidName() {
+
+        // Arrange
+        IExpenseCategoryDao expenseCategoryDaoMock =
+                Mockito.mock(IExpenseCategoryDao.class);
+
+        ExpenseCategory expenseCategory =
+                new ExpenseCategory(
+                        "",
+                        "Travel related expenses"
+                );
+
+        ExpenseCategoryServiceImpl expenseCategoryService =
+                new ExpenseCategoryServiceImpl(
+                        expenseCategoryDaoMock
+                );
+
+        // Act & Assert
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> expenseCategoryService.addExpenseCategory(
+                        expenseCategory
+                )
+        );
+    }
+
+    @Test
     void updateExpenseCategory() {
 
         // Arrange
@@ -84,6 +130,33 @@ class ExpenseCategoryServiceImplTest {
     }
 
     @Test
+    void updateExpenseCategoryInvalidId() {
+
+        // Arrange
+        IExpenseCategoryDao expenseCategoryDaoMock =
+                Mockito.mock(IExpenseCategoryDao.class);
+
+        ExpenseCategory expenseCategory =
+                new ExpenseCategory(
+                        "Updated Travel",
+                        "Updated travel expenses"
+                );
+
+        ExpenseCategoryServiceImpl expenseCategoryService =
+                new ExpenseCategoryServiceImpl(
+                        expenseCategoryDaoMock
+                );
+
+        // Act & Assert
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> expenseCategoryService.updateExpenseCategory(
+                        expenseCategory
+                )
+        );
+    }
+
+    @Test
     void getExpenseCategoryById() {
 
         // Arrange
@@ -115,6 +188,25 @@ class ExpenseCategoryServiceImplTest {
         Assertions.assertEquals(
                 expenseCategory,
                 actualResult
+        );
+    }
+
+    @Test
+    void getExpenseCategoryByIdInvalidId() {
+
+        // Arrange
+        IExpenseCategoryDao expenseCategoryDaoMock =
+                Mockito.mock(IExpenseCategoryDao.class);
+
+        ExpenseCategoryServiceImpl expenseCategoryService =
+                new ExpenseCategoryServiceImpl(
+                        expenseCategoryDaoMock
+                );
+
+        // Act & Assert
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> expenseCategoryService.getExpenseCategoryById(0)
         );
     }
 
@@ -179,5 +271,24 @@ class ExpenseCategoryServiceImplTest {
 
         // Assert
         Assertions.assertTrue(actualResult);
+    }
+
+    @Test
+    void deleteExpenseCategoryByIdInvalidId() {
+
+        // Arrange
+        IExpenseCategoryDao expenseCategoryDaoMock =
+                Mockito.mock(IExpenseCategoryDao.class);
+
+        ExpenseCategoryServiceImpl expenseCategoryService =
+                new ExpenseCategoryServiceImpl(
+                        expenseCategoryDaoMock
+                );
+
+        // Act & Assert
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> expenseCategoryService.deleteExpenseCategoryById(0)
+        );
     }
 }

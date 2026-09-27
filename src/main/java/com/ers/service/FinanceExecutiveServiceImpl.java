@@ -6,13 +6,18 @@ import com.ers.model.FinanceExecutive;
 import com.ers.model.Reimbursement;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 // Business Logic
-
 public class FinanceExecutiveServiceImpl
         implements IFinanceExecutiveService {
 
-    private IFinanceExecutiveDao financeExecutiveDao;
+    private static final Logger logger =
+            Logger.getLogger(
+                    FinanceExecutiveServiceImpl.class.getName()
+            );
+
+    private final IFinanceExecutiveDao financeExecutiveDao;
 
     public FinanceExecutiveServiceImpl(
             IFinanceExecutiveDao financeExecutiveDao) {
@@ -24,36 +29,63 @@ public class FinanceExecutiveServiceImpl
     public FinanceExecutive addFinanceExecutive(
             FinanceExecutive financeExecutive) {
 
+        // Validation
         if (financeExecutive == null) {
-            return null;
+            throw new IllegalArgumentException(
+                    "Finance executive cannot be null."
+            );
         }
 
         if (financeExecutive.getEmployeeId() <= 0) {
-            return null;
+            throw new IllegalArgumentException(
+                    "Invalid employee ID."
+            );
         }
 
         if (financeExecutive.getFullName() == null ||
                 financeExecutive.getFullName().isBlank()) {
-            return null;
+            throw new IllegalArgumentException(
+                    "Full name is required."
+            );
         }
 
         if (financeExecutive.getEmail() == null ||
                 financeExecutive.getEmail().isBlank()) {
-            return null;
+            throw new IllegalArgumentException(
+                    "Email is required."
+            );
         }
 
         if (!financeExecutive.getEmail().contains("@")) {
-            return null;
+            throw new IllegalArgumentException(
+                    "Invalid email address."
+            );
         }
 
         if (financeExecutive.getDepartment() == null ||
                 financeExecutive.getDepartment().isBlank()) {
-            return null;
+            throw new IllegalArgumentException(
+                    "Department is required."
+            );
         }
 
-        return financeExecutiveDao.addFinanceExecutive(
-                financeExecutive
+        FinanceExecutive result =
+                financeExecutiveDao.addFinanceExecutive(
+                        financeExecutive
+                );
+
+        if (result == null) {
+            throw new IllegalArgumentException(
+                    "Failed to add finance executive."
+            );
+        }
+
+        logger.info(
+                "Finance executive added successfully: Employee ID="
+                        + financeExecutive.getEmployeeId()
         );
+
+        return result;
     }
 
     @Override
@@ -61,35 +93,57 @@ public class FinanceExecutiveServiceImpl
             FinanceExecutive financeExecutive) {
 
         if (financeExecutive == null) {
-            return false;
+            throw new IllegalArgumentException(
+                    "Finance executive cannot be null."
+            );
         }
 
         if (financeExecutive.getEmployeeId() <= 0) {
-            return false;
+            throw new IllegalArgumentException(
+                    "Invalid employee ID."
+            );
         }
 
         if (financeExecutive.getFullName() == null ||
                 financeExecutive.getFullName().isBlank()) {
-            return false;
+            throw new IllegalArgumentException(
+                    "Full name is required."
+            );
         }
 
         if (financeExecutive.getEmail() == null ||
                 financeExecutive.getEmail().isBlank()) {
-            return false;
+            throw new IllegalArgumentException(
+                    "Email is required."
+            );
         }
 
         if (!financeExecutive.getEmail().contains("@")) {
-            return false;
+            throw new IllegalArgumentException(
+                    "Invalid email address."
+            );
         }
 
         if (financeExecutive.getDepartment() == null ||
                 financeExecutive.getDepartment().isBlank()) {
-            return false;
+            throw new IllegalArgumentException(
+                    "Department is required."
+            );
         }
 
-        return financeExecutiveDao.updateFinanceExecutive(
-                financeExecutive
-        );
+        boolean result =
+                financeExecutiveDao.updateFinanceExecutive(
+                        financeExecutive
+                );
+
+        if (result) {
+            logger.info(
+                    "Finance executive updated successfully: Employee ID="
+                            + financeExecutive.getEmployeeId()
+            );
+        }
+
+        return result;
     }
 
     @Override
@@ -97,12 +151,24 @@ public class FinanceExecutiveServiceImpl
             int employeeId) {
 
         if (employeeId <= 0) {
-            return null;
+            throw new IllegalArgumentException(
+                    "Invalid employee ID."
+            );
         }
 
-        return financeExecutiveDao.getFinanceExecutiveById(
-                employeeId
-        );
+        FinanceExecutive result =
+                financeExecutiveDao.getFinanceExecutiveById(
+                        employeeId
+                );
+
+        if (result == null) {
+            logger.warning(
+                    "No finance executive found with Employee ID="
+                            + employeeId
+            );
+        }
+
+        return result;
     }
 
     @Override
@@ -116,12 +182,24 @@ public class FinanceExecutiveServiceImpl
             int employeeId) {
 
         if (employeeId <= 0) {
-            return false;
+            throw new IllegalArgumentException(
+                    "Invalid employee ID."
+            );
         }
 
-        return financeExecutiveDao.deleteFinanceExecutiveById(
-                employeeId
-        );
+        boolean result =
+                financeExecutiveDao.deleteFinanceExecutiveById(
+                        employeeId
+                );
+
+        if (result) {
+            logger.info(
+                    "Finance executive deleted successfully: Employee ID="
+                            + employeeId
+            );
+        }
+
+        return result;
     }
 
     @Override
@@ -134,10 +212,21 @@ public class FinanceExecutiveServiceImpl
     public ExpenseClaim getClaimById(int claimId) {
 
         if (claimId <= 0) {
-            return null;
+            throw new IllegalArgumentException(
+                    "Invalid claim ID."
+            );
         }
 
-        return financeExecutiveDao.getClaimById(claimId);
+        ExpenseClaim result =
+                financeExecutiveDao.getClaimById(claimId);
+
+        if (result == null) {
+            logger.warning(
+                    "No claim found with ID=" + claimId
+            );
+        }
+
+        return result;
     }
 
     @Override
@@ -147,23 +236,39 @@ public class FinanceExecutiveServiceImpl
             String paymentMode) {
 
         if (claimId <= 0) {
-            return false;
+            throw new IllegalArgumentException(
+                    "Invalid claim ID."
+            );
         }
 
         if (financeExecutiveId <= 0) {
-            return false;
+            throw new IllegalArgumentException(
+                    "Invalid finance executive ID."
+            );
         }
 
         if (paymentMode == null ||
                 paymentMode.isBlank()) {
-            return false;
+            throw new IllegalArgumentException(
+                    "Payment mode is required."
+            );
         }
 
-        return financeExecutiveDao.processPayment(
-                claimId,
-                financeExecutiveId,
-                paymentMode
-        );
+        boolean result =
+                financeExecutiveDao.processPayment(
+                        claimId,
+                        financeExecutiveId,
+                        paymentMode
+                );
+
+        if (result) {
+            logger.info(
+                    "Payment processed successfully: Claim ID="
+                            + claimId
+            );
+        }
+
+        return result;
     }
 
     @Override
@@ -171,7 +276,9 @@ public class FinanceExecutiveServiceImpl
             int financeExecutiveId) {
 
         if (financeExecutiveId <= 0) {
-            return List.of();
+            throw new IllegalArgumentException(
+                    "Invalid finance executive ID."
+            );
         }
 
         return financeExecutiveDao.getReimbursementHistory(

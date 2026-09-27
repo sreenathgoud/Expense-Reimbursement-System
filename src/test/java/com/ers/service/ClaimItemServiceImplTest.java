@@ -28,21 +28,15 @@ class ClaimItemServiceImplTest {
                 );
 
         Mockito.when(
-                claimItemDaoMock.addClaimItem(
-                        claimItem
-                )
+                claimItemDaoMock.addClaimItem(claimItem)
         ).thenReturn(claimItem);
 
         ClaimItemServiceImpl claimItemService =
-                new ClaimItemServiceImpl(
-                        claimItemDaoMock
-                );
+                new ClaimItemServiceImpl(claimItemDaoMock);
 
         // Act
         ClaimItem actualResult =
-                claimItemService.addClaimItem(
-                        claimItem
-                );
+                claimItemService.addClaimItem(claimItem);
 
         // Assert
         Assertions.assertEquals(
@@ -51,6 +45,22 @@ class ClaimItemServiceImplTest {
         );
     }
 
+    @Test
+    void addClaimItemNullTest() {
+
+        // Arrange
+        IClaimItemDao claimItemDaoMock =
+                Mockito.mock(IClaimItemDao.class);
+
+        ClaimItemServiceImpl claimItemService =
+                new ClaimItemServiceImpl(claimItemDaoMock);
+
+        // Act & Assert
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> claimItemService.addClaimItem(null)
+        );
+    }
 
     @Test
     void updateClaimItemTest() {
@@ -71,28 +81,45 @@ class ClaimItemServiceImplTest {
         claimItem.setItemId(1);
 
         Mockito.when(
-                claimItemDaoMock.updateClaimItem(
-                        claimItem
-                )
+                claimItemDaoMock.updateClaimItem(claimItem)
         ).thenReturn(true);
 
         ClaimItemServiceImpl claimItemService =
-                new ClaimItemServiceImpl(
-                        claimItemDaoMock
-                );
+                new ClaimItemServiceImpl(claimItemDaoMock);
 
         // Act
         boolean actualResult =
-                claimItemService.updateClaimItem(
-                        claimItem
-                );
+                claimItemService.updateClaimItem(claimItem);
 
         // Assert
-        Assertions.assertTrue(
-                actualResult
-        );
+        Assertions.assertTrue(actualResult);
     }
 
+    @Test
+    void updateClaimItemInvalidIdTest() {
+
+        // Arrange
+        IClaimItemDao claimItemDaoMock =
+                Mockito.mock(IClaimItemDao.class);
+
+        ClaimItem claimItem =
+                new ClaimItem(
+                        1,
+                        2,
+                        "Updated travel expense",
+                        2000.00,
+                        LocalDate.now()
+                );
+
+        ClaimItemServiceImpl claimItemService =
+                new ClaimItemServiceImpl(claimItemDaoMock);
+
+        // Act & Assert
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> claimItemService.updateClaimItem(claimItem)
+        );
+    }
 
     @Test
     void getClaimItemByIdTest() {
@@ -117,9 +144,7 @@ class ClaimItemServiceImplTest {
         ).thenReturn(claimItem);
 
         ClaimItemServiceImpl claimItemService =
-                new ClaimItemServiceImpl(
-                        claimItemDaoMock
-                );
+                new ClaimItemServiceImpl(claimItemDaoMock);
 
         // Act
         ClaimItem actualResult =
@@ -132,6 +157,22 @@ class ClaimItemServiceImplTest {
         );
     }
 
+    @Test
+    void getClaimItemByIdInvalidIdTest() {
+
+        // Arrange
+        IClaimItemDao claimItemDaoMock =
+                Mockito.mock(IClaimItemDao.class);
+
+        ClaimItemServiceImpl claimItemService =
+                new ClaimItemServiceImpl(claimItemDaoMock);
+
+        // Act & Assert
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> claimItemService.getClaimItemById(0)
+        );
+    }
 
     @Test
     void getAllClaimItemsTest() {
@@ -163,9 +204,7 @@ class ClaimItemServiceImplTest {
         ).thenReturn(claimItems);
 
         ClaimItemServiceImpl claimItemService =
-                new ClaimItemServiceImpl(
-                        claimItemDaoMock
-                );
+                new ClaimItemServiceImpl(claimItemDaoMock);
 
         // Act
         List<ClaimItem> actualResult =
@@ -177,7 +216,6 @@ class ClaimItemServiceImplTest {
                 actualResult
         );
     }
-
 
     @Test
     void deleteClaimItemByIdTest() {
@@ -191,20 +229,32 @@ class ClaimItemServiceImplTest {
         ).thenReturn(true);
 
         ClaimItemServiceImpl claimItemService =
-                new ClaimItemServiceImpl(
-                        claimItemDaoMock
-                );
+                new ClaimItemServiceImpl(claimItemDaoMock);
 
         // Act
         boolean actualResult =
                 claimItemService.deleteClaimItemById(1);
 
         // Assert
-        Assertions.assertTrue(
-                actualResult
-        );
+        Assertions.assertTrue(actualResult);
     }
 
+    @Test
+    void deleteClaimItemByIdInvalidIdTest() {
+
+        // Arrange
+        IClaimItemDao claimItemDaoMock =
+                Mockito.mock(IClaimItemDao.class);
+
+        ClaimItemServiceImpl claimItemService =
+                new ClaimItemServiceImpl(claimItemDaoMock);
+
+        // Act & Assert
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> claimItemService.deleteClaimItemById(0)
+        );
+    }
 
     @Test
     void getClaimItemsByClaimIdTest() {
@@ -229,9 +279,7 @@ class ClaimItemServiceImplTest {
         ).thenReturn(claimItems);
 
         ClaimItemServiceImpl claimItemService =
-                new ClaimItemServiceImpl(
-                        claimItemDaoMock
-                );
+                new ClaimItemServiceImpl(claimItemDaoMock);
 
         // Act
         List<ClaimItem> actualResult =
@@ -241,6 +289,23 @@ class ClaimItemServiceImplTest {
         Assertions.assertEquals(
                 claimItems,
                 actualResult
+        );
+    }
+
+    @Test
+    void getClaimItemsByClaimIdInvalidIdTest() {
+
+        // Arrange
+        IClaimItemDao claimItemDaoMock =
+                Mockito.mock(IClaimItemDao.class);
+
+        ClaimItemServiceImpl claimItemService =
+                new ClaimItemServiceImpl(claimItemDaoMock);
+
+        // Act & Assert
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> claimItemService.getClaimItemsByClaimId(0)
         );
     }
 }

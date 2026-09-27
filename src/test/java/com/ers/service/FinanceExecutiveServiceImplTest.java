@@ -52,6 +52,24 @@ public class FinanceExecutiveServiceImplTest {
         );
     }
 
+    @Test
+    void addFinanceExecutiveNullTest() {
+
+        // Arrange
+        IFinanceExecutiveDao financeExecutiveDao =
+                Mockito.mock(IFinanceExecutiveDao.class);
+
+        FinanceExecutiveServiceImpl service =
+                new FinanceExecutiveServiceImpl(
+                        financeExecutiveDao
+                );
+
+        // Act & Assert
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> service.addFinanceExecutive(null)
+        );
+    }
 
     @Test
     void updateFinanceExecutiveTest() {
@@ -88,6 +106,34 @@ public class FinanceExecutiveServiceImplTest {
         Assertions.assertTrue(actualResult);
     }
 
+    @Test
+    void updateFinanceExecutiveInvalidIdTest() {
+
+        // Arrange
+        IFinanceExecutiveDao financeExecutiveDao =
+                Mockito.mock(IFinanceExecutiveDao.class);
+
+        FinanceExecutive financeExecutive =
+                new FinanceExecutive(
+                        0,
+                        "Updated Finance Executive",
+                        "updatedfinance@gmail.com",
+                        "FINANCE"
+                );
+
+        FinanceExecutiveServiceImpl service =
+                new FinanceExecutiveServiceImpl(
+                        financeExecutiveDao
+                );
+
+        // Act & Assert
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> service.updateFinanceExecutive(
+                        financeExecutive
+                )
+        );
+    }
 
     @Test
     void getFinanceExecutiveByIdTest() {
@@ -125,6 +171,24 @@ public class FinanceExecutiveServiceImplTest {
         );
     }
 
+    @Test
+    void getFinanceExecutiveByIdInvalidIdTest() {
+
+        // Arrange
+        IFinanceExecutiveDao financeExecutiveDao =
+                Mockito.mock(IFinanceExecutiveDao.class);
+
+        FinanceExecutiveServiceImpl service =
+                new FinanceExecutiveServiceImpl(
+                        financeExecutiveDao
+                );
+
+        // Act & Assert
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> service.getFinanceExecutiveById(0)
+        );
+    }
 
     @Test
     void getAllFinanceExecutivesTest() {
@@ -164,7 +228,6 @@ public class FinanceExecutiveServiceImplTest {
         );
     }
 
-
     @Test
     void deleteFinanceExecutiveByIdTest() {
 
@@ -189,6 +252,24 @@ public class FinanceExecutiveServiceImplTest {
         Assertions.assertTrue(actualResult);
     }
 
+    @Test
+    void deleteFinanceExecutiveByIdInvalidIdTest() {
+
+        // Arrange
+        IFinanceExecutiveDao financeExecutiveDao =
+                Mockito.mock(IFinanceExecutiveDao.class);
+
+        FinanceExecutiveServiceImpl service =
+                new FinanceExecutiveServiceImpl(
+                        financeExecutiveDao
+                );
+
+        // Act & Assert
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> service.deleteFinanceExecutiveById(0)
+        );
+    }
 
     @Test
     void getPendingClaimsTest() {
@@ -230,7 +311,6 @@ public class FinanceExecutiveServiceImplTest {
         );
     }
 
-
     @Test
     void getClaimByIdTest() {
 
@@ -271,6 +351,24 @@ public class FinanceExecutiveServiceImplTest {
         );
     }
 
+    @Test
+    void getClaimByIdInvalidIdTest() {
+
+        // Arrange
+        IFinanceExecutiveDao financeExecutiveDao =
+                Mockito.mock(IFinanceExecutiveDao.class);
+
+        FinanceExecutiveServiceImpl service =
+                new FinanceExecutiveServiceImpl(
+                        financeExecutiveDao
+                );
+
+        // Act & Assert
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> service.getClaimById(0)
+        );
+    }
 
     @Test
     void processPaymentTest() {
@@ -304,6 +402,74 @@ public class FinanceExecutiveServiceImplTest {
         Assertions.assertTrue(actualResult);
     }
 
+    @Test
+    void processPaymentInvalidClaimIdTest() {
+
+        // Arrange
+        IFinanceExecutiveDao financeExecutiveDao =
+                Mockito.mock(IFinanceExecutiveDao.class);
+
+        FinanceExecutiveServiceImpl service =
+                new FinanceExecutiveServiceImpl(
+                        financeExecutiveDao
+                );
+
+        // Act & Assert
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> service.processPayment(
+                        0,
+                        20,
+                        "BANK_TRANSFER"
+                )
+        );
+    }
+
+    @Test
+    void processPaymentInvalidFinanceExecutiveIdTest() {
+
+        // Arrange
+        IFinanceExecutiveDao financeExecutiveDao =
+                Mockito.mock(IFinanceExecutiveDao.class);
+
+        FinanceExecutiveServiceImpl service =
+                new FinanceExecutiveServiceImpl(
+                        financeExecutiveDao
+                );
+
+        // Act & Assert
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> service.processPayment(
+                        3,
+                        0,
+                        "BANK_TRANSFER"
+                )
+        );
+    }
+
+    @Test
+    void processPaymentInvalidPaymentModeTest() {
+
+        // Arrange
+        IFinanceExecutiveDao financeExecutiveDao =
+                Mockito.mock(IFinanceExecutiveDao.class);
+
+        FinanceExecutiveServiceImpl service =
+                new FinanceExecutiveServiceImpl(
+                        financeExecutiveDao
+                );
+
+        // Act & Assert
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> service.processPayment(
+                        3,
+                        20,
+                        ""
+                )
+        );
+    }
 
     @Test
     void getReimbursementHistoryTest() {
@@ -350,6 +516,25 @@ public class FinanceExecutiveServiceImplTest {
         Assertions.assertEquals(
                 20,
                 actualResult.get(0).getProcessedBy()
+        );
+    }
+
+    @Test
+    void getReimbursementHistoryInvalidIdTest() {
+
+        // Arrange
+        IFinanceExecutiveDao financeExecutiveDao =
+                Mockito.mock(IFinanceExecutiveDao.class);
+
+        FinanceExecutiveServiceImpl service =
+                new FinanceExecutiveServiceImpl(
+                        financeExecutiveDao
+                );
+
+        // Act & Assert
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> service.getReimbursementHistory(0)
         );
     }
 }

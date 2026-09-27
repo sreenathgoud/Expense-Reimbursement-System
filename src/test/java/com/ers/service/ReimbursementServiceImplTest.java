@@ -30,8 +30,7 @@ public class ReimbursementServiceImplTest {
                 );
 
         Mockito.when(
-                reimbursementDao.addReimbursement(
-                        reimbursement)
+                reimbursementDao.addReimbursement(reimbursement)
         ).thenReturn(reimbursement);
 
         ReimbursementServiceImpl service =
@@ -41,9 +40,7 @@ public class ReimbursementServiceImplTest {
 
         // Act
         Reimbursement actualResult =
-                service.addReimbursement(
-                        reimbursement
-                );
+                service.addReimbursement(reimbursement);
 
         // Assert
         Assertions.assertNotNull(actualResult);
@@ -53,6 +50,24 @@ public class ReimbursementServiceImplTest {
         );
     }
 
+    @Test
+    void addReimbursementNullTest() {
+
+        // Arrange
+        IReimbursementDao reimbursementDao =
+                Mockito.mock(IReimbursementDao.class);
+
+        ReimbursementServiceImpl service =
+                new ReimbursementServiceImpl(
+                        reimbursementDao
+                );
+
+        // Act & Assert
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> service.addReimbursement(null)
+        );
+    }
 
     @Test
     void updateReimbursementTest() {
@@ -76,7 +91,8 @@ public class ReimbursementServiceImplTest {
 
         Mockito.when(
                 reimbursementDao.updateReimbursement(
-                        reimbursement)
+                        reimbursement
+                )
         ).thenReturn(true);
 
         ReimbursementServiceImpl service =
@@ -94,6 +110,35 @@ public class ReimbursementServiceImplTest {
         Assertions.assertTrue(actualResult);
     }
 
+    @Test
+    void updateReimbursementInvalidIdTest() {
+
+        // Arrange
+        IReimbursementDao reimbursementDao =
+                Mockito.mock(IReimbursementDao.class);
+
+        Reimbursement reimbursement =
+                new Reimbursement(
+                        3,
+                        2000.00,
+                        "BANK_TRANSFER",
+                        null,
+                        LocalDate.now(),
+                        20,
+                        "PROCESSED"
+                );
+
+        ReimbursementServiceImpl service =
+                new ReimbursementServiceImpl(
+                        reimbursementDao
+                );
+
+        // Act & Assert
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> service.updateReimbursement(reimbursement)
+        );
+    }
 
     @Test
     void getReimbursementByIdTest() {
@@ -136,6 +181,24 @@ public class ReimbursementServiceImplTest {
         );
     }
 
+    @Test
+    void getReimbursementByIdInvalidIdTest() {
+
+        // Arrange
+        IReimbursementDao reimbursementDao =
+                Mockito.mock(IReimbursementDao.class);
+
+        ReimbursementServiceImpl service =
+                new ReimbursementServiceImpl(
+                        reimbursementDao
+                );
+
+        // Act & Assert
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> service.getReimbursementById(0)
+        );
+    }
 
     @Test
     void getAllReimbursementsTest() {
@@ -179,7 +242,6 @@ public class ReimbursementServiceImplTest {
         );
     }
 
-
     @Test
     void deleteReimbursementByIdTest() {
 
@@ -204,6 +266,24 @@ public class ReimbursementServiceImplTest {
         Assertions.assertTrue(actualResult);
     }
 
+    @Test
+    void deleteReimbursementByIdInvalidIdTest() {
+
+        // Arrange
+        IReimbursementDao reimbursementDao =
+                Mockito.mock(IReimbursementDao.class);
+
+        ReimbursementServiceImpl service =
+                new ReimbursementServiceImpl(
+                        reimbursementDao
+                );
+
+        // Act & Assert
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> service.deleteReimbursementById(0)
+        );
+    }
 
     @Test
     void getReimbursementByClaimIdTest() {
@@ -244,6 +324,24 @@ public class ReimbursementServiceImplTest {
         );
     }
 
+    @Test
+    void getReimbursementByClaimIdInvalidIdTest() {
+
+        // Arrange
+        IReimbursementDao reimbursementDao =
+                Mockito.mock(IReimbursementDao.class);
+
+        ReimbursementServiceImpl service =
+                new ReimbursementServiceImpl(
+                        reimbursementDao
+                );
+
+        // Act & Assert
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> service.getReimbursementByClaimId(0)
+        );
+    }
 
     @Test
     void getReimbursementsByEmployeeIdTest() {
@@ -291,6 +389,24 @@ public class ReimbursementServiceImplTest {
         );
     }
 
+    @Test
+    void getReimbursementsByEmployeeIdInvalidIdTest() {
+
+        // Arrange
+        IReimbursementDao reimbursementDao =
+                Mockito.mock(IReimbursementDao.class);
+
+        ReimbursementServiceImpl service =
+                new ReimbursementServiceImpl(
+                        reimbursementDao
+                );
+
+        // Act & Assert
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> service.getReimbursementsByEmployeeId(0)
+        );
+    }
 
     @Test
     void getReimbursementsByStatusTest() {
@@ -314,8 +430,7 @@ public class ReimbursementServiceImplTest {
                 List.of(reimbursement);
 
         Mockito.when(
-                reimbursementDao.getReimbursementsByStatus(
-                        "PROCESSED")
+                reimbursementDao.getReimbursementsByStatus("PROCESSED")
         ).thenReturn(reimbursements);
 
         ReimbursementServiceImpl service =
@@ -325,9 +440,7 @@ public class ReimbursementServiceImplTest {
 
         // Act
         List<Reimbursement> actualResult =
-                service.getReimbursementsByStatus(
-                        "PROCESSED"
-                );
+                service.getReimbursementsByStatus("PROCESSED");
 
         // Assert
         Assertions.assertNotNull(actualResult);
@@ -338,6 +451,25 @@ public class ReimbursementServiceImplTest {
         Assertions.assertEquals(
                 "PROCESSED",
                 actualResult.get(0).getStatus()
+        );
+    }
+
+    @Test
+    void getReimbursementsByStatusInvalidStatusTest() {
+
+        // Arrange
+        IReimbursementDao reimbursementDao =
+                Mockito.mock(IReimbursementDao.class);
+
+        ReimbursementServiceImpl service =
+                new ReimbursementServiceImpl(
+                        reimbursementDao
+                );
+
+        // Act & Assert
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> service.getReimbursementsByStatus("")
         );
     }
 }

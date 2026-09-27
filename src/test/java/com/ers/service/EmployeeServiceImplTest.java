@@ -8,12 +8,11 @@ import org.mockito.Mockito;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class EmployeeServiceImplTest {
 
     @Test
     void addEmployee() {
+
         // Arrange
         IEmployeeDao employeeDaoMock =
                 Mockito.mock(IEmployeeDao.class);
@@ -25,8 +24,9 @@ class EmployeeServiceImplTest {
                 6
         );
 
-        Mockito.when(employeeDaoMock.addEmployee(employee))
-                .thenReturn(employee);
+        Mockito.when(
+                employeeDaoMock.addEmployee(employee)
+        ).thenReturn(employee);
 
         EmployeeServiceImpl employeeService =
                 new EmployeeServiceImpl(employeeDaoMock);
@@ -36,11 +36,56 @@ class EmployeeServiceImplTest {
                 employeeService.addEmployee(employee);
 
         // Assert
-        Assertions.assertEquals(employee, actualResult);
+        Assertions.assertEquals(
+                employee,
+                actualResult
+        );
+    }
+
+    @Test
+    void addEmployeeInvalidEmployee() {
+
+        // Arrange
+        IEmployeeDao employeeDaoMock =
+                Mockito.mock(IEmployeeDao.class);
+
+        EmployeeServiceImpl employeeService =
+                new EmployeeServiceImpl(employeeDaoMock);
+
+        // Act & Assert
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> employeeService.addEmployee(null)
+        );
+    }
+
+    @Test
+    void addEmployeeInvalidEmail() {
+
+        // Arrange
+        IEmployeeDao employeeDaoMock =
+                Mockito.mock(IEmployeeDao.class);
+
+        Employee employee = new Employee(
+                2,
+                "Sreenath",
+                "invalid-email",
+                6
+        );
+
+        EmployeeServiceImpl employeeService =
+                new EmployeeServiceImpl(employeeDaoMock);
+
+        // Act & Assert
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> employeeService.addEmployee(employee)
+        );
     }
 
     @Test
     void updateEmployee() {
+
         // Arrange
         IEmployeeDao employeeDaoMock =
                 Mockito.mock(IEmployeeDao.class);
@@ -54,8 +99,9 @@ class EmployeeServiceImplTest {
 
         employee.setEmployeeId(9);
 
-        Mockito.when(employeeDaoMock.updateEmployee(employee))
-                .thenReturn(true);
+        Mockito.when(
+                employeeDaoMock.updateEmployee(employee)
+        ).thenReturn(true);
 
         EmployeeServiceImpl employeeService =
                 new EmployeeServiceImpl(employeeDaoMock);
@@ -69,7 +115,32 @@ class EmployeeServiceImplTest {
     }
 
     @Test
+    void updateEmployeeInvalidId() {
+
+        // Arrange
+        IEmployeeDao employeeDaoMock =
+                Mockito.mock(IEmployeeDao.class);
+
+        Employee employee = new Employee(
+                2,
+                "Sreenath",
+                "sreenath@gmail.com",
+                6
+        );
+
+        EmployeeServiceImpl employeeService =
+                new EmployeeServiceImpl(employeeDaoMock);
+
+        // Act & Assert
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> employeeService.updateEmployee(employee)
+        );
+    }
+
+    @Test
     void getEmployeeById() {
+
         // Arrange
         IEmployeeDao employeeDaoMock =
                 Mockito.mock(IEmployeeDao.class);
@@ -83,8 +154,9 @@ class EmployeeServiceImplTest {
 
         employee.setEmployeeId(9);
 
-        Mockito.when(employeeDaoMock.getEmployeeById(9))
-                .thenReturn(employee);
+        Mockito.when(
+                employeeDaoMock.getEmployeeById(9)
+        ).thenReturn(employee);
 
         EmployeeServiceImpl employeeService =
                 new EmployeeServiceImpl(employeeDaoMock);
@@ -94,11 +166,32 @@ class EmployeeServiceImplTest {
                 employeeService.getEmployeeById(9);
 
         // Assert
-        Assertions.assertEquals(employee, actualResult);
+        Assertions.assertEquals(
+                employee,
+                actualResult
+        );
+    }
+
+    @Test
+    void getEmployeeByIdInvalidId() {
+
+        // Arrange
+        IEmployeeDao employeeDaoMock =
+                Mockito.mock(IEmployeeDao.class);
+
+        EmployeeServiceImpl employeeService =
+                new EmployeeServiceImpl(employeeDaoMock);
+
+        // Act & Assert
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> employeeService.getEmployeeById(0)
+        );
     }
 
     @Test
     void getAllEmployees() {
+
         // Arrange
         IEmployeeDao employeeDaoMock =
                 Mockito.mock(IEmployeeDao.class);
@@ -112,8 +205,9 @@ class EmployeeServiceImplTest {
                 )
         );
 
-        Mockito.when(employeeDaoMock.getAllEmployees())
-                .thenReturn(employees);
+        Mockito.when(
+                employeeDaoMock.getAllEmployees()
+        ).thenReturn(employees);
 
         EmployeeServiceImpl employeeService =
                 new EmployeeServiceImpl(employeeDaoMock);
@@ -123,17 +217,22 @@ class EmployeeServiceImplTest {
                 employeeService.getAllEmployees();
 
         // Assert
-        Assertions.assertEquals(employees, actualResult);
+        Assertions.assertEquals(
+                employees,
+                actualResult
+        );
     }
 
     @Test
     void deleteEmployeeById() {
+
         // Arrange
         IEmployeeDao employeeDaoMock =
                 Mockito.mock(IEmployeeDao.class);
 
-        Mockito.when(employeeDaoMock.deleteEmployeeById(9))
-                .thenReturn(true);
+        Mockito.when(
+                employeeDaoMock.deleteEmployeeById(9)
+        ).thenReturn(true);
 
         EmployeeServiceImpl employeeService =
                 new EmployeeServiceImpl(employeeDaoMock);
@@ -144,5 +243,22 @@ class EmployeeServiceImplTest {
 
         // Assert
         Assertions.assertTrue(actualResult);
+    }
+
+    @Test
+    void deleteEmployeeByIdInvalidId() {
+
+        // Arrange
+        IEmployeeDao employeeDaoMock =
+                Mockito.mock(IEmployeeDao.class);
+
+        EmployeeServiceImpl employeeService =
+                new EmployeeServiceImpl(employeeDaoMock);
+
+        // Act & Assert
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> employeeService.deleteEmployeeById(0)
+        );
     }
 }

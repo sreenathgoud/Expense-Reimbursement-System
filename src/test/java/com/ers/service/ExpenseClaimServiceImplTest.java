@@ -33,20 +33,33 @@ class ExpenseClaimServiceImplTest {
         ).thenReturn(expenseClaim);
 
         ExpenseClaimServiceImpl expenseClaimService =
-                new ExpenseClaimServiceImpl(
-                        expenseClaimDaoMock
-                );
+                new ExpenseClaimServiceImpl(expenseClaimDaoMock);
 
         // Act
         ExpenseClaim actualResult =
-                expenseClaimService.addExpenseClaim(
-                        expenseClaim
-                );
+                expenseClaimService.addExpenseClaim(expenseClaim);
 
         // Assert
         Assertions.assertEquals(
                 expenseClaim,
                 actualResult
+        );
+    }
+
+    @Test
+    void addExpenseClaimNull() {
+
+        // Arrange
+        IExpenseClaimDao expenseClaimDaoMock =
+                Mockito.mock(IExpenseClaimDao.class);
+
+        ExpenseClaimServiceImpl expenseClaimService =
+                new ExpenseClaimServiceImpl(expenseClaimDaoMock);
+
+        // Act & Assert
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> expenseClaimService.addExpenseClaim(null)
         );
     }
 
@@ -70,24 +83,45 @@ class ExpenseClaimServiceImplTest {
         expenseClaim.setClaimId(1);
 
         Mockito.when(
-                expenseClaimDaoMock.updateExpenseClaim(
-                        expenseClaim
-                )
+                expenseClaimDaoMock.updateExpenseClaim(expenseClaim)
         ).thenReturn(true);
 
         ExpenseClaimServiceImpl expenseClaimService =
-                new ExpenseClaimServiceImpl(
-                        expenseClaimDaoMock
-                );
+                new ExpenseClaimServiceImpl(expenseClaimDaoMock);
 
         // Act
         boolean actualResult =
-                expenseClaimService.updateExpenseClaim(
-                        expenseClaim
-                );
+                expenseClaimService.updateExpenseClaim(expenseClaim);
 
         // Assert
         Assertions.assertTrue(actualResult);
+    }
+
+    @Test
+    void updateExpenseClaimInvalidId() {
+
+        // Arrange
+        IExpenseClaimDao expenseClaimDaoMock =
+                Mockito.mock(IExpenseClaimDao.class);
+
+        ExpenseClaim expenseClaim =
+                new ExpenseClaim(
+                        10,
+                        "Updated travel expenses",
+                        3000.00,
+                        LocalDate.now(),
+                        "DRAFT",
+                        "updated.pdf"
+                );
+
+        ExpenseClaimServiceImpl expenseClaimService =
+                new ExpenseClaimServiceImpl(expenseClaimDaoMock);
+
+        // Act & Assert
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> expenseClaimService.updateExpenseClaim(expenseClaim)
+        );
     }
 
     @Test
@@ -114,9 +148,7 @@ class ExpenseClaimServiceImplTest {
         ).thenReturn(expenseClaim);
 
         ExpenseClaimServiceImpl expenseClaimService =
-                new ExpenseClaimServiceImpl(
-                        expenseClaimDaoMock
-                );
+                new ExpenseClaimServiceImpl(expenseClaimDaoMock);
 
         // Act
         ExpenseClaim actualResult =
@@ -126,6 +158,23 @@ class ExpenseClaimServiceImplTest {
         Assertions.assertEquals(
                 expenseClaim,
                 actualResult
+        );
+    }
+
+    @Test
+    void getExpenseClaimByIdInvalidId() {
+
+        // Arrange
+        IExpenseClaimDao expenseClaimDaoMock =
+                Mockito.mock(IExpenseClaimDao.class);
+
+        ExpenseClaimServiceImpl expenseClaimService =
+                new ExpenseClaimServiceImpl(expenseClaimDaoMock);
+
+        // Act & Assert
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> expenseClaimService.getExpenseClaimById(0)
         );
     }
 
@@ -161,9 +210,7 @@ class ExpenseClaimServiceImplTest {
         ).thenReturn(expenseClaims);
 
         ExpenseClaimServiceImpl expenseClaimService =
-                new ExpenseClaimServiceImpl(
-                        expenseClaimDaoMock
-                );
+                new ExpenseClaimServiceImpl(expenseClaimDaoMock);
 
         // Act
         List<ExpenseClaim> actualResult =
@@ -188,9 +235,7 @@ class ExpenseClaimServiceImplTest {
         ).thenReturn(true);
 
         ExpenseClaimServiceImpl expenseClaimService =
-                new ExpenseClaimServiceImpl(
-                        expenseClaimDaoMock
-                );
+                new ExpenseClaimServiceImpl(expenseClaimDaoMock);
 
         // Act
         boolean actualResult =
@@ -198,6 +243,23 @@ class ExpenseClaimServiceImplTest {
 
         // Assert
         Assertions.assertTrue(actualResult);
+    }
+
+    @Test
+    void deleteExpenseClaimByIdInvalidId() {
+
+        // Arrange
+        IExpenseClaimDao expenseClaimDaoMock =
+                Mockito.mock(IExpenseClaimDao.class);
+
+        ExpenseClaimServiceImpl expenseClaimService =
+                new ExpenseClaimServiceImpl(expenseClaimDaoMock);
+
+        // Act & Assert
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> expenseClaimService.deleteExpenseClaimById(0)
+        );
     }
 
     @Test
@@ -224,9 +286,7 @@ class ExpenseClaimServiceImplTest {
         ).thenReturn(expenseClaims);
 
         ExpenseClaimServiceImpl expenseClaimService =
-                new ExpenseClaimServiceImpl(
-                        expenseClaimDaoMock
-                );
+                new ExpenseClaimServiceImpl(expenseClaimDaoMock);
 
         // Act
         List<ExpenseClaim> actualResult =
@@ -236,6 +296,23 @@ class ExpenseClaimServiceImplTest {
         Assertions.assertEquals(
                 expenseClaims,
                 actualResult
+        );
+    }
+
+    @Test
+    void getClaimsByEmployeeIdInvalidId() {
+
+        // Arrange
+        IExpenseClaimDao expenseClaimDaoMock =
+                Mockito.mock(IExpenseClaimDao.class);
+
+        ExpenseClaimServiceImpl expenseClaimService =
+                new ExpenseClaimServiceImpl(expenseClaimDaoMock);
+
+        // Act & Assert
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> expenseClaimService.getClaimsByEmployeeId(0)
         );
     }
 
@@ -251,9 +328,7 @@ class ExpenseClaimServiceImplTest {
         ).thenReturn(true);
 
         ExpenseClaimServiceImpl expenseClaimService =
-                new ExpenseClaimServiceImpl(
-                        expenseClaimDaoMock
-                );
+                new ExpenseClaimServiceImpl(expenseClaimDaoMock);
 
         // Act
         boolean actualResult =
@@ -261,6 +336,23 @@ class ExpenseClaimServiceImplTest {
 
         // Assert
         Assertions.assertTrue(actualResult);
+    }
+
+    @Test
+    void submitClaimInvalidId() {
+
+        // Arrange
+        IExpenseClaimDao expenseClaimDaoMock =
+                Mockito.mock(IExpenseClaimDao.class);
+
+        ExpenseClaimServiceImpl expenseClaimService =
+                new ExpenseClaimServiceImpl(expenseClaimDaoMock);
+
+        // Act & Assert
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> expenseClaimService.submitClaim(0)
+        );
     }
 
     @Test
@@ -275,9 +367,7 @@ class ExpenseClaimServiceImplTest {
         ).thenReturn(true);
 
         ExpenseClaimServiceImpl expenseClaimService =
-                new ExpenseClaimServiceImpl(
-                        expenseClaimDaoMock
-                );
+                new ExpenseClaimServiceImpl(expenseClaimDaoMock);
 
         // Act
         boolean actualResult =
@@ -285,6 +375,23 @@ class ExpenseClaimServiceImplTest {
 
         // Assert
         Assertions.assertTrue(actualResult);
+    }
+
+    @Test
+    void approveClaimInvalidId() {
+
+        // Arrange
+        IExpenseClaimDao expenseClaimDaoMock =
+                Mockito.mock(IExpenseClaimDao.class);
+
+        ExpenseClaimServiceImpl expenseClaimService =
+                new ExpenseClaimServiceImpl(expenseClaimDaoMock);
+
+        // Act & Assert
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> expenseClaimService.approveClaim(0)
+        );
     }
 
     @Test
@@ -302,9 +409,7 @@ class ExpenseClaimServiceImplTest {
         ).thenReturn(true);
 
         ExpenseClaimServiceImpl expenseClaimService =
-                new ExpenseClaimServiceImpl(
-                        expenseClaimDaoMock
-                );
+                new ExpenseClaimServiceImpl(expenseClaimDaoMock);
 
         // Act
         boolean actualResult =
@@ -315,6 +420,46 @@ class ExpenseClaimServiceImplTest {
 
         // Assert
         Assertions.assertTrue(actualResult);
+    }
+
+    @Test
+    void rejectClaimInvalidId() {
+
+        // Arrange
+        IExpenseClaimDao expenseClaimDaoMock =
+                Mockito.mock(IExpenseClaimDao.class);
+
+        ExpenseClaimServiceImpl expenseClaimService =
+                new ExpenseClaimServiceImpl(expenseClaimDaoMock);
+
+        // Act & Assert
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> expenseClaimService.rejectClaim(
+                        0,
+                        "Invalid expense"
+                )
+        );
+    }
+
+    @Test
+    void rejectClaimEmptyReason() {
+
+        // Arrange
+        IExpenseClaimDao expenseClaimDaoMock =
+                Mockito.mock(IExpenseClaimDao.class);
+
+        ExpenseClaimServiceImpl expenseClaimService =
+                new ExpenseClaimServiceImpl(expenseClaimDaoMock);
+
+        // Act & Assert
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> expenseClaimService.rejectClaim(
+                        1,
+                        ""
+                )
+        );
     }
 
     @Test
@@ -341,9 +486,7 @@ class ExpenseClaimServiceImplTest {
         ).thenReturn(expenseClaims);
 
         ExpenseClaimServiceImpl expenseClaimService =
-                new ExpenseClaimServiceImpl(
-                        expenseClaimDaoMock
-                );
+                new ExpenseClaimServiceImpl(expenseClaimDaoMock);
 
         // Act
         List<ExpenseClaim> actualResult =
@@ -353,6 +496,23 @@ class ExpenseClaimServiceImplTest {
         Assertions.assertEquals(
                 expenseClaims,
                 actualResult
+        );
+    }
+
+    @Test
+    void getClaimsByStatusInvalidStatus() {
+
+        // Arrange
+        IExpenseClaimDao expenseClaimDaoMock =
+                Mockito.mock(IExpenseClaimDao.class);
+
+        ExpenseClaimServiceImpl expenseClaimService =
+                new ExpenseClaimServiceImpl(expenseClaimDaoMock);
+
+        // Act & Assert
+        Assertions.assertThrows(
+                IllegalArgumentException.class,
+                () -> expenseClaimService.getClaimsByStatus("")
         );
     }
 }
