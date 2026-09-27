@@ -8,40 +8,82 @@ import com.ers.service.IFinanceExecutiveService;
 import java.util.List;
 
 public class FinanceExecutiveController {
+
     private IFinanceExecutiveService financeExecutiveService;
 
-    public FinanceExecutiveController(IFinanceExecutiveService financeExecutiveService){
-        this.financeExecutiveService = financeExecutiveService;
+    public FinanceExecutiveController(
+            IFinanceExecutiveService financeExecutiveService) {
+
+        this.financeExecutiveService =
+                financeExecutiveService;
     }
 
-    public FinanceExecutive addNewFinanceExecutive(){
-        return null;
+    public FinanceExecutive addNewFinanceExecutive(
+            FinanceExecutive financeExecutive) {
+
+        return financeExecutiveService.addFinanceExecutive(
+                financeExecutive
+        );
     }
-    public boolean updateFinanceExecutive(FinanceExecutive financeExecutive){
-        return false;
+
+    public boolean updateFinanceExecutive(
+            FinanceExecutive financeExecutive) {
+
+        return financeExecutiveService.updateFinanceExecutive(
+                financeExecutive
+        );
     }
-    public FinanceExecutive getFinanceExecutiveById(int employeeId) {
-        return null;
+
+    public FinanceExecutive getFinanceExecutiveById(
+            int employeeId) {
+
+        return financeExecutiveService.getFinanceExecutiveById(
+                employeeId
+        );
     }
+
     public List<FinanceExecutive> getAllFinanceExecutives() {
-        return List.of();
+
+        return financeExecutiveService.getAllFinanceExecutives();
     }
-    public boolean deleteFinanceExecutiveById(int FinanceExecutiveId) {
-        return false;
+
+    public boolean deleteFinanceExecutiveById(
+            int financeExecutiveId) {
+
+        return financeExecutiveService.deleteFinanceExecutiveById(
+                financeExecutiveId
+        );
     }
+
     public List<ExpenseClaim> getPendingClaims() {
-        return List.of();
+
+        return financeExecutiveService.getPendingClaims();
     }
 
     public ExpenseClaim getClaimById(int claimId) {
-        return null;
+
+        return financeExecutiveService.getClaimById(
+                claimId
+        );
     }
 
-    public boolean processPayment(int claimId, int financeExecutiveId, String paymentMode){
-        return false;
+    public boolean processPayment(
+            int claimId,
+            int financeExecutiveId,
+            String paymentMode) {
+
+        return financeExecutiveService.processPayment(
+                claimId,
+                financeExecutiveId,
+                paymentMode
+        );
     }
 
-    public List<Reimbursement> getReimbursementHistory(int financeExecutiveId) {
-        return List.of();
+    public List<Reimbursement> getReimbursementHistory(
+            int financeExecutiveId) {
+
+        return financeExecutiveService.getReimbursementHistory(
+                financeExecutiveId
+        );
     }
 }

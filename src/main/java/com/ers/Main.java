@@ -3,6 +3,7 @@ package com.ers;
 import com.ers.dao.IUserDao;
 import com.ers.dao.UserDaoImpl;
 import com.ers.model.User;
+import com.ers.service.UserEmployeeService;
 import com.ers.util.JDBCUtil;
 
 import java.sql.SQLException;
@@ -15,13 +16,15 @@ public class Main {
 
                 // Run JDBC connection test
                 JDBCUtil.testConnection();
+        UserEmployeeService service = new UserEmployeeService();
+
 
         IUserDao userDao = new UserDaoImpl();
 
         User user = new User(
                 "sreenath",
-                "sreenath123",
-                "EMPLOYEE",
+                "sreenath1230",
+                "Admin",
                 true,
                 LocalDateTime.now()
         );
