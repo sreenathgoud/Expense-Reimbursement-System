@@ -1,20 +1,12 @@
 package com.ers.controller;
-
-import ch.qos.logback.classic.Logger;
 import com.ers.model.Reimbursement;
 import com.ers.service.IReimbursementService;
-import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Scanner;
 
 public class ReimbursementController {
-
-    private static final Logger logger =
-            (Logger) LoggerFactory.getLogger(
-                    ReimbursementController.class
-            );
 
     private final IReimbursementService reimbursementService;
     private final Scanner scanner;
@@ -34,113 +26,194 @@ public class ReimbursementController {
 
         while (running) {
 
-            logger.info("======================================");
-            logger.info("          REIMBURSEMENT MANAGEMENT");
-            logger.info("======================================");
-            logger.info("1. Add Reimbursement");
-            logger.info("2. Update Reimbursement");
-            logger.info("3. Get Reimbursement By ID");
-            logger.info("4. Get All Reimbursements");
-            logger.info("5. Delete Reimbursement");
-            logger.info("6. Get Reimbursement By Claim ID");
-            logger.info("7. Get Reimbursements By Employee ID");
-            logger.info("8. Get Reimbursements By Status");
-            logger.info("9. Back");
-            logger.info("======================================");
-            logger.info("Enter your choice:");
+            System.out.println(
+                    "======================================"
+            );
 
-            String choice = scanner.nextLine();
+            System.out.println(
+                    "          REIMBURSEMENT MANAGEMENT"
+            );
+
+            System.out.println(
+                    "======================================"
+            );
+
+            System.out.println("1. Add Reimbursement");
+            System.out.println("2. Update Reimbursement");
+            System.out.println("3. Get Reimbursement By ID");
+            System.out.println("4. Get All Reimbursements");
+            System.out.println("5. Delete Reimbursement");
+            System.out.println("6. Get Reimbursement By Claim ID");
+            System.out.println("7. Get Reimbursements By Employee ID");
+            System.out.println("8. Get Reimbursements By Status");
+            System.out.println("9. Back");
+
+            System.out.println(
+                    "======================================"
+            );
+
+            System.out.println(
+                    "Enter your choice:"
+            );
+
+            String choice =
+                    scanner.nextLine();
 
             try {
 
                 switch (choice) {
 
                     case "1":
+
                         addReimbursementFromInput();
+
                         break;
 
                     case "2":
+
                         updateReimbursementFromInput();
+
                         break;
 
                     case "3":
+
                         getReimbursementByIdFromInput();
+
                         break;
 
                     case "4":
+
                         displayAllReimbursements();
+
                         break;
 
                     case "5":
+
                         deleteReimbursementFromInput();
+
                         break;
 
                     case "6":
+
                         getReimbursementByClaimIdFromInput();
+
                         break;
 
                     case "7":
+
                         getReimbursementsByEmployeeIdFromInput();
+
                         break;
 
                     case "8":
+
                         getReimbursementsByStatusFromInput();
+
                         break;
 
                     case "9":
+
                         running = false;
-                        logger.info("Returning to main menu.");
+
+                        System.out.println(
+                                "Returning to main menu."
+                        );
+
                         break;
 
                     default:
-                        logger.warn("Invalid menu choice: {}", choice);
+
+                        System.out.println(
+                                "Invalid menu choice: "
+                                        + choice
+                        );
                 }
 
             } catch (IllegalArgumentException e) {
 
-                logger.warn(
-                        "Invalid reimbursement input: {}",
-                        e.getMessage()
+                System.out.println(
+                        "Invalid reimbursement input: "
+                                + e.getMessage()
                 );
 
             } catch (Exception e) {
 
-                logger.error(
-                        "Unexpected error in ReimbursementController.",
-                        e
+                System.out.println(
+                        "Unexpected error in ReimbursementController: "
+                                + e.getMessage()
                 );
+
+                e.printStackTrace();
             }
         }
     }
 
+    // ==========================================
+    // ADD REIMBURSEMENT
+    // ==========================================
+
     private void addReimbursementFromInput() {
 
-        logger.info("========== ADD REIMBURSEMENT ==========");
+        System.out.println(
+                "========== ADD REIMBURSEMENT =========="
+        );
 
-        logger.info("Enter Claim ID:");
+        System.out.println(
+                "Enter Claim ID:"
+        );
+
         int claimId =
-                Integer.parseInt(scanner.nextLine());
+                Integer.parseInt(
+                        scanner.nextLine()
+                );
 
-        logger.info("Enter Reimbursed Amount:");
+        System.out.println(
+                "Enter Reimbursed Amount:"
+        );
+
         double reimbursedAmount =
-                Double.parseDouble(scanner.nextLine());
+                Double.parseDouble(
+                        scanner.nextLine()
+                );
 
-        logger.info("Enter Payment Mode:");
-        String paymentMode = scanner.nextLine();
+        System.out.println(
+                "Enter Payment Mode:"
+        );
 
-        logger.info("Enter Transaction Reference:");
-        String transactionRef = scanner.nextLine();
+        String paymentMode =
+                scanner.nextLine();
 
-        logger.info("Enter Reimbursement Date (YYYY-MM-DD):");
+        System.out.println(
+                "Enter Transaction Reference:"
+        );
+
+        String transactionRef =
+                scanner.nextLine();
+
+        System.out.println(
+                "Enter Reimbursement Date (YYYY-MM-DD):"
+        );
+
         LocalDate reimbursementDate =
-                LocalDate.parse(scanner.nextLine());
+                LocalDate.parse(
+                        scanner.nextLine()
+                );
 
-        logger.info("Enter Finance Executive ID:");
+        System.out.println(
+                "Enter Finance Executive ID:"
+        );
+
         int processedBy =
-                Integer.parseInt(scanner.nextLine());
+                Integer.parseInt(
+                        scanner.nextLine()
+                );
 
-        logger.info("Enter Status:");
-        String status = scanner.nextLine();
+        System.out.println(
+                "Enter Status:"
+        );
+
+        String status =
+                scanner.nextLine();
 
         Reimbursement reimbursement =
                 new Reimbursement(
@@ -158,49 +231,94 @@ public class ReimbursementController {
 
         if (result != null) {
 
-            logger.info(
-                    "Reimbursement added successfully. ID={}",
-                    result.getReimbursementId()
+            System.out.println(
+                    "Reimbursement added successfully. ID="
+                            + result.getReimbursementId()
             );
 
         } else {
 
-            logger.warn("Failed to add reimbursement.");
+            System.out.println(
+                    "Failed to add reimbursement."
+            );
         }
     }
 
+    // ==========================================
+    // UPDATE REIMBURSEMENT
+    // ==========================================
+
     private void updateReimbursementFromInput() {
 
-        logger.info("========== UPDATE REIMBURSEMENT ==========");
+        System.out.println(
+                "========== UPDATE REIMBURSEMENT =========="
+        );
 
-        logger.info("Enter Reimbursement ID:");
+        System.out.println(
+                "Enter Reimbursement ID:"
+        );
+
         int reimbursementId =
-                Integer.parseInt(scanner.nextLine());
+                Integer.parseInt(
+                        scanner.nextLine()
+                );
 
-        logger.info("Enter Claim ID:");
+        System.out.println(
+                "Enter Claim ID:"
+        );
+
         int claimId =
-                Integer.parseInt(scanner.nextLine());
+                Integer.parseInt(
+                        scanner.nextLine()
+                );
 
-        logger.info("Enter Reimbursed Amount:");
+        System.out.println(
+                "Enter Reimbursed Amount:"
+        );
+
         double reimbursedAmount =
-                Double.parseDouble(scanner.nextLine());
+                Double.parseDouble(
+                        scanner.nextLine()
+                );
 
-        logger.info("Enter Payment Mode:");
-        String paymentMode = scanner.nextLine();
+        System.out.println(
+                "Enter Payment Mode:"
+        );
 
-        logger.info("Enter Transaction Reference:");
-        String transactionRef = scanner.nextLine();
+        String paymentMode =
+                scanner.nextLine();
 
-        logger.info("Enter Reimbursement Date (YYYY-MM-DD):");
+        System.out.println(
+                "Enter Transaction Reference:"
+        );
+
+        String transactionRef =
+                scanner.nextLine();
+
+        System.out.println(
+                "Enter Reimbursement Date (YYYY-MM-DD):"
+        );
+
         LocalDate reimbursementDate =
-                LocalDate.parse(scanner.nextLine());
+                LocalDate.parse(
+                        scanner.nextLine()
+                );
 
-        logger.info("Enter Finance Executive ID:");
+        System.out.println(
+                "Enter Finance Executive ID:"
+        );
+
         int processedBy =
-                Integer.parseInt(scanner.nextLine());
+                Integer.parseInt(
+                        scanner.nextLine()
+                );
 
-        logger.info("Enter Status:");
-        String status = scanner.nextLine();
+        System.out.println(
+                "Enter Status:"
+        );
+
+        String status =
+                scanner.nextLine();
 
         Reimbursement reimbursement =
                 new Reimbursement(
@@ -218,203 +336,285 @@ public class ReimbursementController {
         );
 
         boolean result =
-                updateReimbursement(reimbursement);
+                updateReimbursement(
+                        reimbursement
+                );
 
         if (result) {
 
-            logger.info(
-                    "Reimbursement updated successfully. ID={}",
-                    reimbursementId
+            System.out.println(
+                    "Reimbursement updated successfully. ID="
+                            + reimbursementId
             );
 
         } else {
 
-            logger.warn(
-                    "Reimbursement update failed. ID={}",
-                    reimbursementId
+            System.out.println(
+                    "Reimbursement update failed. ID="
+                            + reimbursementId
             );
         }
     }
+
+    // ==========================================
+    // GET REIMBURSEMENT BY ID
+    // ==========================================
 
     private void getReimbursementByIdFromInput() {
 
-        logger.info(
+        System.out.println(
                 "========== GET REIMBURSEMENT BY ID =========="
         );
 
-        logger.info("Enter Reimbursement ID:");
+        System.out.println(
+                "Enter Reimbursement ID:"
+        );
+
         int reimbursementId =
-                Integer.parseInt(scanner.nextLine());
+                Integer.parseInt(
+                        scanner.nextLine()
+                );
 
         Reimbursement reimbursement =
-                getReimbursementById(reimbursementId);
+                getReimbursementById(
+                        reimbursementId
+                );
 
         if (reimbursement != null) {
 
-            logger.info("Reimbursement found:");
-            logger.info("{}", reimbursement);
+            System.out.println(
+                    "Reimbursement found:"
+            );
+
+            System.out.println(
+                    reimbursement
+            );
 
         } else {
 
-            logger.warn(
-                    "No reimbursement found with ID={}",
-                    reimbursementId
+            System.out.println(
+                    "No reimbursement found with ID="
+                            + reimbursementId
             );
         }
     }
 
+    // ==========================================
+    // GET ALL REIMBURSEMENTS
+    // ==========================================
+
     private void displayAllReimbursements() {
 
-        logger.info("========== ALL REIMBURSEMENTS ==========");
+        System.out.println(
+                "========== ALL REIMBURSEMENTS =========="
+        );
 
         List<Reimbursement> reimbursements =
                 getAllReimbursements();
 
         if (reimbursements.isEmpty()) {
 
-            logger.info("No reimbursements found.");
+            System.out.println(
+                    "No reimbursements found."
+            );
 
         } else {
 
-            logger.info(
-                    "Total reimbursements found: {}",
-                    reimbursements.size()
+            System.out.println(
+                    "Total reimbursements found: "
+                            + reimbursements.size()
             );
 
             for (Reimbursement reimbursement :
                     reimbursements) {
 
-                logger.info("{}", reimbursement);
+                System.out.println(
+                        reimbursement
+                );
             }
         }
     }
+
+    // ==========================================
+    // DELETE REIMBURSEMENT
+    // ==========================================
 
     private void deleteReimbursementFromInput() {
 
-        logger.info(
+        System.out.println(
                 "========== DELETE REIMBURSEMENT =========="
         );
 
-        logger.info("Enter Reimbursement ID:");
+        System.out.println(
+                "Enter Reimbursement ID:"
+        );
+
         int reimbursementId =
-                Integer.parseInt(scanner.nextLine());
+                Integer.parseInt(
+                        scanner.nextLine()
+                );
 
         boolean result =
-                deleteReimbursementById(reimbursementId);
+                deleteReimbursementById(
+                        reimbursementId
+                );
 
         if (result) {
 
-            logger.info(
-                    "Reimbursement deleted successfully. ID={}",
-                    reimbursementId
+            System.out.println(
+                    "Reimbursement deleted successfully. ID="
+                            + reimbursementId
             );
 
         } else {
 
-            logger.warn(
-                    "Reimbursement deletion failed. ID={}",
-                    reimbursementId
+            System.out.println(
+                    "Reimbursement deletion failed. ID="
+                            + reimbursementId
             );
         }
     }
+
+    // ==========================================
+    // GET REIMBURSEMENT BY CLAIM ID
+    // ==========================================
 
     private void getReimbursementByClaimIdFromInput() {
 
-        logger.info(
+        System.out.println(
                 "========== REIMBURSEMENT BY CLAIM ID =========="
         );
 
-        logger.info("Enter Claim ID:");
+        System.out.println(
+                "Enter Claim ID:"
+        );
+
         int claimId =
-                Integer.parseInt(scanner.nextLine());
+                Integer.parseInt(
+                        scanner.nextLine()
+                );
 
         Reimbursement reimbursement =
-                getReimbursementByClaimId(claimId);
+                getReimbursementByClaimId(
+                        claimId
+                );
 
         if (reimbursement != null) {
 
-            logger.info("Reimbursement found:");
-            logger.info("{}", reimbursement);
+            System.out.println(
+                    "Reimbursement found:"
+            );
+
+            System.out.println(
+                    reimbursement
+            );
 
         } else {
 
-            logger.warn(
-                    "No reimbursement found for Claim ID={}",
-                    claimId
+            System.out.println(
+                    "No reimbursement found for Claim ID="
+                            + claimId
             );
         }
     }
+
+    // ==========================================
+    // GET REIMBURSEMENTS BY EMPLOYEE ID
+    // ==========================================
 
     private void getReimbursementsByEmployeeIdFromInput() {
 
-        logger.info(
+        System.out.println(
                 "========== REIMBURSEMENTS BY EMPLOYEE ID =========="
         );
 
-        logger.info("Enter Employee ID:");
+        System.out.println(
+                "Enter Employee ID:"
+        );
+
         int employeeId =
-                Integer.parseInt(scanner.nextLine());
+                Integer.parseInt(
+                        scanner.nextLine()
+                );
 
         List<Reimbursement> reimbursements =
-                getReimbursementsByEmployeeId(employeeId);
+                getReimbursementsByEmployeeId(
+                        employeeId
+                );
 
         if (reimbursements.isEmpty()) {
 
-            logger.info(
-                    "No reimbursements found for Employee ID={}",
-                    employeeId
+            System.out.println(
+                    "No reimbursements found for Employee ID="
+                            + employeeId
             );
 
         } else {
 
-            logger.info(
-                    "Reimbursements for Employee ID={}:",
-                    employeeId
+            System.out.println(
+                    "Reimbursements for Employee ID="
+                            + employeeId
             );
 
             for (Reimbursement reimbursement :
                     reimbursements) {
 
-                logger.info("{}", reimbursement);
+                System.out.println(
+                        reimbursement
+                );
             }
         }
     }
+
+    // ==========================================
+    // GET REIMBURSEMENTS BY STATUS
+    // ==========================================
 
     private void getReimbursementsByStatusFromInput() {
 
-        logger.info(
+        System.out.println(
                 "========== REIMBURSEMENTS BY STATUS =========="
         );
 
-        logger.info("Enter Status:");
-        String status = scanner.nextLine();
+        System.out.println(
+                "Enter Status:"
+        );
+
+        String status =
+                scanner.nextLine();
 
         List<Reimbursement> reimbursements =
-                getReimbursementsByStatus(status);
+                getReimbursementsByStatus(
+                        status
+                );
 
         if (reimbursements.isEmpty()) {
 
-            logger.info(
-                    "No reimbursements found with status={}",
-                    status
+            System.out.println(
+                    "No reimbursements found with status="
+                            + status
             );
 
         } else {
 
-            logger.info(
-                    "Reimbursements with status={}:",
-                    status
+            System.out.println(
+                    "Reimbursements with status="
+                            + status
             );
 
             for (Reimbursement reimbursement :
                     reimbursements) {
 
-                logger.info("{}", reimbursement);
+                System.out.println(
+                        reimbursement
+                );
             }
         }
     }
 
-    // Service delegation methods
+    // ==========================================
+    // SERVICE DELEGATION METHODS
+    // ==========================================
 
     public Reimbursement addReimbursement(
             Reimbursement reimbursement) {

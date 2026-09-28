@@ -1,21 +1,14 @@
-package com.ers.controller;
+ package com.ers.controller;
 
-import ch.qos.logback.classic.Logger;
 import com.ers.model.ExpenseClaim;
 import com.ers.model.FinanceExecutive;
 import com.ers.model.Reimbursement;
 import com.ers.service.IFinanceExecutiveService;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Scanner;
 
 public class FinanceExecutiveController {
-
-    private static final Logger logger =
-            (Logger) LoggerFactory.getLogger(
-                    FinanceExecutiveController.class
-            );
 
     private final IFinanceExecutiveService financeExecutiveService;
     private final Scanner scanner;
@@ -35,21 +28,16 @@ public class FinanceExecutiveController {
 
         while (running) {
 
-            logger.info("======================================");
-            logger.info("       FINANCE EXECUTIVE");
-            logger.info("======================================");
-            logger.info("1. Add Finance Executive");
-            logger.info("2. Update Finance Executive");
-            logger.info("3. Get Finance Executive By ID");
-            logger.info("4. Get All Finance Executives");
-            logger.info("5. Delete Finance Executive");
-            logger.info("6. Get Pending Claims");
-            logger.info("7. Get Claim By ID");
-            logger.info("8. Process Payment");
-            logger.info("9. Get Reimbursement History");
-            logger.info("10. Back");
-            logger.info("======================================");
-            logger.info("Enter your choice:");
+            System.out.println("======================================");
+            System.out.println("       FINANCE EXECUTIVE");
+            System.out.println("======================================");
+            System.out.println("1. Get Pending Claims");
+            System.out.println("2. Get Claim By ID");
+            System.out.println("3. Process Payment");
+            System.out.println("4. Get Reimbursement History");
+            System.out.println("5. Back");
+            System.out.println("======================================");
+            System.out.println("Enter your choice:");
 
             String choice = scanner.nextLine();
 
@@ -58,83 +46,99 @@ public class FinanceExecutiveController {
                 switch (choice) {
 
                     case "1":
-                        addFinanceExecutiveFromInput();
-                        break;
 
-                    case "2":
-                        updateFinanceExecutiveFromInput();
-                        break;
-
-                    case "3":
-                        getFinanceExecutiveByIdFromInput();
-                        break;
-
-                    case "4":
-                        displayAllFinanceExecutives();
-                        break;
-
-                    case "5":
-                        deleteFinanceExecutiveFromInput();
-                        break;
-
-                    case "6":
                         displayPendingClaims();
                         break;
 
-                    case "7":
+                    case "2":
+
                         getClaimByIdFromInput();
                         break;
 
-                    case "8":
+                    case "3":
+
                         processPaymentFromInput();
                         break;
 
-                    case "9":
+                    case "4":
+
                         displayReimbursementHistory();
                         break;
 
-                    case "10":
+                    case "5":
+
                         running = false;
-                        logger.info("Returning to main menu.");
+
+                        System.out.println(
+                                "Returning to main menu."
+                        );
+
                         break;
 
                     default:
-                        logger.warn("Invalid menu choice: {}", choice);
+
+                        System.out.println(
+                                "Invalid finance executive menu choice: "
+                                        + choice
+                        );
                 }
 
             } catch (IllegalArgumentException e) {
 
-                logger.warn(
-                        "Invalid finance executive input: {}",
-                        e.getMessage()
+                System.out.println(
+                        "Invalid finance executive input: "
+                                + e.getMessage()
                 );
 
             } catch (Exception e) {
 
-                logger.error(
-                        "Unexpected error in FinanceExecutiveController.",
-                        e
+                System.out.println(
+                        "Unexpected error in FinanceExecutiveController: "
+                                + e.getMessage()
                 );
             }
         }
     }
 
+    // ==========================================
+    // ADD FINANCE EXECUTIVE
+    // ==========================================
+
     private void addFinanceExecutiveFromInput() {
 
-        logger.info("========== ADD FINANCE EXECUTIVE ==========");
+        System.out.println(
+                "========== ADD FINANCE EXECUTIVE =========="
+        );
 
-        logger.info("Enter Employee ID:");
+        System.out.println(
+                "Enter Employee ID:"
+        );
+
         int employeeId =
-                Integer.parseInt(scanner.nextLine());
+                Integer.parseInt(
+                        scanner.nextLine()
+                );
 
-        logger.info("Enter Full Name:");
-        String fullName = scanner.nextLine();
+        System.out.println(
+                "Enter Full Name:"
+        );
 
-        logger.info("Enter Email:");
-        String email = scanner.nextLine();
+        String fullName =
+                scanner.nextLine();
 
-        logger.info("Enter Department:");
-        String department = scanner.nextLine();
+        System.out.println(
+                "Enter Email:"
+        );
+
+        String email =
+                scanner.nextLine();
+
+        System.out.println(
+                "Enter Department:"
+        );
+
+        String department =
+                scanner.nextLine();
 
         FinanceExecutive financeExecutive =
                 new FinanceExecutive(
@@ -145,37 +149,65 @@ public class FinanceExecutiveController {
                 );
 
         FinanceExecutive result =
-                addNewFinanceExecutive(financeExecutive);
+                addNewFinanceExecutive(
+                        financeExecutive
+                );
 
         if (result != null) {
 
-            logger.info(
-                    "Finance executive added successfully. Employee ID={}",
-                    result.getEmployeeId()
+            System.out.println(
+                    "Finance executive added successfully. "
+                            + "Employee ID="
+                            + result.getEmployeeId()
             );
 
         } else {
 
-            logger.warn("Failed to add finance executive.");
+            System.out.println(
+                    "Failed to add finance executive."
+            );
         }
     }
 
+    // ==========================================
+    // UPDATE FINANCE EXECUTIVE
+    // ==========================================
+
     private void updateFinanceExecutiveFromInput() {
 
-        logger.info("========== UPDATE FINANCE EXECUTIVE ==========");
+        System.out.println(
+                "========== UPDATE FINANCE EXECUTIVE =========="
+        );
 
-        logger.info("Enter Employee ID:");
+        System.out.println(
+                "Enter Employee ID:"
+        );
+
         int employeeId =
-                Integer.parseInt(scanner.nextLine());
+                Integer.parseInt(
+                        scanner.nextLine()
+                );
 
-        logger.info("Enter Full Name:");
-        String fullName = scanner.nextLine();
+        System.out.println(
+                "Enter Full Name:"
+        );
 
-        logger.info("Enter Email:");
-        String email = scanner.nextLine();
+        String fullName =
+                scanner.nextLine();
 
-        logger.info("Enter Department:");
-        String department = scanner.nextLine();
+        System.out.println(
+                "Enter Email:"
+        );
+
+        String email =
+                scanner.nextLine();
+
+        System.out.println(
+                "Enter Department:"
+        );
+
+        String department =
+                scanner.nextLine();
 
         FinanceExecutive financeExecutive =
                 new FinanceExecutive(
@@ -186,166 +218,261 @@ public class FinanceExecutiveController {
                 );
 
         boolean result =
-                updateFinanceExecutive(financeExecutive);
+                updateFinanceExecutive(
+                        financeExecutive
+                );
 
         if (result) {
 
-            logger.info(
-                    "Finance executive updated successfully. Employee ID={}",
-                    employeeId
+            System.out.println(
+                    "Finance executive updated successfully. "
+                            + "Employee ID="
+                            + employeeId
             );
 
         } else {
 
-            logger.warn(
-                    "Finance executive update failed. Employee ID={}",
-                    employeeId
+            System.out.println(
+                    "Finance executive update failed. "
+                            + "Employee ID="
+                            + employeeId
             );
         }
     }
+
+    // ==========================================
+    // GET FINANCE EXECUTIVE BY ID
+    // ==========================================
 
     private void getFinanceExecutiveByIdFromInput() {
 
-        logger.info(
+        System.out.println(
                 "========== GET FINANCE EXECUTIVE BY ID =========="
         );
 
-        logger.info("Enter Employee ID:");
+        System.out.println(
+                "Enter Employee ID:"
+        );
+
         int employeeId =
-                Integer.parseInt(scanner.nextLine());
+                Integer.parseInt(
+                        scanner.nextLine()
+                );
 
         FinanceExecutive financeExecutive =
-                getFinanceExecutiveById(employeeId);
+                getFinanceExecutiveById(
+                        employeeId
+                );
 
         if (financeExecutive != null) {
 
-            logger.info("Finance executive found:");
-            logger.info("{}", financeExecutive);
+            System.out.println(
+                    "Finance executive found:"
+            );
+
+            System.out.println(
+                    financeExecutive
+            );
 
         } else {
 
-            logger.warn(
-                    "No finance executive found with Employee ID={}",
-                    employeeId
+            System.out.println(
+                    "No finance executive found "
+                            + "with Employee ID="
+                            + employeeId
             );
         }
     }
 
+    // ==========================================
+    // GET ALL FINANCE EXECUTIVES
+    // ==========================================
+
     private void displayAllFinanceExecutives() {
 
-        logger.info("========== ALL FINANCE EXECUTIVES ==========");
+        System.out.println(
+                "========== ALL FINANCE EXECUTIVES =========="
+        );
 
         List<FinanceExecutive> executives =
                 getAllFinanceExecutives();
 
         if (executives.isEmpty()) {
 
-            logger.info("No finance executives found.");
+            System.out.println(
+                    "No finance executives found."
+            );
 
         } else {
 
-            logger.info(
-                    "Total finance executives found: {}",
-                    executives.size()
+            System.out.println(
+                    "Total finance executives found: "
+                            + executives.size()
             );
 
-            for (FinanceExecutive executive : executives) {
-                logger.info("{}", executive);
+            for (FinanceExecutive executive :
+                    executives) {
+
+                System.out.println(
+                        executive
+                );
             }
         }
     }
 
+    // ==========================================
+    // DELETE FINANCE EXECUTIVE
+    // ==========================================
+
     private void deleteFinanceExecutiveFromInput() {
 
-        logger.info(
+        System.out.println(
                 "========== DELETE FINANCE EXECUTIVE =========="
         );
 
-        logger.info("Enter Employee ID:");
+        System.out.println(
+                "Enter Employee ID:"
+        );
+
         int employeeId =
-                Integer.parseInt(scanner.nextLine());
+                Integer.parseInt(
+                        scanner.nextLine()
+                );
 
         boolean result =
-                deleteFinanceExecutiveById(employeeId);
+                deleteFinanceExecutiveById(
+                        employeeId
+                );
 
         if (result) {
 
-            logger.info(
-                    "Finance executive deleted successfully. Employee ID={}",
-                    employeeId
+            System.out.println(
+                    "Finance executive deleted successfully. "
+                            + "Employee ID="
+                            + employeeId
             );
 
         } else {
 
-            logger.warn(
-                    "Finance executive deletion failed. Employee ID={}",
-                    employeeId
+            System.out.println(
+                    "Finance executive deletion failed. "
+                            + "Employee ID="
+                            + employeeId
             );
         }
     }
 
+    // ==========================================
+    // PENDING CLAIMS
+    // ==========================================
+
     private void displayPendingClaims() {
 
-        logger.info("========== PENDING CLAIMS ==========");
+        System.out.println(
+                "========== PENDING CLAIMS =========="
+        );
 
         List<ExpenseClaim> claims =
                 getPendingClaims();
 
         if (claims.isEmpty()) {
 
-            logger.info("No pending claims found.");
+            System.out.println(
+                    "No pending claims found."
+            );
 
         } else {
 
-            logger.info(
-                    "Total pending claims: {}",
-                    claims.size()
+            System.out.println(
+                    "Total pending claims: "
+                            + claims.size()
             );
 
-            for (ExpenseClaim claim : claims) {
-                logger.info("{}", claim);
+            for (ExpenseClaim claim :
+                    claims) {
+
+                System.out.println(
+                        claim
+                );
             }
         }
     }
 
+    // ==========================================
+    // GET CLAIM BY ID
+    // ==========================================
+
     private void getClaimByIdFromInput() {
 
-        logger.info("========== GET CLAIM BY ID ==========");
+        System.out.println(
+                "========== GET CLAIM BY ID =========="
+        );
 
-        logger.info("Enter Claim ID:");
+        System.out.println(
+                "Enter Claim ID:"
+        );
+
         int claimId =
-                Integer.parseInt(scanner.nextLine());
+                Integer.parseInt(
+                        scanner.nextLine()
+                );
 
         ExpenseClaim claim =
-                getClaimById(claimId);
+                getClaimById(
+                        claimId
+                );
 
         if (claim != null) {
 
-            logger.info("Claim found:");
-            logger.info("{}", claim);
+            System.out.println(
+                    "Claim found:"
+            );
+
+            System.out.println(
+                    claim
+            );
 
         } else {
 
-            logger.warn(
-                    "No claim found with ID={}",
-                    claimId
+            System.out.println(
+                    "No claim found with ID="
+                            + claimId
             );
         }
     }
 
+    // ==========================================
+    // PROCESS PAYMENT
+    // ==========================================
+
     private void processPaymentFromInput() {
 
-        logger.info("========== PROCESS PAYMENT ==========");
+        System.out.println(
+                "========== PROCESS PAYMENT =========="
+        );
 
-        logger.info("Enter Claim ID:");
+        System.out.println(
+                "Enter Claim ID:"
+        );
+
         int claimId =
-                Integer.parseInt(scanner.nextLine());
+                Integer.parseInt(
+                        scanner.nextLine()
+                );
 
-        logger.info("Enter Finance Executive ID:");
+        System.out.println(
+                "Enter Finance Executive ID:"
+        );
+
         int financeExecutiveId =
-                Integer.parseInt(scanner.nextLine());
+                Integer.parseInt(
+                        scanner.nextLine()
+                );
 
-        logger.info("Enter Payment Mode:");
+        System.out.println(
+                "Enter Payment Mode:"
+        );
+
         String paymentMode =
                 scanner.nextLine();
 
@@ -358,29 +485,40 @@ public class FinanceExecutiveController {
 
         if (result) {
 
-            logger.info(
-                    "Payment processed successfully. Claim ID={}",
-                    claimId
+            System.out.println(
+                    "Payment processed successfully. "
+                            + "Claim ID="
+                            + claimId
             );
 
         } else {
 
-            logger.warn(
-                    "Payment processing failed. Claim ID={}",
-                    claimId
+            System.out.println(
+                    "Payment processing failed. "
+                            + "Claim ID="
+                            + claimId
             );
         }
     }
 
+    // ==========================================
+    // REIMBURSEMENT HISTORY
+    // ==========================================
+
     private void displayReimbursementHistory() {
 
-        logger.info(
+        System.out.println(
                 "========== REIMBURSEMENT HISTORY =========="
         );
 
-        logger.info("Enter Finance Executive ID:");
+        System.out.println(
+                "Enter Finance Executive ID:"
+        );
+
         int financeExecutiveId =
-                Integer.parseInt(scanner.nextLine());
+                Integer.parseInt(
+                        scanner.nextLine()
+                );
 
         List<Reimbursement> reimbursements =
                 getReimbursementHistory(
@@ -389,26 +527,30 @@ public class FinanceExecutiveController {
 
         if (reimbursements.isEmpty()) {
 
-            logger.info(
+            System.out.println(
                     "No reimbursement history found."
             );
 
         } else {
 
-            logger.info(
-                    "Total reimbursements: {}",
-                    reimbursements.size()
+            System.out.println(
+                    "Total reimbursements: "
+                            + reimbursements.size()
             );
 
             for (Reimbursement reimbursement :
                     reimbursements) {
 
-                logger.info("{}", reimbursement);
+                System.out.println(
+                        reimbursement
+                );
             }
         }
     }
 
-    // Service delegation methods
+    // ==========================================
+    // SERVICE DELEGATION METHODS
+    // ==========================================
 
     public FinanceExecutive addNewFinanceExecutive(
             FinanceExecutive financeExecutive) {
@@ -436,27 +578,32 @@ public class FinanceExecutiveController {
 
     public List<FinanceExecutive> getAllFinanceExecutives() {
 
-        return financeExecutiveService.getAllFinanceExecutives();
+        return financeExecutiveService
+                .getAllFinanceExecutives();
     }
 
     public boolean deleteFinanceExecutiveById(
             int financeExecutiveId) {
 
-        return financeExecutiveService.deleteFinanceExecutiveById(
-                financeExecutiveId
-        );
+        return financeExecutiveService
+                .deleteFinanceExecutiveById(
+                        financeExecutiveId
+                );
     }
 
     public List<ExpenseClaim> getPendingClaims() {
 
-        return financeExecutiveService.getPendingClaims();
+        return financeExecutiveService
+                .getPendingClaims();
     }
 
-    public ExpenseClaim getClaimById(int claimId) {
+    public ExpenseClaim getClaimById(
+            int claimId) {
 
-        return financeExecutiveService.getClaimById(
-                claimId
-        );
+        return financeExecutiveService
+                .getClaimById(
+                        claimId
+                );
     }
 
     public boolean processPayment(
@@ -464,18 +611,20 @@ public class FinanceExecutiveController {
             int financeExecutiveId,
             String paymentMode) {
 
-        return financeExecutiveService.processPayment(
-                claimId,
-                financeExecutiveId,
-                paymentMode
-        );
+        return financeExecutiveService
+                .processPayment(
+                        claimId,
+                        financeExecutiveId,
+                        paymentMode
+                );
     }
 
     public List<Reimbursement> getReimbursementHistory(
             int financeExecutiveId) {
 
-        return financeExecutiveService.getReimbursementHistory(
-                financeExecutiveId
-        );
+        return financeExecutiveService
+                .getReimbursementHistory(
+                        financeExecutiveId
+                );
     }
 }

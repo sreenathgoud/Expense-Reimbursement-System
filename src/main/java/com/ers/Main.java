@@ -1,6 +1,5 @@
 package com.ers;
 
-import ch.qos.logback.classic.Logger;
 import com.ers.controller.AppController;
 import com.ers.dao.EmployeeDaoImpl;
 import com.ers.dao.IEmployeeDao;
@@ -13,56 +12,100 @@ import com.ers.service.IEmployeeService;
 import com.ers.service.IUserService;
 import com.ers.service.UserServiceImpl;
 import com.ers.util.JDBCUtil;
-import org.slf4j.LoggerFactory;
 
 import java.util.Scanner;
 
 public class Main {
 
-    private static final Logger logger =
-            (Logger) LoggerFactory.getLogger(Main.class);
-
     public static void main(String[] args) {
 
         Scanner scanner = new Scanner(System.in);
 
+        // =========================
         // USER
-        IUserDao userDao = new UserDaoImpl();
+        // =========================
+
+        IUserDao userDao =
+                new UserDaoImpl();
+
         IUserService userService =
                 new UserServiceImpl(userDao);
 
-        logger.info("======================================");
-        logger.info("   EXPENSE REIMBURSEMENT SYSTEM");
-        logger.info("                 LOGIN");
-        logger.info("======================================");
+        System.out.println(
+                "======================================"
+        );
 
-        logger.info("Enter Username:");
-        String username = scanner.nextLine();
+        System.out.println(
+                "   EXPENSE REIMBURSEMENT SYSTEM"
+        );
 
-        logger.info("Enter Password:");
-        String password = scanner.nextLine();
+        System.out.println(
+                "                 LOGIN"
+        );
+
+        System.out.println(
+                "======================================"
+        );
+
+        System.out.println(
+                "Enter Username:"
+        );
+
+        String username =
+                scanner.nextLine();
+
+        System.out.println(
+                "Enter Password:"
+        );
+
+        String password =
+                scanner.nextLine();
 
         User user =
                 userService.getUserByUsername(username);
 
+        // =========================
+        // USER VALIDATION
+        // =========================
+
         if (user == null) {
-            logger.warn("Invalid username.");
+
+            System.out.println(
+                    "Invalid username."
+            );
+
             return;
         }
 
         if (!user.getPassword().equals(password)) {
-            logger.warn("Invalid password.");
+
+            System.out.println(
+                    "Invalid password."
+            );
+
             return;
         }
 
         if (!user.isActive()) {
-            logger.warn("User account is inactive.");
+
+            System.out.println(
+                    "User account is inactive."
+            );
+
             return;
         }
 
-        logger.info("Login successful.");
-        logger.info("Welcome, {}", user.getUserName());
-        logger.info("Role: {}", user.getRole());
+        System.out.println(
+                "Login successful."
+        );
+
+        System.out.println(
+                "Welcome, " + user.getUserName()
+        );
+
+        System.out.println(
+                "Role: " + user.getRole()
+        );
 
         /*
          * ==================================
@@ -75,10 +118,14 @@ public class Main {
         if ("EMPLOYEE".equals(user.getRole())) {
 
             IEmployeeDao employeeDao =
-                    new EmployeeDaoImpl(new JDBCUtil());
+                    new EmployeeDaoImpl(
+                            new JDBCUtil()
+                    );
 
             IEmployeeService employeeService =
-                    new EmployeeServiceImpl(employeeDao);
+                    new EmployeeServiceImpl(
+                            employeeDao
+                    );
 
             employee =
                     employeeService.getEmployeeByUserId(
@@ -87,17 +134,17 @@ public class Main {
 
             if (employee == null) {
 
-                logger.warn(
-                        "Employee record not found for user ID: {}",
-                        user.getUserId()
+                System.out.println(
+                        "Employee record not found for user ID: "
+                                + user.getUserId()
                 );
 
                 return;
             }
 
-            logger.info(
-                    "Employee ID: {}",
-                    employee.getEmployeeId()
+            System.out.println(
+                    "Employee ID: "
+                            + employee.getEmployeeId()
             );
         }
 

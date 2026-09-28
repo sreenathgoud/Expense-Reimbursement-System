@@ -1,22 +1,15 @@
 package com.ers.controller;
 
-import ch.qos.logback.classic.Logger;
 import com.ers.model.ClaimItem;
 import com.ers.model.ExpenseClaim;
 import com.ers.service.IClaimItemService;
 import com.ers.service.IExpenseClaimService;
-import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Scanner;
 
 public class EmployeeClaimController {
-
-    private static final Logger logger =
-            (Logger) LoggerFactory.getLogger(
-                    EmployeeClaimController.class
-            );
 
     private final IExpenseClaimService expenseClaimService;
     private final IClaimItemService claimItemService;
@@ -41,17 +34,17 @@ public class EmployeeClaimController {
 
         while (running) {
 
-            logger.info("======================================");
-            logger.info("          EMPLOYEE CLAIM MENU");
-            logger.info("======================================");
-            logger.info("1. Raise Expense Claim");
-            logger.info("2. My Expense Claims");
-            logger.info("3. Add Claim Item");
-            logger.info("4. My Claim Items");
-            logger.info("5. Submit Claim");
-            logger.info("6. Back");
-            logger.info("======================================");
-            logger.info("Enter your choice:");
+            System.out.println("======================================");
+            System.out.println("          EMPLOYEE CLAIM MENU");
+            System.out.println("======================================");
+            System.out.println("1. Raise Expense Claim");
+            System.out.println("2. My Expense Claims");
+            System.out.println("3. Add Claim Item");
+            System.out.println("4. My Claim Items");
+            System.out.println("5. Submit Claim");
+            System.out.println("6. Back");
+            System.out.println("======================================");
+            System.out.println("Enter your choice:");
 
             String choice = scanner.nextLine();
 
@@ -81,49 +74,53 @@ public class EmployeeClaimController {
 
                     case "6":
                         running = false;
-                        logger.info("Returning to main menu.");
+                        System.out.println("Returning to main menu.");
                         break;
 
                     default:
-                        logger.warn(
-                                "Invalid employee claim menu choice: {}",
-                                choice
+                        System.out.println(
+                                "Invalid employee claim menu choice: "
+                                        + choice
                         );
                 }
 
             } catch (IllegalArgumentException e) {
 
-                logger.warn(
-                        "Invalid input: {}",
-                        e.getMessage()
+                System.out.println(
+                        "Invalid input: "
+                                + e.getMessage()
                 );
 
             } catch (Exception e) {
 
-                logger.error(
-                        "Unexpected error in EmployeeClaimController.",
-                        e
+                System.out.println(
+                        "Unexpected error: "
+                                + e.getMessage()
                 );
             }
         }
     }
 
+    // =========================
+    // RAISE EXPENSE CLAIM
+    // =========================
+
     private void addExpenseClaim() {
 
-        logger.info("========== RAISE EXPENSE CLAIM ==========");
+        System.out.println("========== RAISE EXPENSE CLAIM ==========");
 
-        logger.info("Enter Claim Description:");
+        System.out.println("Enter Claim Description:");
         String description = scanner.nextLine();
 
-        logger.info("Enter Claim Amount:");
+        System.out.println("Enter Claim Amount:");
         double amount =
                 Double.parseDouble(scanner.nextLine());
 
-        logger.info("Enter Claim Date (YYYY-MM-DD):");
+        System.out.println("Enter Claim Date (YYYY-MM-DD):");
         LocalDate claimDate =
                 LocalDate.parse(scanner.nextLine());
 
-        logger.info("Enter Document Path:");
+        System.out.println("Enter Document Path:");
         String documentPath = scanner.nextLine();
 
         ExpenseClaim expenseClaim =
@@ -143,22 +140,26 @@ public class EmployeeClaimController {
 
         if (result != null) {
 
-            logger.info(
-                    "Expense claim created successfully. Claim ID={}",
-                    result.getClaimId()
+            System.out.println(
+                    "Expense claim created successfully. Claim ID="
+                            + result.getClaimId()
             );
 
         } else {
 
-            logger.warn(
+            System.out.println(
                     "Failed to create expense claim."
             );
         }
     }
 
+    // =========================
+    // GET MY EXPENSE CLAIMS
+    // =========================
+
     private void getMyExpenseClaims() {
 
-        logger.info("========== MY EXPENSE CLAIMS ==========");
+        System.out.println("========== MY EXPENSE CLAIMS ==========");
 
         List<ExpenseClaim> claims =
                 expenseClaimService.getClaimsByEmployeeId(
@@ -167,26 +168,29 @@ public class EmployeeClaimController {
 
         if (claims.isEmpty()) {
 
-            logger.info("No expense claims found.");
+            System.out.println("No expense claims found.");
 
         } else {
 
-            logger.info(
-                    "Total claims: {}",
-                    claims.size()
+            System.out.println(
+                    "Total claims: " + claims.size()
             );
 
             for (ExpenseClaim claim : claims) {
-                logger.info("{}", claim);
+                System.out.println(claim);
             }
         }
     }
 
+    // =========================
+    // ADD CLAIM ITEM
+    // =========================
+
     private void addClaimItem() {
 
-        logger.info("========== ADD CLAIM ITEM ==========");
+        System.out.println("========== ADD CLAIM ITEM ==========");
 
-        logger.info("Enter Claim ID:");
+        System.out.println("Enter Claim ID:");
         int claimId =
                 Integer.parseInt(scanner.nextLine());
 
@@ -201,9 +205,8 @@ public class EmployeeClaimController {
 
         if (claim == null) {
 
-            logger.warn(
-                    "Claim not found. Claim ID={}",
-                    claimId
+            System.out.println(
+                    "Claim not found. Claim ID=" + claimId
             );
 
             return;
@@ -211,26 +214,26 @@ public class EmployeeClaimController {
 
         if (claim.getEmployeeId() != employeeId) {
 
-            logger.warn(
+            System.out.println(
                     "You can only add items to your own claims."
             );
 
             return;
         }
 
-        logger.info("Enter Category ID:");
+        System.out.println("Enter Category ID:");
         int categoryId =
                 Integer.parseInt(scanner.nextLine());
 
-        logger.info("Enter Description:");
+        System.out.println("Enter Description:");
         String description =
                 scanner.nextLine();
 
-        logger.info("Enter Amount:");
+        System.out.println("Enter Amount:");
         double amount =
                 Double.parseDouble(scanner.nextLine());
 
-        logger.info("Enter Expense Date (YYYY-MM-DD):");
+        System.out.println("Enter Expense Date (YYYY-MM-DD):");
         LocalDate expenseDate =
                 LocalDate.parse(scanner.nextLine());
 
@@ -250,24 +253,28 @@ public class EmployeeClaimController {
 
         if (result != null) {
 
-            logger.info(
-                    "Claim item added successfully. Item ID={}",
-                    result.getItemId()
+            System.out.println(
+                    "Claim item added successfully. Item ID="
+                            + result.getItemId()
             );
 
         } else {
 
-            logger.warn(
+            System.out.println(
                     "Failed to add claim item."
             );
         }
     }
 
+    // =========================
+    // GET MY CLAIM ITEMS
+    // =========================
+
     private void getMyClaimItems() {
 
-        logger.info("========== MY CLAIM ITEMS ==========");
+        System.out.println("========== MY CLAIM ITEMS ==========");
 
-        logger.info("Enter Claim ID:");
+        System.out.println("Enter Claim ID:");
 
         int claimId =
                 Integer.parseInt(scanner.nextLine());
@@ -282,9 +289,8 @@ public class EmployeeClaimController {
 
         if (claim == null) {
 
-            logger.warn(
-                    "Claim not found. Claim ID={}",
-                    claimId
+            System.out.println(
+                    "Claim not found. Claim ID=" + claimId
             );
 
             return;
@@ -292,7 +298,7 @@ public class EmployeeClaimController {
 
         if (claim.getEmployeeId() != employeeId) {
 
-            logger.warn(
+            System.out.println(
                     "You can only view items belonging to your own claims."
             );
 
@@ -306,26 +312,29 @@ public class EmployeeClaimController {
 
         if (items.isEmpty()) {
 
-            logger.info("No claim items found.");
+            System.out.println("No claim items found.");
 
         } else {
 
-            logger.info(
-                    "Total claim items: {}",
-                    items.size()
+            System.out.println(
+                    "Total claim items: " + items.size()
             );
 
             for (ClaimItem item : items) {
-                logger.info("{}", item);
+                System.out.println(item);
             }
         }
     }
 
+    // =========================
+    // SUBMIT CLAIM
+    // =========================
+
     private void submitClaim() {
 
-        logger.info("========== SUBMIT EXPENSE CLAIM ==========");
+        System.out.println("========== SUBMIT EXPENSE CLAIM ==========");
 
-        logger.info("Enter Claim ID:");
+        System.out.println("Enter Claim ID:");
 
         int claimId =
                 Integer.parseInt(scanner.nextLine());
@@ -340,9 +349,8 @@ public class EmployeeClaimController {
 
         if (claim == null) {
 
-            logger.warn(
-                    "Claim not found. Claim ID={}",
-                    claimId
+            System.out.println(
+                    "Claim not found. Claim ID=" + claimId
             );
 
             return;
@@ -350,7 +358,7 @@ public class EmployeeClaimController {
 
         if (claim.getEmployeeId() != employeeId) {
 
-            logger.warn(
+            System.out.println(
                     "You can only submit your own claims."
             );
 
@@ -364,16 +372,16 @@ public class EmployeeClaimController {
 
         if (result) {
 
-            logger.info(
-                    "Claim submitted successfully. Claim ID={}",
-                    claimId
+            System.out.println(
+                    "Claim submitted successfully. Claim ID="
+                            + claimId
             );
 
         } else {
 
-            logger.warn(
-                    "Claim submission failed. Claim ID={}",
-                    claimId
+            System.out.println(
+                    "Claim submission failed. Claim ID="
+                            + claimId
             );
         }
     }

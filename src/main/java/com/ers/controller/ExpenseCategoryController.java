@@ -1,17 +1,12 @@
 package com.ers.controller;
 
-import ch.qos.logback.classic.Logger;
 import com.ers.model.ExpenseCategory;
 import com.ers.service.IExpenseCategoryService;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Scanner;
 
 public class ExpenseCategoryController {
-
-    private static final Logger logger =
-            (Logger) LoggerFactory.getLogger(ExpenseCategoryController.class);
 
     private final IExpenseCategoryService expenseCategoryService;
     private final Scanner scanner;
@@ -29,17 +24,17 @@ public class ExpenseCategoryController {
 
         while (running) {
 
-            logger.info("======================================");
-            logger.info("    EXPENSE CATEGORY MANAGEMENT");
-            logger.info("======================================");
-            logger.info("1. Add Expense Category");
-            logger.info("2. Update Expense Category");
-            logger.info("3. Get Expense Category By ID");
-            logger.info("4. Get All Expense Categories");
-            logger.info("5. Delete Expense Category");
-            logger.info("6. Back");
-            logger.info("======================================");
-            logger.info("Enter your choice:");
+            System.out.println("======================================");
+            System.out.println("    EXPENSE CATEGORY MANAGEMENT");
+            System.out.println("======================================");
+            System.out.println("1. Add Expense Category");
+            System.out.println("2. Update Expense Category");
+            System.out.println("3. Get Expense Category By ID");
+            System.out.println("4. Get All Expense Categories");
+            System.out.println("5. Delete Expense Category");
+            System.out.println("6. Back");
+            System.out.println("======================================");
+            System.out.println("Enter your choice:");
 
             String choice = scanner.nextLine();
 
@@ -69,39 +64,59 @@ public class ExpenseCategoryController {
 
                     case "6":
                         running = false;
-                        logger.info("Returning to main menu.");
+                        System.out.println(
+                                "Returning to main menu."
+                        );
                         break;
 
                     default:
-                        logger.warn("Invalid menu choice: {}", choice);
+                        System.out.println(
+                                "Invalid menu choice: " + choice
+                        );
                 }
 
             } catch (IllegalArgumentException e) {
 
-                logger.warn(
-                        "Invalid expense category input: {}",
-                        e.getMessage()
+                System.out.println(
+                        "Invalid expense category input: "
+                                + e.getMessage()
                 );
 
             } catch (Exception e) {
 
-                logger.error(
-                        "Unexpected error in ExpenseCategoryController.",
-                        e
+                System.out.println(
+                        "Unexpected error in ExpenseCategoryController: "
+                                + e.getMessage()
                 );
+
+                e.printStackTrace();
             }
         }
     }
 
+    // ==========================================
+    // ADD EXPENSE CATEGORY
+    // ==========================================
+
     private void addExpenseCategoryFromInput() {
 
-        logger.info("========== ADD EXPENSE CATEGORY ==========");
+        System.out.println(
+                "========== ADD EXPENSE CATEGORY =========="
+        );
 
-        logger.info("Enter Category Name:");
-        String categoryName = scanner.nextLine();
+        System.out.println(
+                "Enter Category Name:"
+        );
 
-        logger.info("Enter Description:");
-        String description = scanner.nextLine();
+        String categoryName =
+                scanner.nextLine();
+
+        System.out.println(
+                "Enter Description:"
+        );
+
+        String description =
+                scanner.nextLine();
 
         ExpenseCategory expenseCategory =
                 new ExpenseCategory(
@@ -110,33 +125,58 @@ public class ExpenseCategoryController {
                 );
 
         ExpenseCategory result =
-                addExpenseCategory(expenseCategory);
+                addExpenseCategory(
+                        expenseCategory
+                );
 
         if (result != null) {
 
-            logger.info(
-                    "Expense category added successfully. Category ID={}",
-                    result.getCategory_id()
+            System.out.println(
+                    "Expense category added successfully. "
+                            + "Category ID="
+                            + result.getCategory_id()
             );
 
         } else {
 
-            logger.warn("Failed to add expense category.");
+            System.out.println(
+                    "Failed to add expense category."
+            );
         }
     }
 
+    // ==========================================
+    // UPDATE EXPENSE CATEGORY
+    // ==========================================
+
     private void updateExpenseCategoryFromInput() {
 
-        logger.info("========== UPDATE EXPENSE CATEGORY ==========");
+        System.out.println(
+                "========== UPDATE EXPENSE CATEGORY =========="
+        );
 
-        logger.info("Enter Category ID:");
-        int categoryId = Integer.parseInt(scanner.nextLine());
+        System.out.println(
+                "Enter Category ID:"
+        );
 
-        logger.info("Enter Category Name:");
-        String categoryName = scanner.nextLine();
+        int categoryId =
+                Integer.parseInt(
+                        scanner.nextLine()
+                );
 
-        logger.info("Enter Description:");
-        String description = scanner.nextLine();
+        System.out.println(
+                "Enter Category Name:"
+        );
+
+        String categoryName =
+                scanner.nextLine();
+
+        System.out.println(
+                "Enter Description:"
+        );
+
+        String description =
+                scanner.nextLine();
 
         ExpenseCategory expenseCategory =
                 new ExpenseCategory(
@@ -144,108 +184,157 @@ public class ExpenseCategoryController {
                         description
                 );
 
-        expenseCategory.setCategory_id(categoryId);
+        expenseCategory.setCategory_id(
+                categoryId
+        );
 
         boolean result =
-                updateExpenseCategory(expenseCategory);
+                updateExpenseCategory(
+                        expenseCategory
+                );
 
         if (result) {
 
-            logger.info(
-                    "Expense category updated successfully. Category ID={}",
-                    categoryId
+            System.out.println(
+                    "Expense category updated successfully. "
+                            + "Category ID="
+                            + categoryId
             );
 
         } else {
 
-            logger.warn(
-                    "Expense category update failed. Category ID={}",
-                    categoryId
+            System.out.println(
+                    "Expense category update failed. "
+                            + "Category ID="
+                            + categoryId
             );
         }
     }
+
+    // ==========================================
+    // GET EXPENSE CATEGORY BY ID
+    // ==========================================
 
     private void getExpenseCategoryByIdFromInput() {
 
-        logger.info(
+        System.out.println(
                 "========== GET EXPENSE CATEGORY BY ID =========="
         );
 
-        logger.info("Enter Category ID:");
-        int categoryId = Integer.parseInt(scanner.nextLine());
+        System.out.println(
+                "Enter Category ID:"
+        );
+
+        int categoryId =
+                Integer.parseInt(
+                        scanner.nextLine()
+                );
 
         ExpenseCategory expenseCategory =
-                getExpenseCategoryById(categoryId);
+                getExpenseCategoryById(
+                        categoryId
+                );
 
         if (expenseCategory != null) {
 
-            logger.info("Expense category found:");
-            logger.info("{}", expenseCategory);
+            System.out.println(
+                    "Expense category found:"
+            );
+
+            System.out.println(
+                    expenseCategory
+            );
 
         } else {
 
-            logger.warn(
-                    "No expense category found with ID={}",
-                    categoryId
+            System.out.println(
+                    "No expense category found with ID="
+                            + categoryId
             );
         }
     }
 
+    // ==========================================
+    // GET ALL EXPENSE CATEGORIES
+    // ==========================================
+
     private void displayAllExpenseCategories() {
 
-        logger.info("========== ALL EXPENSE CATEGORIES ==========");
+        System.out.println(
+                "========== ALL EXPENSE CATEGORIES =========="
+        );
 
         List<ExpenseCategory> expenseCategories =
                 getAllExpenseCategories();
 
         if (expenseCategories.isEmpty()) {
 
-            logger.info("No expense categories found.");
+            System.out.println(
+                    "No expense categories found."
+            );
 
         } else {
 
-            logger.info(
-                    "Total expense categories found: {}",
-                    expenseCategories.size()
+            System.out.println(
+                    "Total expense categories found: "
+                            + expenseCategories.size()
             );
 
             for (ExpenseCategory expenseCategory :
                     expenseCategories) {
 
-                logger.info("{}", expenseCategory);
+                System.out.println(
+                        expenseCategory
+                );
             }
         }
     }
 
+    // ==========================================
+    // DELETE EXPENSE CATEGORY
+    // ==========================================
+
     private void deleteExpenseCategoryFromInput() {
 
-        logger.info(
+        System.out.println(
                 "========== DELETE EXPENSE CATEGORY =========="
         );
 
-        logger.info("Enter Category ID:");
-        int categoryId = Integer.parseInt(scanner.nextLine());
+        System.out.println(
+                "Enter Category ID:"
+        );
+
+        int categoryId =
+                Integer.parseInt(
+                        scanner.nextLine()
+                );
 
         boolean result =
-                deleteExpenseCategoryById(categoryId);
+                deleteExpenseCategoryById(
+                        categoryId
+                );
 
         if (result) {
 
-            logger.info(
-                    "Expense category deleted successfully. Category ID={}",
-                    categoryId
+            System.out.println(
+                    "Expense category deleted successfully. "
+                            + "Category ID="
+                            + categoryId
             );
 
         } else {
 
-            logger.warn(
-                    "Expense category deletion failed. Category ID={}",
-                    categoryId
+            System.out.println(
+                    "Expense category deletion failed. "
+                            + "Category ID="
+                            + categoryId
             );
         }
     }
 
-    // Service delegation methods
+    // ==========================================
+    // SERVICE DELEGATION METHODS
+    // ==========================================
 
     public ExpenseCategory addExpenseCategory(
             ExpenseCategory expenseCategory) {
@@ -273,14 +362,16 @@ public class ExpenseCategoryController {
 
     public List<ExpenseCategory> getAllExpenseCategories() {
 
-        return expenseCategoryService.getAllExpenseCategories();
+        return expenseCategoryService
+                .getAllExpenseCategories();
     }
 
     public boolean deleteExpenseCategoryById(
             int categoryId) {
 
-        return expenseCategoryService.deleteExpenseCategoryById(
-                categoryId
-        );
+        return expenseCategoryService
+                .deleteExpenseCategoryById(
+                        categoryId
+                );
     }
 }

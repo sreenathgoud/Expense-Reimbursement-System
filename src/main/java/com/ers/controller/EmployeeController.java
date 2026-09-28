@@ -1,17 +1,12 @@
 package com.ers.controller;
 
-import ch.qos.logback.classic.Logger;
 import com.ers.model.Employee;
 import com.ers.service.IEmployeeService;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Scanner;
 
 public class EmployeeController {
-
-    private static final Logger logger =
-            (Logger) LoggerFactory.getLogger(EmployeeController.class);
 
     private final IEmployeeService employeeService;
     private final Scanner scanner;
@@ -31,17 +26,17 @@ public class EmployeeController {
 
         while (running) {
 
-            logger.info("======================================");
-            logger.info("        EMPLOYEE MANAGEMENT");
-            logger.info("======================================");
-            logger.info("1. Add Employee");
-            logger.info("2. Update Employee");
-            logger.info("3. Get Employee By ID");
-            logger.info("4. Get All Employees");
-            logger.info("5. Delete Employee");
-            logger.info("6. Back");
-            logger.info("======================================");
-            logger.info("Enter your choice:");
+            System.out.println("======================================");
+            System.out.println("        EMPLOYEE MANAGEMENT");
+            System.out.println("======================================");
+            System.out.println("1. Add Employee");
+            System.out.println("2. Update Employee");
+            System.out.println("3. Get Employee By ID");
+            System.out.println("4. Get All Employees");
+            System.out.println("5. Delete Employee");
+            System.out.println("6. Back");
+            System.out.println("======================================");
+            System.out.println("Enter your choice:");
 
             String choice = scanner.nextLine();
 
@@ -71,29 +66,27 @@ public class EmployeeController {
 
                     case "6":
                         running = false;
-                        logger.info("Returning to main menu.");
+                        System.out.println("Returning to main menu.");
                         break;
 
                     default:
-                        logger.warn(
-                                "Invalid menu choice: {}",
-                                choice
+                        System.out.println(
+                                "Invalid menu choice: " + choice
                         );
                 }
 
             } catch (IllegalArgumentException e) {
 
-                logger.warn(
-                        "Invalid employee input: {}",
-                        e.getMessage()
+                System.out.println(
+                        "Invalid employee input: " + e.getMessage()
                 );
 
             } catch (Exception e) {
 
-                logger.error(
-                        "Unexpected error in EmployeeController.",
-                        e
+                System.out.println(
+                        "Unexpected error in EmployeeController."
                 );
+                e.printStackTrace();
             }
         }
     }
@@ -104,18 +97,18 @@ public class EmployeeController {
 
     private void addEmployeeFromInput() {
 
-        logger.info("========== ADD EMPLOYEE ==========");
+        System.out.println("========== ADD EMPLOYEE ==========");
 
-        logger.info("Enter User ID:");
+        System.out.println("Enter User ID:");
         int userId = Integer.parseInt(scanner.nextLine());
 
-        logger.info("Enter Full Name:");
+        System.out.println("Enter Full Name:");
         String fullName = scanner.nextLine();
 
-        logger.info("Enter Email:");
+        System.out.println("Enter Email:");
         String email = scanner.nextLine();
 
-        logger.info("Enter Department ID:");
+        System.out.println("Enter Department ID:");
         int departmentId =
                 Integer.parseInt(scanner.nextLine());
 
@@ -130,14 +123,14 @@ public class EmployeeController {
 
         if (result != null) {
 
-            logger.info(
-                    "Employee added successfully. Employee ID={}",
-                    result.getEmployeeId()
+            System.out.println(
+                    "Employee added successfully. Employee ID="
+                            + result.getEmployeeId()
             );
 
         } else {
 
-            logger.warn("Failed to add employee.");
+            System.out.println("Failed to add employee.");
         }
     }
 
@@ -147,23 +140,23 @@ public class EmployeeController {
 
     private void updateEmployeeFromInput() {
 
-        logger.info("========== UPDATE EMPLOYEE ==========");
+        System.out.println("========== UPDATE EMPLOYEE ==========");
 
-        logger.info("Enter Employee ID:");
+        System.out.println("Enter Employee ID:");
         int employeeId =
                 Integer.parseInt(scanner.nextLine());
 
-        logger.info("Enter User ID:");
+        System.out.println("Enter User ID:");
         int userId =
                 Integer.parseInt(scanner.nextLine());
 
-        logger.info("Enter Full Name:");
+        System.out.println("Enter Full Name:");
         String fullName = scanner.nextLine();
 
-        logger.info("Enter Email:");
+        System.out.println("Enter Email:");
         String email = scanner.nextLine();
 
-        logger.info("Enter Department ID:");
+        System.out.println("Enter Department ID:");
         int departmentId =
                 Integer.parseInt(scanner.nextLine());
 
@@ -180,16 +173,16 @@ public class EmployeeController {
 
         if (result) {
 
-            logger.info(
-                    "Employee updated successfully. Employee ID={}",
-                    employeeId
+            System.out.println(
+                    "Employee updated successfully. Employee ID="
+                            + employeeId
             );
 
         } else {
 
-            logger.warn(
-                    "Employee update failed. Employee ID={}",
-                    employeeId
+            System.out.println(
+                    "Employee update failed. Employee ID="
+                            + employeeId
             );
         }
     }
@@ -200,11 +193,11 @@ public class EmployeeController {
 
     private void getEmployeeByIdFromInput() {
 
-        logger.info(
+        System.out.println(
                 "========== GET EMPLOYEE BY ID =========="
         );
 
-        logger.info("Enter Employee ID:");
+        System.out.println("Enter Employee ID:");
 
         int employeeId =
                 Integer.parseInt(scanner.nextLine());
@@ -214,14 +207,14 @@ public class EmployeeController {
 
         if (employee != null) {
 
-            logger.info("Employee found:");
-            logger.info("{}", employee);
+            System.out.println("Employee found:");
+            System.out.println(employee);
 
         } else {
 
-            logger.warn(
-                    "No employee found with ID={}",
-                    employeeId
+            System.out.println(
+                    "No employee found with ID="
+                            + employeeId
             );
         }
     }
@@ -232,24 +225,24 @@ public class EmployeeController {
 
     private void displayAllEmployees() {
 
-        logger.info("========== ALL EMPLOYEES ==========");
+        System.out.println("========== ALL EMPLOYEES ==========");
 
         List<Employee> employees =
                 getAllEmployees();
 
         if (employees.isEmpty()) {
 
-            logger.info("No employees found.");
+            System.out.println("No employees found.");
 
         } else {
 
-            logger.info(
-                    "Total employees found: {}",
-                    employees.size()
+            System.out.println(
+                    "Total employees found: "
+                            + employees.size()
             );
 
             for (Employee employee : employees) {
-                logger.info("{}", employee);
+                System.out.println(employee);
             }
         }
     }
@@ -260,9 +253,9 @@ public class EmployeeController {
 
     private void deleteEmployeeFromInput() {
 
-        logger.info("========== DELETE EMPLOYEE ==========");
+        System.out.println("========== DELETE EMPLOYEE ==========");
 
-        logger.info("Enter Employee ID:");
+        System.out.println("Enter Employee ID:");
 
         int employeeId =
                 Integer.parseInt(scanner.nextLine());
@@ -272,16 +265,16 @@ public class EmployeeController {
 
         if (result) {
 
-            logger.info(
-                    "Employee deleted successfully. Employee ID={}",
-                    employeeId
+            System.out.println(
+                    "Employee deleted successfully. Employee ID="
+                            + employeeId
             );
 
         } else {
 
-            logger.warn(
-                    "Employee deletion failed. Employee ID={}",
-                    employeeId
+            System.out.println(
+                    "Employee deletion failed. Employee ID="
+                            + employeeId
             );
         }
     }

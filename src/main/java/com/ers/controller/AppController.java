@@ -1,21 +1,14 @@
 package com.ers.controller;
 
-import ch.qos.logback.classic.Logger;
 import com.ers.dao.*;
 import com.ers.model.Employee;
 import com.ers.model.User;
 import com.ers.service.*;
 import com.ers.util.JDBCUtil;
-import org.slf4j.LoggerFactory;
 
 import java.util.Scanner;
 
 public class AppController {
-
-    private static final Logger logger =
-            (Logger) LoggerFactory.getLogger(
-                    AppController.class
-            );
 
     private final Scanner scanner;
     private final User user;
@@ -24,19 +17,13 @@ public class AppController {
     private final UserController userController;
     private final EmployeeController employeeController;
     private final DepartmentController departmentController;
-    private final ExpenseCategoryController
-            expenseCategoryController;
-    private final ExpenseClaimController
-            expenseClaimController;
-    private final ClaimItemController
-            claimItemController;
-    private final FinanceExecutiveController
-            financeExecutiveController;
-    private final ReimbursementController
-            reimbursementController;
+    private final ExpenseCategoryController expenseCategoryController;
+    private final ExpenseClaimController expenseClaimController;
+    private final ClaimItemController claimItemController;
+    private final FinanceExecutiveController financeExecutiveController;
+    private final ReimbursementController reimbursementController;
 
-    private final EmployeeClaimController
-            employeeClaimController;
+    private final EmployeeClaimController employeeClaimController;
 
     public AppController(
             Scanner scanner,
@@ -57,7 +44,6 @@ public class AppController {
         IUserService userService =
                 new UserServiceImpl(userDao);
 
-
         // =========================
         // EMPLOYEE
         // =========================
@@ -77,7 +63,6 @@ public class AppController {
                         employeeService
                 );
 
-
         // =========================
         // DEPARTMENT
         // =========================
@@ -95,7 +80,6 @@ public class AppController {
                         departmentService
                 );
 
-
         // =========================================
         // USER + EMPLOYEE TRANSACTION SERVICE
         // =========================================
@@ -108,7 +92,6 @@ public class AppController {
                         departmentDao
                 );
 
-
         // =========================
         // USER CONTROLLER
         // =========================
@@ -118,7 +101,6 @@ public class AppController {
                         userService,
                         expenseReimbursementService
                 );
-
 
         // =========================
         // EXPENSE CATEGORY
@@ -140,7 +122,6 @@ public class AppController {
                         expenseCategoryService
                 );
 
-
         // =========================
         // EXPENSE CLAIM
         // =========================
@@ -161,7 +142,6 @@ public class AppController {
                         expenseClaimService
                 );
 
-
         // =========================
         // CLAIM ITEM
         // =========================
@@ -181,7 +161,6 @@ public class AppController {
                         claimItemService
                 );
 
-
         // =========================
         // EMPLOYEE CLAIM CONTROLLER
         // =========================
@@ -200,7 +179,6 @@ public class AppController {
 
             employeeClaimController = null;
         }
-
 
         // =========================
         // FINANCE EXECUTIVE
@@ -223,7 +201,6 @@ public class AppController {
                         financeExecutiveService
                 );
 
-
         // =========================
         // REIMBURSEMENT
         // =========================
@@ -244,13 +221,14 @@ public class AppController {
                         reimbursementService
                 );
 
-
-        logger.info(
-                "All controllers and services " +
-                        "initialized successfully."
+        System.out.println(
+                "All controllers and services initialized successfully."
         );
     }
 
+    // ==========================================
+    // START APPLICATION
+    // ==========================================
 
     public void start() {
 
@@ -258,13 +236,12 @@ public class AppController {
 
         String role = user.getRole();
 
-        logger.info(
+        System.out.println(
                 "Expense Reimbursement System started."
         );
 
-        logger.info(
-                "Logged-in role: {}",
-                role
+        System.out.println(
+                "Logged-in role: " + role
         );
 
         while (running) {
@@ -284,6 +261,7 @@ public class AppController {
                                 handleEmployeeMenu(
                                         choice
                                 );
+
                         break;
 
                     case "MANAGER":
@@ -292,6 +270,7 @@ public class AppController {
                                 handleManagerMenu(
                                         choice
                                 );
+
                         break;
 
                     case "FINANCE_EXECUTIVE":
@@ -300,6 +279,7 @@ public class AppController {
                                 handleFinanceMenu(
                                         choice
                                 );
+
                         break;
 
                     case "ADMIN":
@@ -308,13 +288,13 @@ public class AppController {
                                 handleAdminMenu(
                                         choice
                                 );
+
                         break;
 
                     default:
 
-                        logger.warn(
-                                "Invalid user role: {}",
-                                role
+                        System.out.println(
+                                "Invalid user role: " + role
                         );
 
                         running = false;
@@ -322,16 +302,17 @@ public class AppController {
 
             } catch (Exception e) {
 
-                logger.error(
-                        "Unexpected application error.",
-                        e
+                System.out.println(
+                        "Unexpected application error: "
+                                + e.getMessage()
                 );
             }
         }
 
-        logger.info("User logged out.");
+        System.out.println(
+                "User logged out."
+        );
     }
-
 
     // ==========================================
     // DISPLAY MENU
@@ -339,106 +320,125 @@ public class AppController {
 
     private void displayMenu(String role) {
 
-        logger.info(
+        System.out.println(
                 "======================================"
         );
 
-        logger.info(
+        System.out.println(
                 "   EXPENSE REIMBURSEMENT SYSTEM"
         );
 
-        logger.info(
+        System.out.println(
                 "======================================"
         );
 
         switch (role) {
 
+            // ==================================
+            // EMPLOYEE
+            // ==================================
+
             case "EMPLOYEE":
 
-                logger.info(
+                System.out.println(
                         "1. Expense Claims"
                 );
 
-                logger.info("2. Exit");
+                System.out.println(
+                        "2. Exit"
+                );
 
                 break;
+
+            // ==================================
+            // MANAGER
+            // ==================================
 
             case "MANAGER":
 
-                logger.info(
+                System.out.println(
                         "1. Expense Claim Management"
                 );
 
-                logger.info(
+                System.out.println(
                         "2. Claim Item Management"
                 );
 
-                logger.info("3. Exit");
+                System.out.println(
+                        "3. Exit"
+                );
 
                 break;
+
+            // ==================================
+            // FINANCE EXECUTIVE
+            // ==================================
 
             case "FINANCE_EXECUTIVE":
 
-                logger.info(
+                System.out.println(
                         "1. Finance Executive"
                 );
 
-                logger.info(
-                        "2. Reimbursement"
+                System.out.println(
+                        "2. Exit"
                 );
-
-                logger.info("3. Exit");
 
                 break;
 
+            // ==================================
+            // ADMIN
+            // ==================================
+
             case "ADMIN":
 
-                logger.info(
+                System.out.println(
                         "1. User Management"
                 );
 
-                logger.info(
+                System.out.println(
                         "2. Employee Management"
                 );
 
-                logger.info(
+                System.out.println(
                         "3. Department Management"
                 );
 
-                logger.info(
+                System.out.println(
                         "4. Expense Category Management"
                 );
 
-                logger.info(
+                System.out.println(
                         "5. Expense Claim Management"
                 );
 
-                logger.info(
+                System.out.println(
                         "6. Claim Item Management"
                 );
 
-                logger.info(
+                System.out.println(
                         "7. Finance Executive"
                 );
 
-                logger.info(
+                System.out.println(
                         "8. Reimbursement"
                 );
 
-                logger.info("9. Exit");
+                System.out.println(
+                        "9. Exit"
+                );
 
                 break;
         }
 
-        logger.info(
+        System.out.println(
                 "======================================"
         );
 
-        logger.info(
+        System.out.println(
                 "Enter your choice:"
         );
     }
-
 
     // ==========================================
     // EMPLOYEE MENU
@@ -451,7 +451,7 @@ public class AppController {
 
             case "1":
 
-                logger.info(
+                System.out.println(
                         "Opening Employee Expense Claims."
                 );
 
@@ -461,7 +461,7 @@ public class AppController {
 
             case "2":
 
-                logger.info(
+                System.out.println(
                         "Employee logged out."
                 );
 
@@ -469,15 +469,14 @@ public class AppController {
 
             default:
 
-                logger.warn(
-                        "Invalid employee menu choice: {}",
-                        choice
+                System.out.println(
+                        "Invalid employee menu choice: "
+                                + choice
                 );
         }
 
         return true;
     }
-
 
     // ==========================================
     // MANAGER MENU
@@ -490,27 +489,27 @@ public class AppController {
 
             case "1":
 
-                logger.info(
+                System.out.println(
                         "Opening Expense Claim Management."
                 );
 
-                expenseClaimController.start();
+                expenseClaimController.startManager();
 
                 break;
 
             case "2":
 
-                logger.info(
+                System.out.println(
                         "Opening Claim Item Management."
                 );
 
-                claimItemController.start();
+                claimItemController.startManager();
 
                 break;
 
             case "3":
 
-                logger.info(
+                System.out.println(
                         "Manager logged out."
                 );
 
@@ -518,15 +517,14 @@ public class AppController {
 
             default:
 
-                logger.warn(
-                        "Invalid manager menu choice: {}",
-                        choice
+                System.out.println(
+                        "Invalid manager menu choice: "
+                                + choice
                 );
         }
 
         return true;
     }
-
 
     // ==========================================
     // FINANCE EXECUTIVE MENU
@@ -539,7 +537,7 @@ public class AppController {
 
             case "1":
 
-                logger.info(
+                System.out.println(
                         "Opening Finance Executive."
                 );
 
@@ -549,17 +547,7 @@ public class AppController {
 
             case "2":
 
-                logger.info(
-                        "Opening Reimbursement."
-                );
-
-                reimbursementController.start();
-
-                break;
-
-            case "3":
-
-                logger.info(
+                System.out.println(
                         "Finance Executive logged out."
                 );
 
@@ -567,15 +555,14 @@ public class AppController {
 
             default:
 
-                logger.warn(
-                        "Invalid finance menu choice: {}",
-                        choice
+                System.out.println(
+                        "Invalid finance menu choice: "
+                                + choice
                 );
         }
 
         return true;
     }
-
 
     // ==========================================
     // ADMIN MENU
@@ -636,7 +623,7 @@ public class AppController {
 
             case "9":
 
-                logger.info(
+                System.out.println(
                         "Admin logged out."
                 );
 
@@ -644,9 +631,9 @@ public class AppController {
 
             default:
 
-                logger.warn(
-                        "Invalid admin menu choice: {}",
-                        choice
+                System.out.println(
+                        "Invalid admin menu choice: "
+                                + choice
                 );
         }
 

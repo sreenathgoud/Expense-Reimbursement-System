@@ -1,18 +1,13 @@
 package com.ers.controller;
 
-import ch.qos.logback.classic.Logger;
 import com.ers.model.ClaimItem;
 import com.ers.service.IClaimItemService;
-import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Scanner;
 
 public class ClaimItemController {
-
-    private static final Logger logger =
-            (Logger) LoggerFactory.getLogger(ClaimItemController.class);
 
     private final IClaimItemService claimItemService;
     private final Scanner scanner;
@@ -23,25 +18,88 @@ public class ClaimItemController {
         this.claimItemService = claimItemService;
         this.scanner = new Scanner(System.in);
     }
+    public void startManager() {
 
+        boolean running = true;
+
+        while (running) {
+
+            System.out.println("======================================");
+            System.out.println("          CLAIM ITEM REVIEW");
+            System.out.println("======================================");
+            System.out.println("1. Get Claim Item By ID");
+            System.out.println("2. Get All Claim Items");
+            System.out.println("3. Get Claim Items By Claim ID");
+            System.out.println("4. Back");
+            System.out.println("======================================");
+            System.out.println("Enter your choice:");
+
+            String choice = scanner.nextLine();
+
+            try {
+
+                switch (choice) {
+
+                    case "1":
+                        getClaimItemByIdFromInput();
+                        break;
+
+                    case "2":
+                        displayAllClaimItems();
+                        break;
+
+                    case "3":
+                        getClaimItemsByClaimIdFromInput();
+                        break;
+
+                    case "4":
+                        running = false;
+                        System.out.println(
+                                "Returning to main menu."
+                        );
+                        break;
+
+                    default:
+                        System.out.println(
+                                "Invalid manager claim item menu choice: "
+                                        + choice
+                        );
+                }
+
+            } catch (IllegalArgumentException e) {
+
+                System.out.println(
+                        "Invalid claim item input: "
+                                + e.getMessage()
+                );
+
+            } catch (Exception e) {
+
+                System.out.println(
+                        "Unexpected error: "
+                                + e.getMessage()
+                );
+            }
+        }
+    }
     public void start() {
 
         boolean running = true;
 
         while (running) {
 
-            logger.info("======================================");
-            logger.info("          CLAIM ITEM MANAGEMENT");
-            logger.info("======================================");
-            logger.info("1. Add Claim Item");
-            logger.info("2. Update Claim Item");
-            logger.info("3. Get Claim Item By ID");
-            logger.info("4. Get All Claim Items");
-            logger.info("5. Delete Claim Item");
-            logger.info("6. Get Claim Items By Claim ID");
-            logger.info("7. Back");
-            logger.info("======================================");
-            logger.info("Enter your choice:");
+            System.out.println("======================================");
+            System.out.println("          CLAIM ITEM MANAGEMENT");
+            System.out.println("======================================");
+            System.out.println("1. Add Claim Item");
+            System.out.println("2. Update Claim Item");
+            System.out.println("3. Get Claim Item By ID");
+            System.out.println("4. Get All Claim Items");
+            System.out.println("5. Delete Claim Item");
+            System.out.println("6. Get Claim Items By Claim ID");
+            System.out.println("7. Back");
+            System.out.println("======================================");
+            System.out.println("Enter your choice:");
 
             String choice = scanner.nextLine();
 
@@ -75,50 +133,59 @@ public class ClaimItemController {
 
                     case "7":
                         running = false;
-                        logger.info("Returning to main menu.");
+                        System.out.println("Returning to main menu.");
                         break;
 
                     default:
-                        logger.warn("Invalid menu choice: {}", choice);
+                        System.out.println(
+                                "Invalid menu choice: " + choice
+                        );
                 }
 
             } catch (IllegalArgumentException e) {
 
-                logger.warn(
-                        "Invalid claim item input: {}",
-                        e.getMessage()
+                System.out.println(
+                        "Invalid claim item input: "
+                                + e.getMessage()
                 );
 
             } catch (Exception e) {
 
-                logger.error(
-                        "Unexpected error in ClaimItemController.",
-                        e
+                System.out.println(
+                        "Unexpected error in ClaimItemController."
                 );
+                e.printStackTrace();
             }
         }
     }
 
+    // =========================
+    // ADD CLAIM ITEM
+    // =========================
+
     private void addClaimItemFromInput() {
 
-        logger.info("========== ADD CLAIM ITEM ==========");
+        System.out.println(
+                "========== ADD CLAIM ITEM =========="
+        );
 
-        logger.info("Enter Claim ID:");
+        System.out.println("Enter Claim ID:");
         int claimId =
                 Integer.parseInt(scanner.nextLine());
 
-        logger.info("Enter Category ID:");
+        System.out.println("Enter Category ID:");
         int categoryId =
                 Integer.parseInt(scanner.nextLine());
 
-        logger.info("Enter Description:");
-        String description = scanner.nextLine();
+        System.out.println("Enter Description:");
+        String description =
+                scanner.nextLine();
 
-        logger.info("Enter Amount:");
+        System.out.println("Enter Amount:");
         double amount =
                 Double.parseDouble(scanner.nextLine());
 
-        logger.info("Enter Expense Date (YYYY-MM-DD):");
+        System.out.println("Enter Expense Date (YYYY-MM-DD):");
         LocalDate expenseDate =
                 LocalDate.parse(scanner.nextLine());
 
@@ -136,41 +203,50 @@ public class ClaimItemController {
 
         if (result != null) {
 
-            logger.info(
-                    "Claim item added successfully. Item ID={}",
-                    result.getItemId()
+            System.out.println(
+                    "Claim item added successfully. Item ID="
+                            + result.getItemId()
             );
 
         } else {
 
-            logger.warn("Failed to add claim item.");
+            System.out.println(
+                    "Failed to add claim item."
+            );
         }
     }
 
+    // =========================
+    // UPDATE CLAIM ITEM
+    // =========================
+
     private void updateClaimItemFromInput() {
 
-        logger.info("========== UPDATE CLAIM ITEM ==========");
+        System.out.println(
+                "========== UPDATE CLAIM ITEM =========="
+        );
 
-        logger.info("Enter Item ID:");
+        System.out.println("Enter Item ID:");
         int itemId =
                 Integer.parseInt(scanner.nextLine());
 
-        logger.info("Enter Claim ID:");
+        System.out.println("Enter Claim ID:");
         int claimId =
                 Integer.parseInt(scanner.nextLine());
 
-        logger.info("Enter Category ID:");
+        System.out.println("Enter Category ID:");
         int categoryId =
                 Integer.parseInt(scanner.nextLine());
 
-        logger.info("Enter Description:");
-        String description = scanner.nextLine();
+        System.out.println("Enter Description:");
+        String description =
+                scanner.nextLine();
 
-        logger.info("Enter Amount:");
+        System.out.println("Enter Amount:");
         double amount =
                 Double.parseDouble(scanner.nextLine());
 
-        logger.info("Enter Expense Date (YYYY-MM-DD):");
+        System.out.println("Enter Expense Date (YYYY-MM-DD):");
         LocalDate expenseDate =
                 LocalDate.parse(scanner.nextLine());
 
@@ -190,27 +266,32 @@ public class ClaimItemController {
 
         if (result) {
 
-            logger.info(
-                    "Claim item updated successfully. Item ID={}",
-                    itemId
+            System.out.println(
+                    "Claim item updated successfully. Item ID="
+                            + itemId
             );
 
         } else {
 
-            logger.warn(
-                    "Claim item update failed. Item ID={}",
-                    itemId
+            System.out.println(
+                    "Claim item update failed. Item ID="
+                            + itemId
             );
         }
     }
 
+    // =========================
+    // GET CLAIM ITEM BY ID
+    // =========================
+
     private void getClaimItemByIdFromInput() {
 
-        logger.info(
+        System.out.println(
                 "========== GET CLAIM ITEM BY ID =========="
         );
 
-        logger.info("Enter Item ID:");
+        System.out.println("Enter Item ID:");
+
         int itemId =
                 Integer.parseInt(scanner.nextLine());
 
@@ -219,47 +300,62 @@ public class ClaimItemController {
 
         if (claimItem != null) {
 
-            logger.info("Claim item found:");
-            logger.info("{}", claimItem);
+            System.out.println("Claim item found:");
+            System.out.println(claimItem);
 
         } else {
 
-            logger.warn(
-                    "No claim item found with ID={}",
-                    itemId
+            System.out.println(
+                    "No claim item found with ID="
+                            + itemId
             );
         }
     }
 
+    // =========================
+    // GET ALL CLAIM ITEMS
+    // =========================
+
     private void displayAllClaimItems() {
 
-        logger.info("========== ALL CLAIM ITEMS ==========");
+        System.out.println(
+                "========== ALL CLAIM ITEMS =========="
+        );
 
         List<ClaimItem> claimItems =
                 getAllClaimItems();
 
         if (claimItems.isEmpty()) {
 
-            logger.info("No claim items found.");
+            System.out.println(
+                    "No claim items found."
+            );
 
         } else {
 
-            logger.info(
-                    "Total claim items found: {}",
-                    claimItems.size()
+            System.out.println(
+                    "Total claim items found: "
+                            + claimItems.size()
             );
 
             for (ClaimItem claimItem : claimItems) {
-                logger.info("{}", claimItem);
+                System.out.println(claimItem);
             }
         }
     }
 
+    // =========================
+    // DELETE CLAIM ITEM
+    // =========================
+
     private void deleteClaimItemFromInput() {
 
-        logger.info("========== DELETE CLAIM ITEM ==========");
+        System.out.println(
+                "========== DELETE CLAIM ITEM =========="
+        );
 
-        logger.info("Enter Item ID:");
+        System.out.println("Enter Item ID:");
+
         int itemId =
                 Integer.parseInt(scanner.nextLine());
 
@@ -268,27 +364,32 @@ public class ClaimItemController {
 
         if (result) {
 
-            logger.info(
-                    "Claim item deleted successfully. Item ID={}",
-                    itemId
+            System.out.println(
+                    "Claim item deleted successfully. Item ID="
+                            + itemId
             );
 
         } else {
 
-            logger.warn(
-                    "Claim item deletion failed. Item ID={}",
-                    itemId
+            System.out.println(
+                    "Claim item deletion failed. Item ID="
+                            + itemId
             );
         }
     }
 
+    // =========================
+    // GET CLAIM ITEMS BY CLAIM ID
+    // =========================
+
     private void getClaimItemsByClaimIdFromInput() {
 
-        logger.info(
+        System.out.println(
                 "========== CLAIM ITEMS BY CLAIM ID =========="
         );
 
-        logger.info("Enter Claim ID:");
+        System.out.println("Enter Claim ID:");
+
         int claimId =
                 Integer.parseInt(scanner.nextLine());
 
@@ -297,25 +398,27 @@ public class ClaimItemController {
 
         if (claimItems.isEmpty()) {
 
-            logger.info(
-                    "No claim items found for Claim ID={}",
-                    claimId
+            System.out.println(
+                    "No claim items found for Claim ID="
+                            + claimId
             );
 
         } else {
 
-            logger.info(
-                    "Claim items for Claim ID={}:",
-                    claimId
+            System.out.println(
+                    "Claim items for Claim ID="
+                            + claimId + ":"
             );
 
             for (ClaimItem claimItem : claimItems) {
-                logger.info("{}", claimItem);
+                System.out.println(claimItem);
             }
         }
     }
 
-    // Service delegation methods
+    // =========================
+    // SERVICE DELEGATION METHODS
+    // =========================
 
     public ClaimItem addClaimItem(
             ClaimItem claimItem) {

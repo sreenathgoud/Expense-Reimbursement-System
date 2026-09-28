@@ -1,18 +1,13 @@
 package com.ers.controller;
 
-import ch.qos.logback.classic.Logger;
 import com.ers.model.Department;
 import com.ers.model.Employee;
 import com.ers.service.IDepartmentService;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Scanner;
 
 public class DepartmentController {
-
-    private static final Logger logger =
-            (Logger) LoggerFactory.getLogger(DepartmentController.class);
 
     private final IDepartmentService departmentService;
     private final Scanner scanner;
@@ -28,19 +23,19 @@ public class DepartmentController {
 
         while (running) {
 
-            logger.info("======================================");
-            logger.info("       DEPARTMENT MANAGEMENT");
-            logger.info("======================================");
-            logger.info("1. Add Department");
-            logger.info("2. Update Department");
-            logger.info("3. Get Department By ID");
-            logger.info("4. Get All Departments");
-            logger.info("5. Delete Department");
-            logger.info("6. Get Employees By Department ID");
-            logger.info("7. Get Department By Manager ID");
-            logger.info("8. Back");
-            logger.info("======================================");
-            logger.info("Enter your choice:");
+            System.out.println("======================================");
+            System.out.println("       DEPARTMENT MANAGEMENT");
+            System.out.println("======================================");
+            System.out.println("1. Add Department");
+            System.out.println("2. Update Department");
+            System.out.println("3. Get Department By ID");
+            System.out.println("4. Get All Departments");
+            System.out.println("5. Delete Department");
+            System.out.println("6. Get Employees By Department ID");
+            System.out.println("7. Get Department By Manager ID");
+            System.out.println("8. Back");
+            System.out.println("======================================");
+            System.out.println("Enter your choice:");
 
             String choice = scanner.nextLine();
 
@@ -78,225 +73,294 @@ public class DepartmentController {
 
                     case "8":
                         running = false;
-                        logger.info("Returning to main menu.");
+                        System.out.println("Returning to main menu.");
                         break;
 
                     default:
-                        logger.warn("Invalid menu choice: {}", choice);
+                        System.out.println(
+                                "Invalid menu choice: " + choice
+                        );
                 }
 
             } catch (IllegalArgumentException e) {
 
-                logger.warn(
-                        "Invalid department input: {}",
-                        e.getMessage()
+                System.out.println(
+                        "Invalid department input: " + e.getMessage()
                 );
 
             } catch (Exception e) {
 
-                logger.error(
-                        "Unexpected error in DepartmentController.",
-                        e
+                System.out.println(
+                        "Unexpected error in DepartmentController."
                 );
+                e.printStackTrace();
             }
         }
     }
 
+    // =========================
+    // ADD DEPARTMENT
+    // =========================
+
     private void addDepartmentFromInput() {
 
-        logger.info("========== ADD DEPARTMENT ==========");
+        System.out.println("========== ADD DEPARTMENT ==========");
 
-        logger.info("Enter Department Name:");
+        System.out.println("Enter Department Name:");
         String departmentName = scanner.nextLine();
 
-        logger.info("Enter Manager ID (enter 0 if no manager):");
-        int managerId = Integer.parseInt(scanner.nextLine());
+        System.out.println(
+                "Enter Manager ID (enter 0 if no manager):"
+        );
+        int managerId =
+                Integer.parseInt(scanner.nextLine());
 
-        Integer manager = managerId == 0 ? null : managerId;
+        Integer manager =
+                managerId == 0 ? null : managerId;
 
         Department department =
                 new Department(departmentName, manager);
 
-        Department result = addDepartment(department);
+        Department result =
+                addDepartment(department);
 
         if (result != null) {
-            logger.info(
-                    "Department added successfully. Department ID={}",
-                    result.getDepartmentId()
+
+            System.out.println(
+                    "Department added successfully. Department ID="
+                            + result.getDepartmentId()
             );
+
         } else {
-            logger.warn("Failed to add department.");
+
+            System.out.println(
+                    "Failed to add department."
+            );
         }
     }
 
+    // =========================
+    // UPDATE DEPARTMENT
+    // =========================
+
     private void updateDepartmentFromInput() {
 
-        logger.info("========== UPDATE DEPARTMENT ==========");
+        System.out.println(
+                "========== UPDATE DEPARTMENT =========="
+        );
 
-        logger.info("Enter Department ID:");
-        int departmentId = Integer.parseInt(scanner.nextLine());
+        System.out.println("Enter Department ID:");
+        int departmentId =
+                Integer.parseInt(scanner.nextLine());
 
-        logger.info("Enter Department Name:");
-        String departmentName = scanner.nextLine();
+        System.out.println("Enter Department Name:");
+        String departmentName =
+                scanner.nextLine();
 
-        logger.info("Enter Manager ID (enter 0 if no manager):");
-        int managerId = Integer.parseInt(scanner.nextLine());
+        System.out.println(
+                "Enter Manager ID (enter 0 if no manager):"
+        );
+        int managerId =
+                Integer.parseInt(scanner.nextLine());
 
-        Integer manager = managerId == 0 ? null : managerId;
+        Integer manager =
+                managerId == 0 ? null : managerId;
 
         Department department =
                 new Department(departmentName, manager);
 
         department.setDepartmentId(departmentId);
 
-        boolean result = updateDepartment(department);
+        boolean result =
+                updateDepartment(department);
 
         if (result) {
-            logger.info(
-                    "Department updated successfully. Department ID={}",
-                    departmentId
+
+            System.out.println(
+                    "Department updated successfully. Department ID="
+                            + departmentId
             );
+
         } else {
-            logger.warn(
-                    "Department update failed. Department ID={}",
-                    departmentId
+
+            System.out.println(
+                    "Department update failed. Department ID="
+                            + departmentId
             );
         }
     }
 
+    // =========================
+    // GET DEPARTMENT BY ID
+    // =========================
+
     private void getDepartmentByIdFromInput() {
 
-        logger.info("========== GET DEPARTMENT BY ID ==========");
+        System.out.println(
+                "========== GET DEPARTMENT BY ID =========="
+        );
 
-        logger.info("Enter Department ID:");
-        int departmentId = Integer.parseInt(scanner.nextLine());
+        System.out.println("Enter Department ID:");
+
+        int departmentId =
+                Integer.parseInt(scanner.nextLine());
 
         Department department =
                 getDepartmentById(departmentId);
 
         if (department != null) {
 
-            logger.info("Department found:");
-            logger.info("{}", department);
+            System.out.println("Department found:");
+            System.out.println(department);
 
         } else {
 
-            logger.warn(
-                    "No department found with ID={}",
-                    departmentId
+            System.out.println(
+                    "No department found with ID="
+                            + departmentId
             );
         }
     }
 
+    // =========================
+    // GET ALL DEPARTMENTS
+    // =========================
+
     private void displayAllDepartments() {
 
-        logger.info("========== ALL DEPARTMENTS ==========");
+        System.out.println(
+                "========== ALL DEPARTMENTS =========="
+        );
 
         List<Department> departments =
                 getAllDepartments();
 
         if (departments.isEmpty()) {
 
-            logger.info("No departments found.");
+            System.out.println(
+                    "No departments found."
+            );
 
         } else {
 
-            logger.info(
-                    "Total departments found: {}",
-                    departments.size()
+            System.out.println(
+                    "Total departments found: "
+                            + departments.size()
             );
 
             for (Department department : departments) {
-                logger.info("{}", department);
+                System.out.println(department);
             }
         }
     }
 
+    // =========================
+    // DELETE DEPARTMENT
+    // =========================
+
     private void deleteDepartmentFromInput() {
 
-        logger.info("========== DELETE DEPARTMENT ==========");
+        System.out.println(
+                "========== DELETE DEPARTMENT =========="
+        );
 
-        logger.info("Enter Department ID:");
-        int departmentId = Integer.parseInt(scanner.nextLine());
+        System.out.println("Enter Department ID:");
+
+        int departmentId =
+                Integer.parseInt(scanner.nextLine());
 
         boolean result =
                 deleteDepartmentById(departmentId);
 
         if (result) {
 
-            logger.info(
-                    "Department deleted successfully. Department ID={}",
-                    departmentId
+            System.out.println(
+                    "Department deleted successfully. Department ID="
+                            + departmentId
             );
 
         } else {
 
-            logger.warn(
-                    "Department deletion failed. Department ID={}",
-                    departmentId
+            System.out.println(
+                    "Department deletion failed. Department ID="
+                            + departmentId
             );
         }
     }
 
+    // =========================
+    // GET EMPLOYEES BY DEPARTMENT
+    // =========================
+
     private void getEmployeesByDepartmentIdFromInput() {
 
-        logger.info(
+        System.out.println(
                 "========== EMPLOYEES BY DEPARTMENT =========="
         );
 
-        logger.info("Enter Department ID:");
-        int departmentId = Integer.parseInt(scanner.nextLine());
+        System.out.println("Enter Department ID:");
+
+        int departmentId =
+                Integer.parseInt(scanner.nextLine());
 
         List<Employee> employees =
                 getEmployeesByDepartmentId(departmentId);
 
         if (employees.isEmpty()) {
 
-            logger.info(
-                    "No employees found for Department ID={}",
-                    departmentId
+            System.out.println(
+                    "No employees found for Department ID="
+                            + departmentId
             );
 
         } else {
 
-            logger.info(
-                    "Employees in Department ID={}:",
-                    departmentId
+            System.out.println(
+                    "Employees in Department ID="
+                            + departmentId + ":"
             );
 
             for (Employee employee : employees) {
-                logger.info("{}", employee);
+                System.out.println(employee);
             }
         }
     }
 
+    // =========================
+    // GET DEPARTMENT BY MANAGER
+    // =========================
+
     private void getDepartmentByManagerIdFromInput() {
 
-        logger.info(
+        System.out.println(
                 "========== DEPARTMENT BY MANAGER =========="
         );
 
-        logger.info("Enter Manager ID:");
-        int managerId = Integer.parseInt(scanner.nextLine());
+        System.out.println("Enter Manager ID:");
+
+        int managerId =
+                Integer.parseInt(scanner.nextLine());
 
         Department department =
                 getDepartmentByManagerId(managerId);
 
         if (department != null) {
 
-            logger.info("Department found:");
-            logger.info("{}", department);
+            System.out.println("Department found:");
+            System.out.println(department);
 
         } else {
 
-            logger.warn(
-                    "No department found for Manager ID={}",
-                    managerId
+            System.out.println(
+                    "No department found for Manager ID="
+                            + managerId
             );
         }
     }
 
-    // Service delegation methods
+    // =========================
+    // SERVICE DELEGATION METHODS
+    // =========================
 
     public Department addDepartment(Department department) {
         return departmentService.addDepartment(department);
