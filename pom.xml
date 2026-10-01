@@ -41,7 +41,7 @@
 
       <artifactId>mockito-core</artifactId>
 
-      <version>5.5.0</version>
+      <version>5.24.0</version>
 
       <scope>test</scope>
 
@@ -55,7 +55,7 @@
 
       <artifactId>mockito-junit-jupiter</artifactId>
 
-      <version>5.5.0</version>
+      <version>5.24.0</version>
 
       <scope>test</scope>
 
@@ -76,7 +76,7 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.14.1</version>
         <configuration>
-          <release>19</release>
+          <release>25</release>
         </configuration>
       </plugin>
     </plugins>

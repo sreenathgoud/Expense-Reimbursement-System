@@ -1,6 +1,7 @@
 package com.ers.controller;
 
 import com.ers.model.User;
+import com.ers.service.ExpenseReimbursementService;
 import com.ers.service.IUserService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,13 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class UserControllerTest {
+
+        private UserController createController(IUserService userServiceMock) {
+                return new UserController(
+                                userServiceMock,
+                                Mockito.mock(ExpenseReimbursementService.class)
+                );
+        }
 
     @Test
     void addUser() throws SQLException {
@@ -32,7 +40,7 @@ class UserControllerTest {
                 .thenReturn(user);
 
         UserController userController =
-                new UserController(userServiceMock);
+                createController(userServiceMock);
 
         // Act
         User actualResult =
@@ -62,7 +70,7 @@ class UserControllerTest {
                 .thenReturn(true);
 
         UserController userController =
-                new UserController(userServiceMock);
+                createController(userServiceMock);
 
         // Act
         boolean actualResult =
@@ -92,7 +100,7 @@ class UserControllerTest {
                 .thenReturn(users);
 
         UserController userController =
-                new UserController(userServiceMock);
+                createController(userServiceMock);
 
         // Act
         List<User> actualResult =
@@ -114,7 +122,7 @@ class UserControllerTest {
                 .thenReturn(true);
 
         UserController userController =
-                new UserController(userServiceMock);
+                createController(userServiceMock);
 
         // Act
         boolean actualResult =
@@ -137,7 +145,7 @@ class UserControllerTest {
                 .thenReturn(true);
 
         UserController userController =
-                new UserController(userServiceMock);
+                createController(userServiceMock);
 
         // Act
         boolean actualResult =
