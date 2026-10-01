@@ -4,13 +4,13 @@ public class FinanceExecutive {
     private int employeeId;
     private String fullName;
     private String email;
-    private String department;
+    private int departmentId;
 
-    public FinanceExecutive(int employeeId, String fullName, String email, String department) {
+    public FinanceExecutive(int employeeId, String fullName, String email, int departmentId) {
         this.employeeId = employeeId;
         this.fullName = fullName;
         this.email = email;
-        this.department = department;
+        this.departmentId = departmentId;
     }
 
     public int getEmployeeId() {
@@ -37,12 +37,12 @@ public class FinanceExecutive {
         this.email = email;
     }
 
-    public String getDepartment() {
-        return department;
+    public int getDepartmentId() {
+        return departmentId;
     }
 
-    public void setDepartment(String department) {
-        this.department = department;
+    public void setDepartmentId(int departmentId) {
+        this.departmentId = departmentId;
     }
 
     @Override
@@ -51,7 +51,7 @@ public class FinanceExecutive {
                 "employeeId=" + employeeId +
                 ", fullName='" + fullName + '\'' +
                 ", email='" + email + '\'' +
-                ", department='" + department + '\'' +
+                ", departmentId=" + departmentId +
                 '}';
     }
 }

@@ -71,7 +71,7 @@ public class User {
         return "Users{" +
                 "userId=" + userId +
                 ", userName='" + userName + '\'' +
-                ", password='" + password + '\'' +
+                ", password='[REDACTED]'" +
                 ", role='" + role + '\'' +
                 ", isActive=" + isActive +
                 ", createdAt=" + createdAt +

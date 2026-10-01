@@ -2,24 +2,34 @@ package com.ers.service;
 
 import com.ers.dao.IClaimItemDao;
 import com.ers.model.ClaimItem;
+import com.ers.service.IExpenseCategoryService;
+import ch.qos.logback.classic.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.time.LocalDate;
 import java.util.List;
-import java.util.logging.Logger;
 
 public class ClaimItemServiceImpl
         implements IClaimItemService {
 
     private static final Logger logger =
-            Logger.getLogger(
-                    ClaimItemServiceImpl.class.getName()
-            );
+            (Logger) LoggerFactory.getLogger(ClaimItemServiceImpl.class);
 
     private final IClaimItemDao claimItemDao;
+    private final IExpenseCategoryService expenseCategoryService;
 
     public ClaimItemServiceImpl(
             IClaimItemDao claimItemDao) {
 
+        this(claimItemDao, null);
+    }
+
+    public ClaimItemServiceImpl(
+            IClaimItemDao claimItemDao,
+            IExpenseCategoryService expenseCategoryService) {
+
         this.claimItemDao = claimItemDao;
+        this.expenseCategoryService = expenseCategoryService;
     }
 
     @Override
@@ -45,16 +55,29 @@ public class ClaimItemServiceImpl
             );
         }
 
+        if (expenseCategoryService != null
+                && expenseCategoryService.getExpenseCategoryById(claimItem.getCategoryId()) == null) {
+            throw new IllegalArgumentException("Expense category is invalid or inactive.");
+        }
+
         if (claimItem.getAmount() <= 0) {
             throw new IllegalArgumentException(
                     "Claim item amount must be greater than zero."
             );
         }
 
+        if (claimItem.getDescription() == null || claimItem.getDescription().isBlank()) {
+            throw new IllegalArgumentException("Claim item description is required.");
+        }
+
         if (claimItem.getExpenseDate() == null) {
             throw new IllegalArgumentException(
                     "Expense date is required."
             );
+        }
+
+        if (claimItem.getExpenseDate().isAfter(LocalDate.now())) {
+            throw new IllegalArgumentException("Expense date cannot be in the future.");
         }
 
         ClaimItem result =
@@ -104,16 +127,29 @@ public class ClaimItemServiceImpl
             );
         }
 
+        if (expenseCategoryService != null
+                && expenseCategoryService.getExpenseCategoryById(claimItem.getCategoryId()) == null) {
+            throw new IllegalArgumentException("Expense category is invalid or inactive.");
+        }
+
         if (claimItem.getAmount() <= 0) {
             throw new IllegalArgumentException(
                     "Claim item amount must be greater than zero."
             );
         }
 
+        if (claimItem.getDescription() == null || claimItem.getDescription().isBlank()) {
+            throw new IllegalArgumentException("Claim item description is required.");
+        }
+
         if (claimItem.getExpenseDate() == null) {
             throw new IllegalArgumentException(
                     "Expense date is required."
             );
+        }
+
+        if (claimItem.getExpenseDate().isAfter(LocalDate.now())) {
+            throw new IllegalArgumentException("Expense date cannot be in the future.");
         }
 
         boolean result =
@@ -147,7 +183,7 @@ public class ClaimItemServiceImpl
                 );
 
         if (claimItem == null) {
-            logger.warning(
+            logger.warn(
                     "No claim item found with ID="
                             + itemId
             );

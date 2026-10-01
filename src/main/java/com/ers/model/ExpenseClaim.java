@@ -10,7 +10,7 @@ public class ExpenseClaim {
     private LocalDate claimDate;
     private String status;
     private String documentPath;
-    private String reason;
+    private String reviewRemarks;
 
     public ExpenseClaim(int employeeId, String claimDesc, double claimAmount, LocalDate claimDate, String status, String documentPath) {
         this.employeeId = employeeId;
@@ -77,6 +77,14 @@ public class ExpenseClaim {
         this.documentPath = documentPath;
     }
 
+    public String getReviewRemarks() {
+        return reviewRemarks;
+    }
+
+    public void setReviewRemarks(String reviewRemarks) {
+        this.reviewRemarks = reviewRemarks;
+    }
+
     @Override
     public String toString() {
         return "ExpenseClaims{" +
@@ -87,6 +95,7 @@ public class ExpenseClaim {
                 ", claimDate=" + claimDate +
                 ", status='" + status + '\'' +
                 ", documentPath='" + documentPath + '\'' +
+                ", reviewRemarks='" + reviewRemarks + '\'' +
                 '}';
     }
 }

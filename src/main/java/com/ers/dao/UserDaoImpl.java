@@ -22,7 +22,7 @@ public class UserDaoImpl implements IUserDao{
                     "WHERE user_id = ?";
     private final String selectuser = "SELECT * FROM users";
     private final String removeUserQuery = "DELETE FROM users WHERE user_id = ?";
-   private final String sql = "UPDATE users SET is_active = ? WHERE user_id = ?";
+    private final String sql = "UPDATE users SET is_active = ? WHERE user_id = ?";
     private final String getbyname  =
             "SELECT * FROM users WHERE username = ?";
     @Override
@@ -60,7 +60,7 @@ public class UserDaoImpl implements IUserDao{
         }
 
         return null;
-        }
+    }
 
     @Override
     public User addUser(User user, Connection con) throws SQLException {

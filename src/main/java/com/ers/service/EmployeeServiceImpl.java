@@ -2,14 +2,15 @@ package com.ers.service;
 
 import com.ers.dao.IEmployeeDao;
 import com.ers.model.Employee;
+import ch.qos.logback.classic.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 public class EmployeeServiceImpl implements IEmployeeService {
 
     private static final Logger logger =
-            Logger.getLogger(EmployeeServiceImpl.class.getName());
+            (Logger) LoggerFactory.getLogger(EmployeeServiceImpl.class);
 
     private final IEmployeeDao employeeDao;
 
@@ -149,7 +150,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
                 employeeDao.getEmployeeById(employeeId);
 
         if (employee == null) {
-            logger.warning(
+            logger.warn(
                     "No employee found with ID="
                             + employeeId
             );

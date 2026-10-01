@@ -3,14 +3,15 @@ package com.ers.service;
 import com.ers.dao.IDepartmentDao;
 import com.ers.model.Department;
 import com.ers.model.Employee;
+import ch.qos.logback.classic.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 public class DepartmentServiceImpl implements IDepartmentService {
 
     private static final Logger logger =
-            Logger.getLogger(DepartmentServiceImpl.class.getName());
+            (Logger) LoggerFactory.getLogger(DepartmentServiceImpl.class);
 
     private final IDepartmentDao departmentDao;
 
@@ -105,7 +106,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
                 departmentDao.getDepartmentById(departmentId);
 
         if (department == null) {
-            logger.warning(
+            logger.warn(
                     "No department found with ID="
                             + departmentId
             );
@@ -176,7 +177,7 @@ public class DepartmentServiceImpl implements IDepartmentService {
                 );
 
         if (department == null) {
-            logger.warning(
+            logger.warn(
                     "No department found for manager ID="
                             + managerId
             );

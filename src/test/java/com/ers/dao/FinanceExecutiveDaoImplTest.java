@@ -24,7 +24,7 @@ public class FinanceExecutiveDaoImplTest {
                         20,
                         "Finance Executive",
                         "finance@gmail.com",
-                        "FINANCE"
+                        1
                 );
 
         // Act
@@ -51,7 +51,7 @@ public class FinanceExecutiveDaoImplTest {
                         20,
                         "Updated Finance Executive",
                         "updatedfinance@gmail.com",
-                        "FINANCE"
+                        2
                 );
 
         // Act

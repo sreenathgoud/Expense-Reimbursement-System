@@ -2,15 +2,16 @@ package com.ers.service;
 
 import com.ers.dao.IUserDao;
 import com.ers.model.User;
+import ch.qos.logback.classic.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 import java.util.List;
-import java.util.logging.Logger;
 
 public class UserServiceImpl implements IUserService {
 
     private static final Logger logger =
-            Logger.getLogger(UserServiceImpl.class.getName());
+            (Logger) LoggerFactory.getLogger(UserServiceImpl.class);
 
     private final IUserDao userDao;
 
@@ -123,7 +124,7 @@ public class UserServiceImpl implements IUserService {
         User user = userDao.getUserById(userId);
 
         if (user == null) {
-            logger.warning(
+            logger.warn(
                     "No user found with ID=" + userId
             );
         }

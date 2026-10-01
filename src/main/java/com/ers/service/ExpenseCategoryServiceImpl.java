@@ -2,17 +2,16 @@ package com.ers.service;
 
 import com.ers.dao.IExpenseCategoryDao;
 import com.ers.model.ExpenseCategory;
+import ch.qos.logback.classic.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 public class ExpenseCategoryServiceImpl
         implements IExpenseCategoryService {
 
     private static final Logger logger =
-            Logger.getLogger(
-                    ExpenseCategoryServiceImpl.class.getName()
-            );
+            (Logger) LoggerFactory.getLogger(ExpenseCategoryServiceImpl.class);
 
     private final IExpenseCategoryDao expenseCategoryDao;
 
@@ -113,7 +112,7 @@ public class ExpenseCategoryServiceImpl
                 );
 
         if (category == null) {
-            logger.warning(
+            logger.warn(
                     "No expense category found with ID="
                             + categoryId
             );
@@ -126,6 +125,14 @@ public class ExpenseCategoryServiceImpl
     public List<ExpenseCategory> getAllExpenseCategories() {
 
         return expenseCategoryDao.getAllExpenseCategories();
+    }
+
+    @Override
+    public List<ExpenseCategory> searchExpenseCategories(String searchTerm) {
+        if (searchTerm == null || searchTerm.isBlank()) {
+            return expenseCategoryDao.getAllExpenseCategories();
+        }
+        return expenseCategoryDao.searchExpenseCategories(searchTerm.trim());
     }
 
     @Override

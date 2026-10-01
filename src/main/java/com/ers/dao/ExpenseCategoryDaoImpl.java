@@ -5,6 +5,7 @@ import com.ers.model.ExpenseCategory;
 import com.ers.util.JDBCUtil;
 import org.slf4j.LoggerFactory;
 
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,23 +23,26 @@ public class ExpenseCategoryDaoImpl implements IExpenseCategoryDao{
                     "(category_name, description) VALUES (?, ?)";
 
     private final String updateQuery =
-            "UPDATE expense_categories " +
-                    "SET category_name = ?, description = ? " +
-                    "WHERE category_id = ?";
+            "UPDATE expense_categories SET category_name = ?, description = ? " +
+                    "WHERE category_id = ? AND is_active = TRUE";
 
     private final String getQuery =
             "SELECT * FROM expense_categories " +
-                    "WHERE category_id = ?";
+                    "WHERE category_id = ? AND is_active = TRUE";
 
     private final String getAllQuery =
-            "SELECT * FROM expense_categories";
+            "SELECT * FROM expense_categories WHERE is_active = TRUE";
 
-    private final String deleteQuery =
-            "DELETE FROM expense_categories " +
-                    "WHERE category_id = ?";
+    private final String searchQuery =
+            "SELECT * FROM expense_categories " +
+                    "WHERE is_active = TRUE AND (category_name LIKE ? OR description LIKE ?)";
 
- public ExpenseCategoryDaoImpl(JDBCUtil jdbcUtil){
-        this.jdbcUtil=jdbcUtil;
+    private final String deactivateQuery =
+            "UPDATE expense_categories SET is_active = FALSE " +
+                    "WHERE category_id = ? AND is_active = TRUE";
+
+    public ExpenseCategoryDaoImpl(JDBCUtil jdbcUtil) {
+        this.jdbcUtil = jdbcUtil;
     }
     @Override
     public ExpenseCategory addExpenseCategory(ExpenseCategory expenseCategory) {
@@ -159,6 +163,7 @@ public class ExpenseCategoryDaoImpl implements IExpenseCategoryDao{
                     expenseCategory.setCategory_id(
                             rs.getInt("category_id")
                     );
+                    expenseCategory.setActive(rs.getBoolean("is_active"));
 
                     return expenseCategory;
                 }
@@ -198,6 +203,7 @@ public class ExpenseCategoryDaoImpl implements IExpenseCategoryDao{
                 expenseCategory.setCategory_id(
                         rs.getInt("category_id")
                 );
+                expenseCategory.setActive(rs.getBoolean("is_active"));
 
                 expenseCategories.add(expenseCategory);
             }
@@ -214,11 +220,39 @@ public class ExpenseCategoryDaoImpl implements IExpenseCategoryDao{
     }
 
     @Override
+    public List<ExpenseCategory> searchExpenseCategories(String searchTerm) {
+        List<ExpenseCategory> expenseCategories = new ArrayList<>();
+        String pattern = "%" + searchTerm + "%";
+
+        try (
+                Connection con = JDBCUtil.getConnection();
+                PreparedStatement ps = con.prepareStatement(searchQuery)
+        ) {
+            ps.setString(1, pattern);
+            ps.setString(2, pattern);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    ExpenseCategory category = new ExpenseCategory(
+                            rs.getString("category_name"),
+                            rs.getString("description")
+                    );
+                    category.setCategory_id(rs.getInt("category_id"));
+                    category.setActive(rs.getBoolean("is_active"));
+                    expenseCategories.add(category);
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("Error while searching expense categories", e);
+        }
+        return expenseCategories;
+    }
+
+    @Override
     public boolean deleteExpenseCategoryById(int categoryId) {
         try (
                 Connection con = JDBCUtil.getConnection();
                 PreparedStatement ps =
-                        con.prepareStatement(deleteQuery)
+                        con.prepareStatement(deactivateQuery)
         ) {
 
             ps.setInt(1, categoryId);
@@ -227,9 +261,7 @@ public class ExpenseCategoryDaoImpl implements IExpenseCategoryDao{
 
             if (count > 0) {
 
-                logger.info(
-                        "Expense category deleted successfully"
-                );
+                logger.info("Expense category deactivated successfully");
 
                 return true;
             }

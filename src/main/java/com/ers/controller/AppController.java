@@ -16,6 +16,7 @@ public class AppController {
 
     private final UserController userController;
     private final EmployeeController employeeController;
+    private final EmployeeProfileController employeeProfileController;
     private final DepartmentController departmentController;
     private final ExpenseCategoryController expenseCategoryController;
     private final ExpenseClaimController expenseClaimController;
@@ -60,7 +61,8 @@ public class AppController {
 
         employeeController =
                 new EmployeeController(
-                        employeeService
+                        employeeService,
+                        user.getRole()
                 );
 
         // =========================
@@ -74,6 +76,17 @@ public class AppController {
                 new DepartmentServiceImpl(
                         departmentDao
                 );
+
+        employeeProfileController = employee == null
+                ? null
+                : new EmployeeProfileController(
+                employee,
+                user,
+                employeeService,
+                userService,
+                departmentService,
+                scanner
+        );
 
         departmentController =
                 new DepartmentController(
@@ -123,6 +136,21 @@ public class AppController {
                 );
 
         // =========================
+        // CLAIM ITEM
+        // =========================
+
+        IClaimItemDao claimItemDao =
+                new ClaimItemDaoImpl(
+                        new JDBCUtil()
+                );
+
+        IClaimItemService claimItemService =
+                new ClaimItemServiceImpl(
+                        claimItemDao,
+                        expenseCategoryService
+                );
+
+        // =========================
         // EXPENSE CLAIM
         // =========================
 
@@ -139,46 +167,17 @@ public class AppController {
 
         expenseClaimController =
                 new ExpenseClaimController(
-                        expenseClaimService
-                );
-
-        // =========================
-        // CLAIM ITEM
-        // =========================
-
-        IClaimItemDao claimItemDao =
-                new ClaimItemDaoImpl(
-                        new JDBCUtil()
-                );
-
-        IClaimItemService claimItemService =
-                new ClaimItemServiceImpl(
-                        claimItemDao
+                        expenseClaimService,
+                        claimItemService,
+                        employeeService,
+                        expenseCategoryService,
+                        employee != null ? employee.getEmployeeId() : null
                 );
 
         claimItemController =
                 new ClaimItemController(
                         claimItemService
                 );
-
-        // =========================
-        // EMPLOYEE CLAIM CONTROLLER
-        // =========================
-
-        if ("EMPLOYEE".equals(user.getRole())) {
-
-            employeeClaimController =
-                    new EmployeeClaimController(
-                            expenseClaimService,
-                            claimItemService,
-                            scanner,
-                            employee.getEmployeeId()
-                    );
-
-        } else {
-
-            employeeClaimController = null;
-        }
 
         // =========================
         // FINANCE EXECUTIVE
@@ -198,7 +197,9 @@ public class AppController {
 
         financeExecutiveController =
                 new FinanceExecutiveController(
-                        financeExecutiveService
+                        financeExecutiveService,
+                        employee != null ? employee.getEmployeeId() : null,
+                        employeeService
                 );
 
         // =========================
@@ -220,6 +221,21 @@ public class AppController {
                 new ReimbursementController(
                         reimbursementService
                 );
+
+        // =========================
+        // EMPLOYEE CLAIM CONTROLLER
+        // =========================
+
+        if ("EMPLOYEE".equals(user.getRole()) && employee != null) {
+            employeeClaimController = new EmployeeClaimController(
+                    expenseClaimService,
+                    reimbursementService,
+                    scanner,
+                    employee.getEmployeeId()
+            );
+        } else {
+            employeeClaimController = null;
+        }
 
         System.out.println(
                 "All controllers and services initialized successfully."
@@ -243,6 +259,10 @@ public class AppController {
         System.out.println(
                 "Logged-in role: " + role
         );
+
+        if (employee != null) {
+            System.out.println("Employee ID: " + employee.getEmployeeId());
+        }
 
         while (running) {
 
@@ -341,11 +361,15 @@ public class AppController {
             case "EMPLOYEE":
 
                 System.out.println(
-                        "1. Expense Claims"
+                        "1. Employee Profile"
                 );
 
                 System.out.println(
-                        "2. Exit"
+                        "2. Expense Claims"
+                );
+
+                System.out.println(
+                        "3. Exit"
                 );
 
                 break;
@@ -361,11 +385,7 @@ public class AppController {
                 );
 
                 System.out.println(
-                        "2. Claim Item Management"
-                );
-
-                System.out.println(
-                        "3. Exit"
+                        "2. Exit"
                 );
 
                 break;
@@ -451,6 +471,26 @@ public class AppController {
 
             case "1":
 
+                if (employeeProfileController == null) {
+                    System.out.println(
+                            "No employee profile is available for this account."
+                    );
+                    return true;
+                }
+
+                employeeProfileController.start();
+
+                break;
+
+            case "2":
+
+                if (employeeClaimController == null) {
+                    System.out.println(
+                            "No employee profile is available for this account."
+                    );
+                    return true;
+                }
+
                 System.out.println(
                         "Opening Employee Expense Claims."
                 );
@@ -459,7 +499,7 @@ public class AppController {
 
                 break;
 
-            case "2":
+            case "3":
 
                 System.out.println(
                         "Employee logged out."
@@ -498,16 +538,6 @@ public class AppController {
                 break;
 
             case "2":
-
-                System.out.println(
-                        "Opening Claim Item Management."
-                );
-
-                claimItemController.startManager();
-
-                break;
-
-            case "3":
 
                 System.out.println(
                         "Manager logged out."

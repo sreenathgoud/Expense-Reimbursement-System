@@ -23,12 +23,12 @@ public class FinanceExecutiveDaoImpl implements IFinanceExecutiveDao {
 
     private final String addQuery =
             "INSERT INTO finance_executives " +
-                    "(employee_id, full_name, email, department) " +
+                    "(employee_id, full_name, email, department_id) " +
                     "VALUES (?, ?, ?, ?)";
 
     private final String updateQuery =
             "UPDATE finance_executives SET " +
-                    "full_name = ?, email = ?, department = ? " +
+                    "full_name = ?, email = ?, department_id = ? " +
                     "WHERE employee_id = ?";
 
     private final String getQuery =
@@ -46,18 +46,34 @@ public class FinanceExecutiveDaoImpl implements IFinanceExecutiveDao {
             "SELECT * FROM expense_claims " +
                     "WHERE status = 'APPROVED'";
 
+    private final String getPendingClaimsForFinanceExecutiveQuery =
+            "SELECT ec.* FROM expense_claims ec " +
+                    "JOIN employees e ON e.employee_id = ec.employee_id " +
+                    "JOIN finance_executives fe ON fe.department_id = e.department_id " +
+                    "WHERE ec.status = 'APPROVED' AND fe.employee_id = ?";
+
     private final String getClaimByIdQuery =
             "SELECT * FROM expense_claims " +
                     "WHERE claim_id = ?";
+
+    private final String getApprovedClaimByIdForFinanceExecutiveQuery =
+            "SELECT ec.* FROM expense_claims ec " +
+                    "JOIN employees e ON e.employee_id = ec.employee_id " +
+                    "JOIN finance_executives fe ON fe.employee_id = ? " +
+                    "WHERE ec.claim_id = ? AND ec.status = 'APPROVED' " +
+                    "AND e.department_id = fe.department_id";
     private final String getClaimAmountQuery =
-            "SELECT claim_amount FROM expense_claims " +
-                    "WHERE claim_id = ? AND status = 'APPROVED'";
+            "SELECT ec.claim_amount, e.department_id as employee_department_id " +
+                    "FROM expense_claims ec " +
+                    "JOIN employees e ON e.employee_id = ec.employee_id " +
+                    "JOIN finance_executives fe ON fe.employee_id = ? " +
+                    "WHERE ec.claim_id = ? AND ec.status = 'APPROVED' AND e.department_id = fe.department_id";
 
     private final String insertReimbursementQuery =
             "INSERT INTO reimbursements " +
                     "(claim_id, reimbursed_amount, payment_mode, " +
-                    "reimbursement_date, processed_by, status) " +
-                    "VALUES (?, ?, ?, ?, ?, 'PROCESSED')";
+                    "transaction_ref, reimbursement_date, processed_by, status) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, 'PROCESSED')";
 
     private final String getReimbursementHistoryQuery =
             "SELECT * FROM reimbursements " +
@@ -84,7 +100,7 @@ public class FinanceExecutiveDaoImpl implements IFinanceExecutiveDao {
             ps.setInt(1, financeExecutive.getEmployeeId());
             ps.setString(2, financeExecutive.getFullName());
             ps.setString(3, financeExecutive.getEmail());
-            ps.setString(4, financeExecutive.getDepartment());
+            ps.setInt(4, financeExecutive.getDepartmentId());
 
             int count = ps.executeUpdate();
 
@@ -112,7 +128,7 @@ public class FinanceExecutiveDaoImpl implements IFinanceExecutiveDao {
 
             ps.setString(1, financeExecutive.getFullName());
             ps.setString(2, financeExecutive.getEmail());
-            ps.setString(3, financeExecutive.getDepartment());
+            ps.setInt(3, financeExecutive.getDepartmentId());
             ps.setInt(4, financeExecutive.getEmployeeId());
 
             int count = ps.executeUpdate();
@@ -238,6 +254,31 @@ public class FinanceExecutiveDaoImpl implements IFinanceExecutiveDao {
 
 
     @Override
+    public List<ExpenseClaim> getPendingClaimsForFinanceExecutive(int financeExecutiveEmployeeId) {
+
+        List<ExpenseClaim> claims = new ArrayList<>();
+
+        try (
+                Connection con = JDBCUtil.getConnection();
+                PreparedStatement ps = con.prepareStatement(getPendingClaimsForFinanceExecutiveQuery)
+        ) {
+
+            ps.setInt(1, financeExecutiveEmployeeId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    claims.add(mapExpenseClaim(rs));
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return claims;
+    }
+
+    @Override
     public ExpenseClaim getClaimById(int claimId) {
 
         try (
@@ -263,6 +304,25 @@ public class FinanceExecutiveDaoImpl implements IFinanceExecutiveDao {
         return null;
     }
 
+    @Override
+    public ExpenseClaim getApprovedClaimByIdForFinanceExecutive(
+            int claimId,
+            int financeExecutiveEmployeeId) {
+        try (
+                Connection con = JDBCUtil.getConnection();
+                PreparedStatement ps = con.prepareStatement(getApprovedClaimByIdForFinanceExecutiveQuery)
+        ) {
+            ps.setInt(1, financeExecutiveEmployeeId);
+            ps.setInt(2, claimId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? mapExpenseClaim(rs) : null;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 
     // -----------------------------
     // Reimbursement Operations
@@ -275,6 +335,29 @@ public class FinanceExecutiveDaoImpl implements IFinanceExecutiveDao {
             int financeExecutiveId,
             String paymentMode) {
 
+        return processPayment(claimId, financeExecutiveId, null, paymentMode, null, java.time.LocalDate.now());
+    }
+
+    @Override
+    public boolean processPayment(
+            int claimId,
+            int financeExecutiveId,
+            double reimbursedAmount,
+            String paymentMode,
+            String transactionRef,
+            java.time.LocalDate reimbursementDate) {
+
+        return processPayment(claimId, financeExecutiveId, Double.valueOf(reimbursedAmount), paymentMode, transactionRef, reimbursementDate);
+    }
+
+    private boolean processPayment(
+            int claimId,
+            int financeExecutiveId,
+            Double requestedAmount,
+            String paymentMode,
+            String transactionRef,
+            java.time.LocalDate reimbursementDate) {
+
         try (
                 Connection con = JDBCUtil.getConnection()
         ) {
@@ -286,7 +369,8 @@ public class FinanceExecutiveDaoImpl implements IFinanceExecutiveDao {
                             con.prepareStatement(getClaimAmountQuery)
             ) {
 
-                claimPs.setInt(1, claimId);
+                claimPs.setInt(1, financeExecutiveId);
+                claimPs.setInt(2, claimId);
 
                 try (ResultSet rs = claimPs.executeQuery()) {
 
@@ -297,6 +381,11 @@ public class FinanceExecutiveDaoImpl implements IFinanceExecutiveDao {
 
                     double claimAmount =
                             rs.getDouble("claim_amount");
+                    double paymentAmount = requestedAmount == null ? claimAmount : requestedAmount;
+                    if (paymentAmount <= 0 || paymentAmount > claimAmount) {
+                        con.rollback();
+                        return false;
+                    }
 
                     try (
                             PreparedStatement reimbursementPs =
@@ -305,16 +394,17 @@ public class FinanceExecutiveDaoImpl implements IFinanceExecutiveDao {
                     ) {
 
                         reimbursementPs.setInt(1, claimId);
-                        reimbursementPs.setDouble(2, claimAmount);
+                        reimbursementPs.setDouble(2, paymentAmount);
                         reimbursementPs.setString(3, paymentMode);
+                        reimbursementPs.setString(4, transactionRef);
                         reimbursementPs.setDate(
-                                4,
+                                5,
                                 Date.valueOf(
-                                        java.time.LocalDate.now()
+                                        reimbursementDate
                                 )
                         );
                         reimbursementPs.setInt(
-                                5,
+                                6,
                                 financeExecutiveId
                         );
 
@@ -423,7 +513,7 @@ public class FinanceExecutiveDaoImpl implements IFinanceExecutiveDao {
                         rs.getInt("employee_id"),
                         rs.getString("full_name"),
                         rs.getString("email"),
-                        rs.getString("department")
+                        rs.getInt("department_id")
                 );
 
         return financeExecutive;

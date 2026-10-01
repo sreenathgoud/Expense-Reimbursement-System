@@ -1,25 +1,49 @@
- package com.ers.controller;
+package com.ers.controller;
 
+import com.ers.dao.DepartmentDaoImpl;
+import com.ers.model.Department;
+import com.ers.model.Employee;
 import com.ers.model.ExpenseClaim;
 import com.ers.model.FinanceExecutive;
 import com.ers.model.Reimbursement;
 import com.ers.service.IFinanceExecutiveService;
+import com.ers.service.IEmployeeService;
 
 import java.util.List;
 import java.util.Scanner;
+import java.time.LocalDate;
 
 public class FinanceExecutiveController {
 
     private final IFinanceExecutiveService financeExecutiveService;
     private final Scanner scanner;
+    private final Integer currentFinanceExecutiveEmployeeId;
+    private final IEmployeeService employeeService;
 
     public FinanceExecutiveController(
             IFinanceExecutiveService financeExecutiveService) {
+
+        this(financeExecutiveService, null);
+    }
+
+    public FinanceExecutiveController(
+            IFinanceExecutiveService financeExecutiveService,
+            Integer currentFinanceExecutiveEmployeeId) {
+
+        this(financeExecutiveService, currentFinanceExecutiveEmployeeId, null);
+    }
+
+    public FinanceExecutiveController(
+            IFinanceExecutiveService financeExecutiveService,
+            Integer currentFinanceExecutiveEmployeeId,
+            IEmployeeService employeeService) {
 
         this.financeExecutiveService =
                 financeExecutiveService;
 
         this.scanner = new Scanner(System.in);
+        this.currentFinanceExecutiveEmployeeId = currentFinanceExecutiveEmployeeId;
+        this.employeeService = employeeService;
     }
 
     public void start() {
@@ -35,7 +59,8 @@ public class FinanceExecutiveController {
             System.out.println("2. Get Claim By ID");
             System.out.println("3. Process Payment");
             System.out.println("4. Get Reimbursement History");
-            System.out.println("5. Back");
+            System.out.println("5. Finance Dashboard");
+            System.out.println("6. Back");
             System.out.println("======================================");
             System.out.println("Enter your choice:");
 
@@ -66,6 +91,11 @@ public class FinanceExecutiveController {
                         break;
 
                     case "5":
+
+                        displayFinanceDashboard();
+                        break;
+
+                    case "6":
 
                         running = false;
 
@@ -133,19 +163,21 @@ public class FinanceExecutiveController {
         String email =
                 scanner.nextLine();
 
-        System.out.println(
-                "Enter Department:"
-        );
+        List<Department> departments = new DepartmentDaoImpl().getAllDepartments();
+        System.out.println("Select Department:");
+        for (int i = 0; i < departments.size(); i++) {
+            System.out.println((i + 1) + ". " + departments.get(i).getDepartmentName());
+        }
 
-        String department =
-                scanner.nextLine();
+        int departmentChoice = Integer.parseInt(scanner.nextLine());
+        Department selectedDepartment = departments.get(departmentChoice - 1);
 
         FinanceExecutive financeExecutive =
                 new FinanceExecutive(
                         employeeId,
                         fullName,
                         email,
-                        department
+                        selectedDepartment.getDepartmentId()
                 );
 
         FinanceExecutive result =
@@ -202,19 +234,21 @@ public class FinanceExecutiveController {
         String email =
                 scanner.nextLine();
 
-        System.out.println(
-                "Enter Department:"
-        );
+        List<Department> departments = new DepartmentDaoImpl().getAllDepartments();
+        System.out.println("Select Department:");
+        for (int i = 0; i < departments.size(); i++) {
+            System.out.println((i + 1) + ". " + departments.get(i).getDepartmentName());
+        }
 
-        String department =
-                scanner.nextLine();
+        int departmentChoice = Integer.parseInt(scanner.nextLine());
+        Department selectedDepartment = departments.get(departmentChoice - 1);
 
         FinanceExecutive financeExecutive =
                 new FinanceExecutive(
                         employeeId,
                         fullName,
                         email,
-                        department
+                        selectedDepartment.getDepartmentId()
                 );
 
         boolean result =
@@ -372,19 +406,21 @@ public class FinanceExecutiveController {
                 "========== PENDING CLAIMS =========="
         );
 
+        int financeExecutiveEmployeeId = resolveFinanceExecutiveEmployeeId();
+
         List<ExpenseClaim> claims =
-                getPendingClaims();
+                getPendingClaimsForFinanceExecutive(financeExecutiveEmployeeId);
 
         if (claims.isEmpty()) {
 
             System.out.println(
-                    "No pending claims found."
+                    "No approved claims are available for this finance executive department."
             );
 
         } else {
 
             System.out.println(
-                    "Total pending claims: "
+                    "Total pending approved claims: "
                             + claims.size()
             );
 
@@ -417,10 +453,10 @@ public class FinanceExecutiveController {
                         scanner.nextLine()
                 );
 
-        ExpenseClaim claim =
-                getClaimById(
-                        claimId
-                );
+        int financeExecutiveId = resolveFinanceExecutiveEmployeeId();
+        ExpenseClaim claim = financeExecutiveService.getApprovedClaimByIdForFinanceExecutive(
+                claimId, financeExecutiveId
+        );
 
         if (claim != null) {
 
@@ -431,11 +467,19 @@ public class FinanceExecutiveController {
             System.out.println(
                     claim
             );
+            if (employeeService != null) {
+                Employee employee = employeeService.getEmployeeById(claim.getEmployeeId());
+                if (employee != null) {
+                    System.out.println("Employee Name: " + employee.getFullName());
+                    System.out.println("Employee Email: " + employee.getEmail());
+                    System.out.println("Department ID: " + employee.getDepartmentId());
+                }
+            }
 
         } else {
 
             System.out.println(
-                    "No claim found with ID="
+                    "No approved claim found in your department with ID="
                             + claimId
             );
         }
@@ -460,27 +504,48 @@ public class FinanceExecutiveController {
                         scanner.nextLine()
                 );
 
-        System.out.println(
-                "Enter Finance Executive ID:"
-        );
+        int financeExecutiveId = resolveFinanceExecutiveEmployeeId();
 
-        int financeExecutiveId =
-                Integer.parseInt(
-                        scanner.nextLine()
-                );
+        System.out.println("Enter Reimbursed Amount:");
+        double reimbursedAmount = Double.parseDouble(scanner.nextLine());
 
         System.out.println(
-                "Enter Payment Mode:"
+                "Payment Mode\n1. BANK_TRANSFER\n2. CASH\n3. UPI\n4. CHEQUE"
         );
 
         String paymentMode =
                 scanner.nextLine();
 
+        switch (paymentMode) {
+            case "1":
+                paymentMode = "BANK_TRANSFER";
+                break;
+            case "2":
+                paymentMode = "CASH";
+                break;
+            case "3":
+                paymentMode = "UPI";
+                break;
+            case "4":
+                paymentMode = "CHEQUE";
+                break;
+            default:
+                paymentMode = paymentMode.trim().toUpperCase();
+        }
+
+        System.out.println("Enter Transaction/Reference Number:");
+        String transactionRef = scanner.nextLine();
+        System.out.println("Enter Reimbursement Date (YYYY-MM-DD):");
+        LocalDate reimbursementDate = LocalDate.parse(scanner.nextLine());
+
         boolean result =
                 processPayment(
                         claimId,
                         financeExecutiveId,
-                        paymentMode
+                        reimbursedAmount,
+                        paymentMode,
+                        transactionRef,
+                        reimbursementDate
                 );
 
         if (result) {
@@ -511,14 +576,7 @@ public class FinanceExecutiveController {
                 "========== REIMBURSEMENT HISTORY =========="
         );
 
-        System.out.println(
-                "Enter Finance Executive ID:"
-        );
-
-        int financeExecutiveId =
-                Integer.parseInt(
-                        scanner.nextLine()
-                );
+        int financeExecutiveId = resolveFinanceExecutiveEmployeeId();
 
         List<Reimbursement> reimbursements =
                 getReimbursementHistory(
@@ -548,9 +606,42 @@ public class FinanceExecutiveController {
         }
     }
 
+    private void displayFinanceDashboard() {
+        int financeExecutiveId = resolveFinanceExecutiveEmployeeId();
+        List<ExpenseClaim> approvedClaims =
+                getPendingClaimsForFinanceExecutive(financeExecutiveId);
+        List<Reimbursement> reimbursements =
+                getReimbursementHistory(financeExecutiveId);
+        double amountAwaitingPayment = approvedClaims.stream()
+                .mapToDouble(ExpenseClaim::getClaimAmount)
+                .sum();
+        double amountReimbursed = reimbursements.stream()
+                .filter(item -> "PROCESSED".equalsIgnoreCase(item.getStatus()))
+                .mapToDouble(Reimbursement::getReimbursedAmount)
+                .sum();
+        long claimsProcessed = reimbursements.stream()
+                .filter(item -> "PROCESSED".equalsIgnoreCase(item.getStatus()))
+                .count();
+
+        System.out.println("========== FINANCE DASHBOARD ==========");
+        System.out.println("Approved claims awaiting reimbursement: " + approvedClaims.size());
+        System.out.println("Claims processed: " + claimsProcessed);
+        System.out.println("Total amount to reimburse: " + amountAwaitingPayment);
+        System.out.println("Total amount reimbursed: " + amountReimbursed);
+    }
+
     // ==========================================
     // SERVICE DELEGATION METHODS
     // ==========================================
+
+    private int resolveFinanceExecutiveEmployeeId() {
+        if (currentFinanceExecutiveEmployeeId != null && currentFinanceExecutiveEmployeeId > 0) {
+            return currentFinanceExecutiveEmployeeId;
+        }
+
+        System.out.println("Enter Finance Executive Employee ID:");
+        return Integer.parseInt(scanner.nextLine());
+    }
 
     public FinanceExecutive addNewFinanceExecutive(
             FinanceExecutive financeExecutive) {
@@ -597,6 +688,10 @@ public class FinanceExecutiveController {
                 .getPendingClaims();
     }
 
+    public List<ExpenseClaim> getPendingClaimsForFinanceExecutive(int financeExecutiveEmployeeId) {
+        return financeExecutiveService.getPendingClaimsForFinanceExecutive(financeExecutiveEmployeeId);
+    }
+
     public ExpenseClaim getClaimById(
             int claimId) {
 
@@ -604,6 +699,10 @@ public class FinanceExecutiveController {
                 .getClaimById(
                         claimId
                 );
+    }
+
+    public ExpenseClaim getApprovedClaimByIdForFinanceExecutive(int claimId, int financeExecutiveId) {
+        return financeExecutiveService.getApprovedClaimByIdForFinanceExecutive(claimId, financeExecutiveId);
     }
 
     public boolean processPayment(
@@ -617,6 +716,23 @@ public class FinanceExecutiveController {
                         financeExecutiveId,
                         paymentMode
                 );
+    }
+
+    public boolean processPayment(
+            int claimId,
+            int financeExecutiveId,
+            double reimbursedAmount,
+            String paymentMode,
+            String transactionRef,
+            LocalDate reimbursementDate) {
+        return financeExecutiveService.processPayment(
+                claimId,
+                financeExecutiveId,
+                reimbursedAmount,
+                paymentMode,
+                transactionRef,
+                reimbursementDate
+        );
     }
 
     public List<Reimbursement> getReimbursementHistory(

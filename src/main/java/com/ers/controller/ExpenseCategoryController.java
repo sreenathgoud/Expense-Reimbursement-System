@@ -31,8 +31,9 @@ public class ExpenseCategoryController {
             System.out.println("2. Update Expense Category");
             System.out.println("3. Get Expense Category By ID");
             System.out.println("4. Get All Expense Categories");
-            System.out.println("5. Delete Expense Category");
-            System.out.println("6. Back");
+            System.out.println("5. Deactivate Expense Category");
+            System.out.println("6. Search Expense Categories");
+            System.out.println("7. Back");
             System.out.println("======================================");
             System.out.println("Enter your choice:");
 
@@ -63,6 +64,10 @@ public class ExpenseCategoryController {
                         break;
 
                     case "6":
+                        searchExpenseCategoriesFromInput();
+                        break;
+
+                    case "7":
                         running = false;
                         System.out.println(
                                 "Returning to main menu."
@@ -297,7 +302,7 @@ public class ExpenseCategoryController {
     private void deleteExpenseCategoryFromInput() {
 
         System.out.println(
-                "========== DELETE EXPENSE CATEGORY =========="
+                "========== DEACTIVATE EXPENSE CATEGORY =========="
         );
 
         System.out.println(
@@ -317,7 +322,7 @@ public class ExpenseCategoryController {
         if (result) {
 
             System.out.println(
-                    "Expense category deleted successfully. "
+                    "Expense category deactivated successfully. "
                             + "Category ID="
                             + categoryId
             );
@@ -325,10 +330,25 @@ public class ExpenseCategoryController {
         } else {
 
             System.out.println(
-                    "Expense category deletion failed. "
+                    "Expense category deactivation failed. "
                             + "Category ID="
                             + categoryId
             );
+        }
+    }
+
+    private void searchExpenseCategoriesFromInput() {
+        System.out.println("========== SEARCH EXPENSE CATEGORIES ==========");
+        System.out.println("Enter category name or description:");
+        String searchTerm = scanner.nextLine();
+        List<ExpenseCategory> categories = expenseCategoryService.searchExpenseCategories(searchTerm);
+
+        if (categories.isEmpty()) {
+            System.out.println("No matching expense categories found.");
+            return;
+        }
+        for (ExpenseCategory category : categories) {
+            System.out.println(category);
         }
     }
 
@@ -364,6 +384,10 @@ public class ExpenseCategoryController {
 
         return expenseCategoryService
                 .getAllExpenseCategories();
+    }
+
+    public List<ExpenseCategory> searchExpenseCategories(String searchTerm) {
+        return expenseCategoryService.searchExpenseCategories(searchTerm);
     }
 
     public boolean deleteExpenseCategoryById(

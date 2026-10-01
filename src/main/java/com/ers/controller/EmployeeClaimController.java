@@ -1,9 +1,9 @@
 package com.ers.controller;
 
-import com.ers.model.ClaimItem;
 import com.ers.model.ExpenseClaim;
-import com.ers.service.IClaimItemService;
+import com.ers.model.Reimbursement;
 import com.ers.service.IExpenseClaimService;
+import com.ers.service.IReimbursementService;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -12,18 +12,18 @@ import java.util.Scanner;
 public class EmployeeClaimController {
 
     private final IExpenseClaimService expenseClaimService;
-    private final IClaimItemService claimItemService;
+    private final IReimbursementService reimbursementService;
     private final Scanner scanner;
     private final int employeeId;
 
     public EmployeeClaimController(
             IExpenseClaimService expenseClaimService,
-            IClaimItemService claimItemService,
+            IReimbursementService reimbursementService,
             Scanner scanner,
             int employeeId) {
 
         this.expenseClaimService = expenseClaimService;
-        this.claimItemService = claimItemService;
+        this.reimbursementService = reimbursementService;
         this.scanner = scanner;
         this.employeeId = employeeId;
     }
@@ -39,10 +39,13 @@ public class EmployeeClaimController {
             System.out.println("======================================");
             System.out.println("1. Raise Expense Claim");
             System.out.println("2. My Expense Claims");
-            System.out.println("3. Add Claim Item");
-            System.out.println("4. My Claim Items");
-            System.out.println("5. Submit Claim");
-            System.out.println("6. Back");
+            System.out.println("3. My Claim Items");
+            System.out.println("4. Submit Claim");
+            System.out.println("5. Edit Draft Claim");
+            System.out.println("6. Delete Draft Claim");
+            System.out.println("7. Search/Filter My Claims");
+            System.out.println("8. Reimbursement History");
+            System.out.println("9. Back");
             System.out.println("======================================");
             System.out.println("Enter your choice:");
 
@@ -61,18 +64,30 @@ public class EmployeeClaimController {
                         break;
 
                     case "3":
-                        addClaimItem();
-                        break;
-
-                    case "4":
                         getMyClaimItems();
                         break;
 
-                    case "5":
+                    case "4":
                         submitClaim();
                         break;
 
+                    case "5":
+                        updateDraftClaim();
+                        break;
+
                     case "6":
+                        deleteDraftClaim();
+                        break;
+
+                    case "7":
+                        searchMyExpenseClaims();
+                        break;
+
+                    case "8":
+                        displayMyReimbursementHistory();
+                        break;
+
+                    case "9":
                         running = false;
                         System.out.println("Returning to main menu.");
                         break;
@@ -178,91 +193,15 @@ public class EmployeeClaimController {
 
             for (ExpenseClaim claim : claims) {
                 System.out.println(claim);
+                Reimbursement reimbursement = reimbursementService.getReimbursementByClaimId(claim.getClaimId());
+                if (reimbursement != null) {
+                    System.out.println("  Reimbursement status: " + reimbursement.getStatus()
+                            + " | date: " + reimbursement.getReimbursementDate()
+                            + " | amount: " + reimbursement.getReimbursedAmount());
+                } else {
+                    System.out.println("  Reimbursement status: NOT_PROCESSED");
+                }
             }
-        }
-    }
-
-    // =========================
-    // ADD CLAIM ITEM
-    // =========================
-
-    private void addClaimItem() {
-
-        System.out.println("========== ADD CLAIM ITEM ==========");
-
-        System.out.println("Enter Claim ID:");
-        int claimId =
-                Integer.parseInt(scanner.nextLine());
-
-        /*
-         * Verify that the claim belongs to
-         * the logged-in employee.
-         */
-        ExpenseClaim claim =
-                expenseClaimService.getExpenseClaimById(
-                        claimId
-                );
-
-        if (claim == null) {
-
-            System.out.println(
-                    "Claim not found. Claim ID=" + claimId
-            );
-
-            return;
-        }
-
-        if (claim.getEmployeeId() != employeeId) {
-
-            System.out.println(
-                    "You can only add items to your own claims."
-            );
-
-            return;
-        }
-
-        System.out.println("Enter Category ID:");
-        int categoryId =
-                Integer.parseInt(scanner.nextLine());
-
-        System.out.println("Enter Description:");
-        String description =
-                scanner.nextLine();
-
-        System.out.println("Enter Amount:");
-        double amount =
-                Double.parseDouble(scanner.nextLine());
-
-        System.out.println("Enter Expense Date (YYYY-MM-DD):");
-        LocalDate expenseDate =
-                LocalDate.parse(scanner.nextLine());
-
-        ClaimItem claimItem =
-                new ClaimItem(
-                        claimId,
-                        categoryId,
-                        description,
-                        amount,
-                        expenseDate
-                );
-
-        ClaimItem result =
-                claimItemService.addClaimItem(
-                        claimItem
-                );
-
-        if (result != null) {
-
-            System.out.println(
-                    "Claim item added successfully. Item ID="
-                            + result.getItemId()
-            );
-
-        } else {
-
-            System.out.println(
-                    "Failed to add claim item."
-            );
         }
     }
 
@@ -274,55 +213,42 @@ public class EmployeeClaimController {
 
         System.out.println("========== MY CLAIM ITEMS ==========");
 
-        System.out.println("Enter Claim ID:");
+        List<ExpenseClaim> claims =
+                expenseClaimService.getClaimsByEmployeeId(employeeId);
+        int paidClaims = 0;
 
-        int claimId =
-                Integer.parseInt(scanner.nextLine());
-
-        /*
-         * Verify claim ownership first.
-         */
-        ExpenseClaim claim =
-                expenseClaimService.getExpenseClaimById(
-                        claimId
-                );
-
-        if (claim == null) {
-
-            System.out.println(
-                    "Claim not found. Claim ID=" + claimId
-            );
-
-            return;
-        }
-
-        if (claim.getEmployeeId() != employeeId) {
-
-            System.out.println(
-                    "You can only view items belonging to your own claims."
-            );
-
-            return;
-        }
-
-        List<ClaimItem> items =
-                claimItemService.getClaimItemsByClaimId(
-                        claimId
-                );
-
-        if (items.isEmpty()) {
-
-            System.out.println("No claim items found.");
-
-        } else {
-
-            System.out.println(
-                    "Total claim items: " + items.size()
-            );
-
-            for (ClaimItem item : items) {
-                System.out.println(item);
+        for (ExpenseClaim claim : claims) {
+            if (!"PAID".equalsIgnoreCase(claim.getStatus())) {
+                continue;
             }
+
+            System.out.println(
+                    "Claim ID: " + claim.getClaimId()
+                            + " | " + claim.getClaimDesc()
+                            + " | Claim amount: " + claim.getClaimAmount()
+                            + " | Claim status: " + claim.getStatus()
+            );
+
+            Reimbursement reimbursement =
+                    reimbursementService.getReimbursementByClaimId(
+                            claim.getClaimId()
+                    );
+            if (reimbursement != null) {
+                System.out.println(
+                        "  Reimbursed: " + reimbursement.getReimbursedAmount()
+                                + " | Payment date: " + reimbursement.getReimbursementDate()
+                                + " | Reimbursement status: " + reimbursement.getStatus()
+                );
+            } else {
+                System.out.println("  Reimbursement record not found.");
+            }
+            paidClaims++;
+        }
+
+        if (paidClaims == 0) {
+            System.out.println("No paid expense claims found.");
+        } else {
+            System.out.println("Total paid claims: " + paidClaims);
         }
     }
 
@@ -365,6 +291,11 @@ public class EmployeeClaimController {
             return;
         }
 
+        if (!"DRAFT".equalsIgnoreCase(claim.getStatus())) {
+            System.out.println("Only DRAFT claims can be submitted.");
+            return;
+        }
+
         boolean result =
                 expenseClaimService.submitClaim(
                         claimId
@@ -384,5 +315,82 @@ public class EmployeeClaimController {
                             + claimId
             );
         }
+    }
+
+    private void updateDraftClaim() {
+        System.out.println("========== EDIT DRAFT CLAIM ==========");
+        System.out.println("Enter Claim ID:");
+        int claimId = Integer.parseInt(scanner.nextLine());
+        System.out.println("Enter Claim Description:");
+        String description = scanner.nextLine();
+        System.out.println("Enter Claim Amount:");
+        double amount = Double.parseDouble(scanner.nextLine());
+        System.out.println("Enter Claim Date (YYYY-MM-DD):");
+        LocalDate claimDate = LocalDate.parse(scanner.nextLine());
+        System.out.println("Enter Document Path:");
+        String documentPath = scanner.nextLine();
+
+        ExpenseClaim claim = new ExpenseClaim(
+                employeeId, description, amount, claimDate, "DRAFT", documentPath
+        );
+        claim.setClaimId(claimId);
+
+        boolean updated = expenseClaimService.updateDraftClaimForEmployee(claim, employeeId);
+        System.out.println(updated
+                ? "Draft claim updated successfully."
+                : "Draft claim not updated. Verify it belongs to you and is still DRAFT.");
+    }
+
+    private void deleteDraftClaim() {
+        System.out.println("========== DELETE DRAFT CLAIM ==========");
+        System.out.println("Enter Claim ID:");
+        int claimId = Integer.parseInt(scanner.nextLine());
+
+        boolean deleted = expenseClaimService.deleteDraftClaimForEmployee(claimId, employeeId);
+        System.out.println(deleted
+                ? "Draft claim deleted successfully."
+                : "Draft claim not deleted. Verify it belongs to you and is still DRAFT.");
+    }
+
+    private void searchMyExpenseClaims() {
+        System.out.println("========== SEARCH/FILTER MY CLAIMS ==========");
+        System.out.println("Status filter (blank for any status):");
+        String statusFilter = scanner.nextLine().trim();
+        System.out.println("Description search (blank for any description):");
+        String descriptionFilter = scanner.nextLine().trim();
+
+        List<ExpenseClaim> matches = expenseClaimService
+                .getClaimsByEmployeeId(employeeId)
+                .stream()
+                .filter(claim -> statusFilter.isEmpty()
+                        || statusFilter.equalsIgnoreCase(claim.getStatus()))
+                .filter(claim -> descriptionFilter.isEmpty()
+                        || (claim.getClaimDesc() != null
+                        && claim.getClaimDesc().toLowerCase().contains(descriptionFilter.toLowerCase())))
+                .toList();
+
+        if (matches.isEmpty()) {
+            System.out.println("No matching claims found.");
+            return;
+        }
+        matches.forEach(System.out::println);
+    }
+
+    private void displayMyReimbursementHistory() {
+        List<com.ers.model.Reimbursement> reimbursements =
+                reimbursementService.getReimbursementsByEmployeeId(employeeId);
+        if (reimbursements.isEmpty()) {
+            System.out.println("No reimbursement history found.");
+            return;
+        }
+
+        double totalReimbursed = 0;
+        for (com.ers.model.Reimbursement reimbursement : reimbursements) {
+            System.out.println(reimbursement);
+            if ("PROCESSED".equalsIgnoreCase(reimbursement.getStatus())) {
+                totalReimbursed += reimbursement.getReimbursedAmount();
+            }
+        }
+        System.out.println("Total amount reimbursed: " + totalReimbursed);
     }
 }

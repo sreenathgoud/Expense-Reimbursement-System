@@ -6,7 +6,7 @@ This is the initial skeleton of the **Expense Reimbursement System** project.
 The project is structured using a layered architecture to separate responsibilities and make the application easier to develop, maintain, and extend.
 
 ## Technologies & Dependencies
-- **Java** – JDK 25 (LTS)
+- **Java** – JDK 19
 - **Maven** – Project build and dependency management
 - **JDBC** – Database connectivity
 - **MySQL** – Database

@@ -61,8 +61,9 @@ public class ReimbursementDaoImpl implements IReimbursementDao {
                     "WHERE claim_id = ?";
 
     private final String getByEmployeeQuery =
-            "SELECT * FROM reimbursements " +
-                    "WHERE processed_by = ?";
+            "SELECT r.* FROM reimbursements r " +
+                    "JOIN expense_claims ec ON ec.claim_id = r.claim_id " +
+                    "WHERE ec.employee_id = ?";
 
     private final String getByStatusQuery =
             "SELECT * FROM reimbursements " +

@@ -115,7 +115,9 @@ public class Main {
 
         Employee employee = null;
 
-        if ("EMPLOYEE".equals(user.getRole())) {
+        if ("EMPLOYEE".equals(user.getRole())
+                || "MANAGER".equals(user.getRole())
+                || "FINANCE_EXECUTIVE".equals(user.getRole())) {
 
             IEmployeeDao employeeDao =
                     new EmployeeDaoImpl(
@@ -135,17 +137,18 @@ public class Main {
             if (employee == null) {
 
                 System.out.println(
-                        "Employee record not found for user ID: "
+                        "No employee profile found for user ID: "
                                 + user.getUserId()
+                                + ". Proceeding with login."
                 );
 
-                return;
-            }
+            } else {
 
-            System.out.println(
-                    "Employee ID: "
-                            + employee.getEmployeeId()
-            );
+                System.out.println(
+                        "Employee ID: "
+                                + employee.getEmployeeId()
+                );
+            }
         }
 
         /*

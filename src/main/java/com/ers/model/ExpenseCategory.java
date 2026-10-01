@@ -4,6 +4,7 @@ public class ExpenseCategory {
     private int category_id;
     private String category_name;
     private String description;
+    private boolean active = true;
 
     public ExpenseCategory(String category_name, String description) {
         this.category_name = category_name;
@@ -34,12 +35,21 @@ public class ExpenseCategory {
         this.description = description;
     }
 
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
     @Override
     public String toString() {
         return "Expense_Categories{" +
                 "category_id=" + category_id +
                 ", category_name='" + category_name + '\'' +
                 ", description='" + description + '\'' +
+                ", active=" + active +
                 '}';
     }
 }

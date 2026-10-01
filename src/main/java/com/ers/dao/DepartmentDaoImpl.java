@@ -23,7 +23,7 @@ public class DepartmentDaoImpl implements IDepartmentDao{
     private final String getDepart =
             "SELECT * FROM departments WHERE department_id = ?";
     private final String allDept = "SELECT * FROM departments";
-   private final String removeQuery =
+    private final String removeQuery =
             "DELETE FROM departments WHERE department_id = ?";
     private final String sql =
             "UPDATE departments SET manager_id = ? " +
@@ -31,36 +31,36 @@ public class DepartmentDaoImpl implements IDepartmentDao{
     @Override
     public Department addDepartment(Department department) {
 
-            try (
-                    Connection con = JDBCUtil.getConnection();
-                    PreparedStatement ps =
-                            con.prepareStatement(addquery, Statement.RETURN_GENERATED_KEYS)
-            ) {
+        try (
+                Connection con = JDBCUtil.getConnection();
+                PreparedStatement ps =
+                        con.prepareStatement(addquery, Statement.RETURN_GENERATED_KEYS)
+        ) {
 
-                ps.setString(1, department.getDepartmentName());
-                if (department.getManagerId() == null) {
-                    ps.setNull(2, Types.INTEGER);
-                } else {
-                    ps.setInt(2, department.getManagerId());
-                }
-
-                int count = ps.executeUpdate();
-
-                if (count > 0) {
-
-                    try (ResultSet rs = ps.getGeneratedKeys()) {
-                        if (rs.next()) {
-                            department.setDepartmentId(rs.getInt(1));
-                        }
-                    }
-                    logger.info("Department added successfully");
-//                    System.out.println("Department added successfully.");
-                    return department;
-                }
-
-            } catch ( SQLException e) {
-                e.printStackTrace();
+            ps.setString(1, department.getDepartmentName());
+            if (department.getManagerId() == null) {
+                ps.setNull(2, Types.INTEGER);
+            } else {
+                ps.setInt(2, department.getManagerId());
             }
+
+            int count = ps.executeUpdate();
+
+            if (count > 0) {
+
+                try (ResultSet rs = ps.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        department.setDepartmentId(rs.getInt(1));
+                    }
+                }
+                logger.info("Department added successfully");
+//                    System.out.println("Department added successfully.");
+                return department;
+            }
+
+        } catch ( SQLException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 

@@ -1,6 +1,12 @@
 package com.ers.controller;
 
+import com.ers.model.ClaimItem;
+import com.ers.model.Employee;
+import com.ers.model.ExpenseCategory;
 import com.ers.model.ExpenseClaim;
+import com.ers.service.IClaimItemService;
+import com.ers.service.IEmployeeService;
+import com.ers.service.IExpenseCategoryService;
 import com.ers.service.IExpenseClaimService;
 
 import java.time.LocalDate;
@@ -10,13 +16,46 @@ import java.util.Scanner;
 public class ExpenseClaimController {
 
     private final IExpenseClaimService expenseClaimService;
+    private final IClaimItemService claimItemService;
+    private final IEmployeeService employeeService;
+    private final IExpenseCategoryService expenseCategoryService;
     private final Scanner scanner;
+    private final Integer currentManagerEmployeeId;
 
     public ExpenseClaimController(
             IExpenseClaimService expenseClaimService) {
 
+        this(expenseClaimService, null, null);
+    }
+
+    public ExpenseClaimController(
+            IExpenseClaimService expenseClaimService,
+            IClaimItemService claimItemService) {
+
+        this(expenseClaimService, claimItemService, null);
+    }
+
+    public ExpenseClaimController(
+            IExpenseClaimService expenseClaimService,
+            IClaimItemService claimItemService,
+            Integer currentManagerEmployeeId) {
+
+        this(expenseClaimService, claimItemService, null, null, currentManagerEmployeeId);
+    }
+
+    public ExpenseClaimController(
+            IExpenseClaimService expenseClaimService,
+            IClaimItemService claimItemService,
+            IEmployeeService employeeService,
+            IExpenseCategoryService expenseCategoryService,
+            Integer currentManagerEmployeeId) {
+
         this.expenseClaimService = expenseClaimService;
+        this.claimItemService = claimItemService;
+        this.employeeService = employeeService;
+        this.expenseCategoryService = expenseCategoryService;
         this.scanner = new Scanner(System.in);
+        this.currentManagerEmployeeId = currentManagerEmployeeId;
     }
 
     // ==========================================
@@ -32,13 +71,14 @@ public class ExpenseClaimController {
             System.out.println("======================================");
             System.out.println("       EXPENSE CLAIM REVIEW");
             System.out.println("======================================");
-            System.out.println("1. Get Expense Claim By ID");
+            System.out.println("1. Review Claim + Items");
             System.out.println("2. Get All Expense Claims");
             System.out.println("3. Get Claims By Employee ID");
             System.out.println("4. Approve Claim");
             System.out.println("5. Reject Claim");
             System.out.println("6. Get Claims By Status");
-            System.out.println("7. Back");
+            System.out.println("7. Manager Dashboard");
+            System.out.println("8. Back");
             System.out.println("======================================");
             System.out.println("Enter your choice:");
 
@@ -49,11 +89,11 @@ public class ExpenseClaimController {
                 switch (choice) {
 
                     case "1":
-                        getExpenseClaimByIdFromInput();
+                        reviewClaimForManagerFromInput();
                         break;
 
                     case "2":
-                        displayAllExpenseClaims();
+                        displayManagerExpenseClaims();
                         break;
 
                     case "3":
@@ -73,6 +113,10 @@ public class ExpenseClaimController {
                         break;
 
                     case "7":
+                        displayManagerDashboard();
+                        break;
+
+                    case "8":
                         running = false;
                         System.out.println(
                                 "Returning to main menu."
@@ -122,11 +166,8 @@ public class ExpenseClaimController {
             System.out.println("4. Get All Expense Claims");
             System.out.println("5. Delete Expense Claim");
             System.out.println("6. Get Claims By Employee ID");
-            System.out.println("7. Submit Claim");
-            System.out.println("8. Approve Claim");
-            System.out.println("9. Reject Claim");
-            System.out.println("10. Get Claims By Status");
-            System.out.println("11. Back");
+            System.out.println("7. Get Claims By Status");
+            System.out.println("8. Back");
             System.out.println("======================================");
             System.out.println("Enter your choice:");
 
@@ -161,22 +202,10 @@ public class ExpenseClaimController {
                         break;
 
                     case "7":
-                        submitClaimFromInput();
-                        break;
-
-                    case "8":
-                        approveClaimFromInput();
-                        break;
-
-                    case "9":
-                        rejectClaimFromInput();
-                        break;
-
-                    case "10":
                         getClaimsByStatusFromInput();
                         break;
 
-                    case "11":
+                    case "8":
                         running = false;
                         System.out.println(
                                 "Returning to main menu."
@@ -408,37 +437,136 @@ public class ExpenseClaimController {
         }
     }
 
+    private void reviewClaimForManagerFromInput() {
+
+        System.out.println("========== MANAGER CLAIM REVIEW ==========");
+        int managerId = resolveManagerEmployeeId();
+        System.out.println("Enter Claim ID:");
+        int claimId = Integer.parseInt(scanner.nextLine());
+
+        ExpenseClaim expenseClaim =
+                getExpenseClaimWithItemsForManager(claimId, managerId);
+
+        if (expenseClaim == null) {
+            System.out.println("Claim not found for this manager. Claim ID=" + claimId);
+            return;
+        }
+
+        System.out.println("Claim ID       : " + expenseClaim.getClaimId());
+        System.out.println("Employee ID    : " + expenseClaim.getEmployeeId());
+        if (employeeService != null) {
+            Employee employee = employeeService.getEmployeeById(expenseClaim.getEmployeeId());
+            if (employee != null) {
+                System.out.println("Employee Name  : " + employee.getFullName());
+                System.out.println("Employee Email : " + employee.getEmail());
+                System.out.println("Department ID  : " + employee.getDepartmentId());
+            }
+        }
+        System.out.println("Description    : " + expenseClaim.getClaimDesc());
+        System.out.println("Claim Amount   : " + expenseClaim.getClaimAmount());
+        System.out.println("Claim Date     : " + expenseClaim.getClaimDate());
+        System.out.println("Status         : " + expenseClaim.getStatus());
+        System.out.println("Review Remarks : " + expenseClaim.getReviewRemarks());
+        System.out.println();
+        System.out.println("Claim Items");
+        System.out.println("--------------------------------");
+
+        List<ClaimItem> items = getClaimItemsByClaimId(claimId);
+        double totalItemsAmount = 0;
+
+        if (items.isEmpty()) {
+            System.out.println("No claim items found for this claim.");
+        } else {
+            for (ClaimItem item : items) {
+                System.out.println("Item ID        : " + item.getItemId());
+                System.out.println("Category ID    : " + item.getCategoryId());
+                if (expenseCategoryService != null) {
+                    ExpenseCategory category = expenseCategoryService.getExpenseCategoryById(item.getCategoryId());
+                    if (category != null) {
+                        System.out.println("Category Name  : " + category.getCategory_name());
+                    }
+                }
+                System.out.println("Description    : " + item.getDescription());
+                System.out.println("Amount         : " + item.getAmount());
+                totalItemsAmount += item.getAmount();
+                System.out.println("--------------------------------");
+            }
+        }
+
+        System.out.println("Total Items Amount: " + totalItemsAmount);
+        System.out.println("1. Approve");
+        System.out.println("2. Reject");
+        System.out.println("3. Back");
+
+        String choice = scanner.nextLine();
+        switch (choice) {
+            case "1":
+                System.out.println("Enter approval remarks:");
+                String approvalRemarks = scanner.nextLine();
+                boolean approved = expenseClaimService.approveClaimForManager(
+                        claimId, managerId, approvalRemarks
+                );
+                System.out.println(approved ? "Claim approved successfully." : "Claim approval failed.");
+                break;
+            case "2":
+                System.out.println("Enter rejection reason:");
+                String reason = scanner.nextLine();
+                boolean rejected = expenseClaimService.rejectClaimForManager(
+                        claimId, managerId, reason
+                );
+                System.out.println(rejected ? "Claim rejected successfully." : "Claim rejection failed.");
+                break;
+            default:
+                System.out.println("Returning to manager menu.");
+        }
+    }
+
     // ==========================================
     // GET ALL EXPENSE CLAIMS
     // ==========================================
 
     private void displayAllExpenseClaims() {
-
-        System.out.println(
-                "========== ALL EXPENSE CLAIMS =========="
-        );
-
-        List<ExpenseClaim> claims =
-                getAllExpenseClaims();
-
+        System.out.println("========== ALL EXPENSE CLAIMS ==========");
+        List<ExpenseClaim> claims = getAllExpenseClaims();
         if (claims.isEmpty()) {
-
-            System.out.println(
-                    "No expense claims found."
-            );
-
-        } else {
-
-            System.out.println(
-                    "Total expense claims found: "
-                            + claims.size()
-            );
-
-            for (ExpenseClaim claim : claims) {
-
-                System.out.println(claim);
-            }
+            System.out.println("No expense claims found.");
+            return;
         }
+        System.out.println("Total expense claims found: " + claims.size());
+        claims.forEach(System.out::println);
+    }
+
+    private void displayManagerExpenseClaims() {
+        List<ExpenseClaim> claims = expenseClaimService.getClaimsForManager(resolveManagerEmployeeId());
+        if (claims.isEmpty()) {
+            System.out.println("No claims found for your department.");
+            return;
+        }
+        claims.forEach(System.out::println);
+    }
+
+    private void displayManagerDashboard() {
+        List<ExpenseClaim> claims = expenseClaimService.getClaimsForManager(resolveManagerEmployeeId());
+        long submitted = claims.stream()
+                .filter(claim -> "SUBMITTED".equalsIgnoreCase(claim.getStatus()))
+                .count();
+        long approved = claims.stream()
+                .filter(claim -> "APPROVED".equalsIgnoreCase(claim.getStatus()))
+                .count();
+        long rejected = claims.stream()
+                .filter(claim -> "REJECTED".equalsIgnoreCase(claim.getStatus()))
+                .count();
+        double approvedAmount = claims.stream()
+                .filter(claim -> "APPROVED".equalsIgnoreCase(claim.getStatus()))
+                .mapToDouble(ExpenseClaim::getClaimAmount)
+                .sum();
+
+        System.out.println("========== MANAGER DASHBOARD ==========");
+        System.out.println("Total claims: " + claims.size());
+        System.out.println("Submitted/pending: " + submitted);
+        System.out.println("Approved: " + approved);
+        System.out.println("Rejected: " + rejected);
+        System.out.println("Total approved amount: " + approvedAmount);
     }
 
     // ==========================================
@@ -496,8 +624,11 @@ public class ExpenseClaimController {
                         scanner.nextLine()
                 );
 
-        List<ExpenseClaim> claims =
-                getClaimsByEmployeeId(employeeId);
+        List<ExpenseClaim> claims = currentManagerEmployeeId == null
+                ? getClaimsByEmployeeId(employeeId)
+                : expenseClaimService.getClaimsForManager(currentManagerEmployeeId).stream()
+                .filter(claim -> claim.getEmployeeId() == employeeId)
+                .toList();
 
         if (claims.isEmpty()) {
 
@@ -568,6 +699,7 @@ public class ExpenseClaimController {
                 "========== APPROVE CLAIM =========="
         );
 
+        int managerId = resolveManagerEmployeeId();
         System.out.println("Enter Claim ID:");
 
         int claimId =
@@ -575,8 +707,11 @@ public class ExpenseClaimController {
                         scanner.nextLine()
                 );
 
-        boolean result =
-                approveClaim(claimId);
+        System.out.println("Enter approval remarks:");
+        String remarks = scanner.nextLine();
+        boolean result = expenseClaimService.approveClaimForManager(
+                claimId, managerId, remarks
+        );
 
         if (result) {
 
@@ -620,11 +755,11 @@ public class ExpenseClaimController {
         String reason =
                 scanner.nextLine();
 
-        boolean result =
-                rejectClaim(
-                        claimId,
-                        reason
-                );
+        boolean result = currentManagerEmployeeId == null
+                ? rejectClaim(claimId, reason)
+                : expenseClaimService.rejectClaimForManager(
+                claimId, currentManagerEmployeeId, reason
+        );
 
         if (result) {
 
@@ -659,8 +794,11 @@ public class ExpenseClaimController {
         String status =
                 scanner.nextLine();
 
-        List<ExpenseClaim> claims =
-                getClaimsByStatus(status);
+        List<ExpenseClaim> claims = currentManagerEmployeeId == null
+                ? getClaimsByStatus(status)
+                : expenseClaimService.getClaimsForManager(currentManagerEmployeeId).stream()
+                .filter(claim -> status.equalsIgnoreCase(claim.getStatus()))
+                .toList();
 
         if (claims.isEmpty()) {
 
@@ -683,6 +821,15 @@ public class ExpenseClaimController {
         }
     }
 
+    private int resolveManagerEmployeeId() {
+        if (currentManagerEmployeeId != null && currentManagerEmployeeId > 0) {
+            return currentManagerEmployeeId;
+        }
+
+        System.out.println("Enter Manager Employee ID:");
+        return Integer.parseInt(scanner.nextLine());
+    }
+
     // ==========================================
     // SERVICE DELEGATION METHODS
     // ==========================================
@@ -693,6 +840,21 @@ public class ExpenseClaimController {
         return expenseClaimService.addExpenseClaim(
                 expenseClaim
         );
+    }
+
+    public ExpenseClaim getExpenseClaimWithItemsForManager(int claimId, int managerId) {
+        return expenseClaimService.getExpenseClaimWithItemsForManager(claimId, managerId);
+    }
+
+    public boolean approveClaimForManager(int claimId, int managerId) {
+        return expenseClaimService.approveClaimForManager(claimId, managerId);
+    }
+
+    public List<ClaimItem> getClaimItemsByClaimId(int claimId) {
+        if (claimItemService == null) {
+            return List.of();
+        }
+        return claimItemService.getClaimItemsByClaimId(claimId);
     }
 
     public boolean updateExpenseClaim(

@@ -363,7 +363,7 @@ class ExpenseClaimServiceImplTest {
                 Mockito.mock(IExpenseClaimDao.class);
 
         Mockito.when(
-                expenseClaimDaoMock.approveClaim(1)
+                expenseClaimDaoMock.approveClaim(1, "APPROVED")
         ).thenReturn(true);
 
         ExpenseClaimServiceImpl expenseClaimService =
@@ -497,6 +497,54 @@ class ExpenseClaimServiceImplTest {
                 expenseClaims,
                 actualResult
         );
+    }
+
+    @Test
+    void getExpenseClaimWithItemsForManager() {
+
+        // Arrange
+        IExpenseClaimDao expenseClaimDaoMock =
+                Mockito.mock(IExpenseClaimDao.class);
+
+        ExpenseClaim expenseClaim =
+                new ExpenseClaim(
+                        10,
+                        "Business trip",
+                        5000.00,
+                        LocalDate.now(),
+                        "SUBMITTED",
+                        null
+                );
+        expenseClaim.setClaimId(101);
+
+        Mockito.when(
+                expenseClaimDaoMock.getExpenseClaimWithItemsForManager(101, 7)
+        ).thenReturn(expenseClaim);
+
+        ExpenseClaimServiceImpl expenseClaimService =
+                new ExpenseClaimServiceImpl(expenseClaimDaoMock);
+
+        // Act
+        ExpenseClaim actualResult =
+                expenseClaimService.getExpenseClaimWithItemsForManager(101, 7);
+
+        // Assert
+        Assertions.assertNotNull(actualResult);
+        Assertions.assertEquals(101, actualResult.getClaimId());
+        Assertions.assertEquals("Business trip", actualResult.getClaimDesc());
+    }
+
+    @Test
+    void getClaimsForManager() {
+        IExpenseClaimDao expenseClaimDao = Mockito.mock(IExpenseClaimDao.class);
+        List<ExpenseClaim> claims = List.of(new ExpenseClaim(
+                10, "Business trip", 5000.00, LocalDate.now(), "SUBMITTED", null
+        ));
+        Mockito.when(expenseClaimDao.getClaimsForManager(7)).thenReturn(claims);
+
+        ExpenseClaimServiceImpl service = new ExpenseClaimServiceImpl(expenseClaimDao);
+
+        Assertions.assertEquals(claims, service.getClaimsForManager(7));
     }
 
     @Test

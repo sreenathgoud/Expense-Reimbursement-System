@@ -25,7 +25,7 @@ public class FinanceExecutiveServiceImplTest {
                         20,
                         "Finance Executive",
                         "finance@gmail.com",
-                        "FINANCE"
+                        1
                 );
 
         Mockito.when(
@@ -83,7 +83,7 @@ public class FinanceExecutiveServiceImplTest {
                         20,
                         "Updated Finance Executive",
                         "updatedfinance@gmail.com",
-                        "FINANCE"
+                        1
                 );
 
         Mockito.when(
@@ -118,7 +118,7 @@ public class FinanceExecutiveServiceImplTest {
                         0,
                         "Updated Finance Executive",
                         "updatedfinance@gmail.com",
-                        "FINANCE"
+                        1
                 );
 
         FinanceExecutiveServiceImpl service =
@@ -147,7 +147,7 @@ public class FinanceExecutiveServiceImplTest {
                         20,
                         "Finance Executive",
                         "finance@gmail.com",
-                        "FINANCE"
+                        1
                 );
 
         Mockito.when(
@@ -203,7 +203,7 @@ public class FinanceExecutiveServiceImplTest {
                                 20,
                                 "Finance Executive",
                                 "finance@gmail.com",
-                                "FINANCE"
+                                1
                         )
                 );
 
@@ -472,6 +472,41 @@ public class FinanceExecutiveServiceImplTest {
     }
 
     @Test
+    void getPendingClaimsForFinanceExecutiveTest() {
+
+        // Arrange
+        IFinanceExecutiveDao financeExecutiveDao =
+                Mockito.mock(IFinanceExecutiveDao.class);
+
+        List<ExpenseClaim> claims = List.of(
+                new ExpenseClaim(
+                        10,
+                        "Approved IT claim",
+                        5000.00,
+                        LocalDate.now(),
+                        "APPROVED",
+                        null
+                )
+        );
+
+        Mockito.when(
+                financeExecutiveDao.getPendingClaimsForFinanceExecutive(20)
+        ).thenReturn(claims);
+
+        FinanceExecutiveServiceImpl service =
+                new FinanceExecutiveServiceImpl(financeExecutiveDao);
+
+        // Act
+        List<ExpenseClaim> actualResult =
+                service.getPendingClaimsForFinanceExecutive(20);
+
+        // Assert
+        Assertions.assertNotNull(actualResult);
+        Assertions.assertEquals(1, actualResult.size());
+        Assertions.assertEquals("APPROVED", actualResult.get(0).getStatus());
+    }
+
+    @Test
     void getReimbursementHistoryTest() {
 
         // Arrange
@@ -516,6 +551,25 @@ public class FinanceExecutiveServiceImplTest {
         Assertions.assertEquals(
                 20,
                 actualResult.get(0).getProcessedBy()
+        );
+    }
+
+    @Test
+    void processPaymentWithDetailsTest() {
+        IFinanceExecutiveDao financeExecutiveDao = Mockito.mock(IFinanceExecutiveDao.class);
+        LocalDate reimbursementDate = LocalDate.now();
+        Mockito.when(financeExecutiveDao.processPayment(
+                15, 23, 125.50, "UPI", "REF-15", reimbursementDate
+        )).thenReturn(true);
+
+        FinanceExecutiveServiceImpl service = new FinanceExecutiveServiceImpl(financeExecutiveDao);
+        boolean result = service.processPayment(
+                15, 23, 125.50, "UPI", "REF-15", reimbursementDate
+        );
+
+        Assertions.assertTrue(result);
+        Mockito.verify(financeExecutiveDao).processPayment(
+                15, 23, 125.50, "UPI", "REF-15", reimbursementDate
         );
     }
 

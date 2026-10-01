@@ -221,7 +221,7 @@ class ExpenseClaimDaoImplTest {
         // Act
         boolean actualResult =
                 expenseClaimDao.approveClaim(
-                        claimId
+                        claimId,"approve"
                 );
 
         // Assert

@@ -27,12 +27,12 @@ public class EmployeeDaoImpl implements IEmployeeDao {
             "UPDATE employees " +
                     "SET user_id = ?, full_name = ?, email = ?, department_id = ? " +
                     "WHERE employee_id = ?";
-   private final String getQuery =
+    private final String getQuery =
             "SELECT * FROM employees WHERE employee_id = ?";
-   private final   String selectQuery = "SELECT * FROM employees";
+    private final   String selectQuery = "SELECT * FROM employees";
     private final String removeQuery =
             "DELETE FROM employees WHERE employee_id = ?";
-   private final String addcon =
+    private final String addcon =
             "INSERT INTO employees(user_id, full_name, email, department_id) " +
                     "VALUES (?, ?, ?, ?)";
 
@@ -61,7 +61,7 @@ public class EmployeeDaoImpl implements IEmployeeDao {
                 }
                 logger.info("employee added successfully");
 //                System.out.println("Employee added successfully.");
-                 return employee;
+                return employee;
             }
 
         } catch (SQLException e) {

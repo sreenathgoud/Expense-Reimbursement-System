@@ -1,7 +1,9 @@
 
-        package com.ers.controller;
+package com.ers.controller;
 
 import ch.qos.logback.classic.Logger;
+import com.ers.dao.DepartmentDaoImpl;
+import com.ers.model.Department;
 import com.ers.model.User;
 import com.ers.service.IUserService;
 import com.ers.model.Employee;
@@ -19,6 +21,10 @@ public class UserController {
     private final Scanner scanner;
     private final ExpenseReimbursementService
             expenseReimbursementService;
+
+    public UserController(IUserService userService) {
+        this(userService, null);
+    }
 
     public UserController(
             IUserService userService,
@@ -249,24 +255,43 @@ public class UserController {
         String email =
                 scanner.nextLine();
 
-        System.out.println(
-                "Enter Department ID (enter 0 if none):"
-        );
+        DepartmentDaoImpl departmentDao = new DepartmentDaoImpl();
+        List<Department> departments = departmentDao.getAllDepartments();
+        if (departments.isEmpty()) {
+            System.out.println("No departments exist yet. Create a department first.");
+            return;
+        }
+
+        System.out.println("Available departments (enter the Department ID):");
+        for (Department department : departments) {
+            System.out.println(
+                    "- Department ID=" + department.getDepartmentId()
+                            + ", Name=" + department.getDepartmentName()
+            );
+        }
+
+        System.out.println("Enter Department ID:");
 
         int departmentId =
                 Integer.parseInt(
                         scanner.nextLine()
                 );
 
-        /*
-         * Convert 0 to null because department_id
-         * is nullable in the database.
-         */
+        if (departmentId <= 0) {
+            System.out.println(
+                    "Employee must belong to a valid department."
+            );
+            return;
+        }
 
-        Integer department =
-                departmentId == 0
-                        ? null
-                        : departmentId;
+        if (departmentDao.getDepartmentById(departmentId) == null) {
+            System.out.println(
+                    "Department ID " + departmentId + " does not exist. Please choose a valid department."
+            );
+            return;
+        }
+
+        Integer department = departmentId;
 
         Employee employee =
                 new Employee(

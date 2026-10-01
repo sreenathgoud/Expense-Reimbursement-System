@@ -41,6 +41,24 @@ public class ExpenseReimbursementService {
 
         try {
 
+            if (employee == null) {
+                throw new IllegalArgumentException(
+                        "Employee details are required for employee/manager/finance roles."
+                );
+            }
+
+            if (employee.getDepartmentId() <= 0) {
+                throw new IllegalArgumentException(
+                        "Employee must belong to a valid department."
+                );
+            }
+
+            if (departmentDao.getDepartmentById(employee.getDepartmentId()) == null) {
+                throw new IllegalArgumentException(
+                        "Department ID " + employee.getDepartmentId() + " does not exist."
+                );
+            }
+
             // BEGIN TRANSACTION
             con = JDBCUtil.getConnection();
             con.setAutoCommit(false);

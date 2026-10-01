@@ -1,5 +1,7 @@
 package com.ers.controller;
 
+import com.ers.dao.DepartmentDaoImpl;
+import com.ers.model.Department;
 import com.ers.model.Employee;
 import com.ers.service.IEmployeeService;
 
@@ -10,10 +12,15 @@ public class EmployeeController {
 
     private final IEmployeeService employeeService;
     private final Scanner scanner;
+    private final String currentRole;
 
-    public EmployeeController(IEmployeeService employeeService) {
+    public EmployeeController(
+            IEmployeeService employeeService,
+            String currentRole) {
+
         this.employeeService = employeeService;
         this.scanner = new Scanner(System.in);
+        this.currentRole = currentRole;
     }
 
     // =========================
@@ -21,6 +28,13 @@ public class EmployeeController {
     // =========================
 
     public void start() {
+
+        if (!"ADMIN".equalsIgnoreCase(currentRole)) {
+            System.out.println(
+                    "Access denied: only Admin can manage employees."
+            );
+            return;
+        }
 
         boolean running = true;
 
@@ -108,6 +122,9 @@ public class EmployeeController {
         System.out.println("Enter Email:");
         String email = scanner.nextLine();
 
+        if (!displayAvailableDepartments()) {
+            return;
+        }
         System.out.println("Enter Department ID:");
         int departmentId =
                 Integer.parseInt(scanner.nextLine());
@@ -156,6 +173,9 @@ public class EmployeeController {
         System.out.println("Enter Email:");
         String email = scanner.nextLine();
 
+        if (!displayAvailableDepartments()) {
+            return;
+        }
         System.out.println("Enter Department ID:");
         int departmentId =
                 Integer.parseInt(scanner.nextLine());
@@ -279,15 +299,44 @@ public class EmployeeController {
         }
     }
 
+    private boolean displayAvailableDepartments() {
+        List<Department> departments =
+                new DepartmentDaoImpl().getAllDepartments();
+
+        if (departments.isEmpty()) {
+            System.out.println("No departments exist yet. Create a department first.");
+            return false;
+        }
+
+        System.out.println("Available departments (enter the Department ID):");
+        for (Department department : departments) {
+            System.out.println(
+                    "- Department ID=" + department.getDepartmentId()
+                            + ", Name=" + department.getDepartmentName()
+            );
+        }
+        return true;
+    }
+
     // =========================
     // SERVICE DELEGATION METHODS
     // =========================
 
     public Employee addNewEmployee(Employee employee) {
+        if (!"ADMIN".equalsIgnoreCase(currentRole)) {
+            throw new SecurityException(
+                    "Only Admin can add employee records."
+            );
+        }
         return employeeService.addEmployee(employee);
     }
 
     public boolean updateEmployee(Employee employee) {
+        if (!"ADMIN".equalsIgnoreCase(currentRole)) {
+            throw new SecurityException(
+                    "Only Admin can update employee records."
+            );
+        }
         return employeeService.updateEmployee(employee);
     }
 
@@ -300,6 +349,11 @@ public class EmployeeController {
     }
 
     public boolean deleteEmployeeById(int employeeId) {
+        if (!"ADMIN".equalsIgnoreCase(currentRole)) {
+            throw new SecurityException(
+                    "Only Admin can remove employee records."
+            );
+        }
         return employeeService.deleteEmployeeById(employeeId);
     }
 }

@@ -25,7 +25,7 @@ public class FinanceExecutiveControllerTest {
                         20,
                         "Finance Executive",
                         "finance@gmail.com",
-                        "FINANCE"
+                        1
                 );
 
         Mockito.when(
@@ -63,7 +63,7 @@ public class FinanceExecutiveControllerTest {
                         20,
                         "Updated Finance Executive",
                         "updatedfinance@gmail.com",
-                        "FINANCE"
+                        3
                 );
 
         Mockito.when(
@@ -97,7 +97,7 @@ public class FinanceExecutiveControllerTest {
                         20,
                         "Finance Executive",
                         "finance@gmail.com",
-                        "FINANCE"
+                        1
                 );
 
         Mockito.when(
@@ -133,7 +133,7 @@ public class FinanceExecutiveControllerTest {
                                 20,
                                 "Finance Executive",
                                 "finance@gmail.com",
-                                "FINANCE"
+                                2
                         )
                 );
 
