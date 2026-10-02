@@ -6,7 +6,10 @@ import com.ers.model.Reimbursement;
 import com.ers.util.JDBCUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.util.List;
 
 public class FinanceExecutiveDaoImplTest {
@@ -40,6 +43,26 @@ public class FinanceExecutiveDaoImplTest {
                 actualResult.getEmployeeId()
         );
     }
+
+        @Test
+        void addFinanceExecutiveWithConnectionTest() throws Exception {
+                Connection connection = Mockito.mock(Connection.class);
+                PreparedStatement statement = Mockito.mock(PreparedStatement.class);
+                FinanceExecutive financeExecutive = new FinanceExecutive(
+                                48,
+                                "Suru Harshit",
+                                "suruharshit@gmail.com",
+                                13
+                );
+                Mockito.when(connection.prepareStatement(Mockito.anyString())).thenReturn(statement);
+                Mockito.when(statement.executeUpdate()).thenReturn(1);
+
+                FinanceExecutive result = financeExecutiveDao.addFinanceExecutive(financeExecutive, connection);
+
+                Assertions.assertSame(financeExecutive, result);
+                Mockito.verify(statement).setInt(1, 48);
+                Mockito.verify(statement).setInt(4, 13);
+        }
 
 
     @Test

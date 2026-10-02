@@ -19,6 +19,7 @@ public class FinanceExecutiveController {
     private final Scanner scanner;
     private final Integer currentFinanceExecutiveEmployeeId;
     private final IEmployeeService employeeService;
+        private final String currentRole;
 
     public FinanceExecutiveController(
             IFinanceExecutiveService financeExecutiveService) {
@@ -38,12 +39,22 @@ public class FinanceExecutiveController {
             Integer currentFinanceExecutiveEmployeeId,
             IEmployeeService employeeService) {
 
+        this(financeExecutiveService, currentFinanceExecutiveEmployeeId, employeeService, null);
+    }
+
+    public FinanceExecutiveController(
+            IFinanceExecutiveService financeExecutiveService,
+            Integer currentFinanceExecutiveEmployeeId,
+            IEmployeeService employeeService,
+            String currentRole) {
+
         this.financeExecutiveService =
                 financeExecutiveService;
 
         this.scanner = new Scanner(System.in);
         this.currentFinanceExecutiveEmployeeId = currentFinanceExecutiveEmployeeId;
         this.employeeService = employeeService;
+        this.currentRole = currentRole;
     }
 
     public void start() {
@@ -133,6 +144,16 @@ public class FinanceExecutiveController {
     // ==========================================
     // ADD FINANCE EXECUTIVE
     // ==========================================
+
+        public boolean addFinanceExecutiveForAdmin() {
+                if (!"ADMIN".equalsIgnoreCase(currentRole)) {
+                        System.out.println("Access denied: only Admin can add finance executives.");
+                        return false;
+                }
+
+                addFinanceExecutiveFromInput();
+                return true;
+        }
 
     private void addFinanceExecutiveFromInput() {
 

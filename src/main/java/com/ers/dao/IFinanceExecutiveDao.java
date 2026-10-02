@@ -4,12 +4,14 @@ import com.ers.model.ExpenseClaim;
 import com.ers.model.FinanceExecutive;
 import com.ers.model.Reimbursement;
 
+import java.sql.Connection;
 import java.time.LocalDate;
 import java.util.List;
 
 public interface IFinanceExecutiveDao {
     //CRUD Operations
     FinanceExecutive addFinanceExecutive(FinanceExecutive financeExecutive);
+    FinanceExecutive addFinanceExecutive(FinanceExecutive financeExecutive, Connection connection);
     boolean updateFinanceExecutive(FinanceExecutive financeExecutive);
     FinanceExecutive getFinanceExecutiveById(int employeeId);
     List<FinanceExecutive> getAllFinanceExecutives();

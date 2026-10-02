@@ -93,26 +93,33 @@ public class FinanceExecutiveDaoImpl implements IFinanceExecutiveDao {
 
         try (
                 Connection con = JDBCUtil.getConnection();
-                PreparedStatement ps =
-                        con.prepareStatement(addQuery)
         ) {
-
-            ps.setInt(1, financeExecutive.getEmployeeId());
-            ps.setString(2, financeExecutive.getFullName());
-            ps.setString(3, financeExecutive.getEmail());
-            ps.setInt(4, financeExecutive.getDepartmentId());
-
-            int count = ps.executeUpdate();
-
-            if (count > 0) {
-                return financeExecutive;
-            }
+            return addFinanceExecutive(financeExecutive, con);
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
         return null;
+    }
+
+    @Override
+    public FinanceExecutive addFinanceExecutive(
+            FinanceExecutive financeExecutive,
+            Connection connection) {
+
+        try (PreparedStatement ps = connection.prepareStatement(addQuery)) {
+            ps.setInt(1, financeExecutive.getEmployeeId());
+            ps.setString(2, financeExecutive.getFullName());
+            ps.setString(3, financeExecutive.getEmail());
+            ps.setInt(4, financeExecutive.getDepartmentId());
+
+            return ps.executeUpdate() > 0 ? financeExecutive : null;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
 

@@ -14,6 +14,17 @@ import java.util.List;
 public class FinanceExecutiveControllerTest {
 
     @Test
+    void addFinanceExecutiveForAdminDeniesNonAdmin() {
+        IFinanceExecutiveService service =
+                Mockito.mock(IFinanceExecutiveService.class);
+        FinanceExecutiveController controller =
+                new FinanceExecutiveController(service, null, null, "FINANCE_EXECUTIVE");
+
+        Assertions.assertFalse(controller.addFinanceExecutiveForAdmin());
+        Mockito.verifyNoInteractions(service);
+    }
+
+    @Test
     void addNewFinanceExecutiveTest() {
 
         // Arrange

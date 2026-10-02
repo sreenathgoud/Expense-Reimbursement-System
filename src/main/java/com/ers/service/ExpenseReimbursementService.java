@@ -3,8 +3,10 @@ package com.ers.service;
 import ch.qos.logback.classic.Logger;
 import com.ers.dao.IDepartmentDao;
 import com.ers.dao.IEmployeeDao;
+import com.ers.dao.IFinanceExecutiveDao;
 import com.ers.dao.IUserDao;
 import com.ers.model.Employee;
+import com.ers.model.FinanceExecutive;
 import com.ers.model.User;
 import com.ers.util.JDBCUtil;
 import org.slf4j.LoggerFactory;
@@ -22,15 +24,18 @@ public class ExpenseReimbursementService {
     private final IUserDao userDao;
     private final IEmployeeDao employeeDao;
     private final IDepartmentDao departmentDao;
+        private final IFinanceExecutiveDao financeExecutiveDao;
 
     public ExpenseReimbursementService(
             IUserDao userDao,
             IEmployeeDao employeeDao,
-            IDepartmentDao departmentDao) {
+            IDepartmentDao departmentDao,
+            IFinanceExecutiveDao financeExecutiveDao) {
 
         this.userDao = userDao;
         this.employeeDao = employeeDao;
         this.departmentDao = departmentDao;
+        this.financeExecutiveDao = financeExecutiveDao;
     }
 
     public Employee createUserAndEmployee(
@@ -112,6 +117,26 @@ public class ExpenseReimbursementService {
                     "Employee created successfully. Employee ID={}",
                     savedEmployee.getEmployeeId()
             );
+
+            if ("FINANCE_EXECUTIVE".equalsIgnoreCase(user.getRole())) {
+                FinanceExecutive financeExecutive = new FinanceExecutive(
+                        savedEmployee.getEmployeeId(),
+                        savedEmployee.getFullName(),
+                        savedEmployee.getEmail(),
+                        savedEmployee.getDepartmentId()
+                );
+
+                if (financeExecutiveDao.addFinanceExecutive(financeExecutive, con) == null) {
+                    con.rollback();
+                    logger.warn("Finance executive creation failed. Transaction rolled back.");
+                    return null;
+                }
+
+                logger.info(
+                        "Finance executive created successfully. Employee ID={}",
+                        savedEmployee.getEmployeeId()
+                );
+            }
 
             // 3. If Manager, update department manager
             if ("MANAGER".equals(user.getRole())) {

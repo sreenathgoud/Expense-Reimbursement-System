@@ -77,6 +77,11 @@ public class AppController {
                         departmentDao
                 );
 
+        IFinanceExecutiveDao financeExecutiveDao =
+                new FinanceExecutiveDaoImpl(
+                        new JDBCUtil()
+                );
+
         employeeProfileController = employee == null
                 ? null
                 : new EmployeeProfileController(
@@ -102,7 +107,8 @@ public class AppController {
                 new ExpenseReimbursementService(
                         userDao,
                         employeeDao,
-                        departmentDao
+                        departmentDao,
+                        financeExecutiveDao
                 );
 
         // =========================
@@ -183,12 +189,6 @@ public class AppController {
         // FINANCE EXECUTIVE
         // =========================
 
-        IFinanceExecutiveDao
-                financeExecutiveDao =
-                new FinanceExecutiveDaoImpl(
-                        new JDBCUtil()
-                );
-
         IFinanceExecutiveService
                 financeExecutiveService =
                 new FinanceExecutiveServiceImpl(
@@ -199,7 +199,8 @@ public class AppController {
                 new FinanceExecutiveController(
                         financeExecutiveService,
                         employee != null ? employee.getEmployeeId() : null,
-                        employeeService
+                        employeeService,
+                        user.getRole()
                 );
 
         // =========================
@@ -441,11 +442,15 @@ public class AppController {
                 );
 
                 System.out.println(
-                        "8. Reimbursement"
+                        "8. Add Finance Executive"
                 );
 
                 System.out.println(
-                        "9. Exit"
+                        "9. Reimbursement"
+                );
+
+                System.out.println(
+                        "10. Exit"
                 );
 
                 break;
@@ -647,11 +652,17 @@ public class AppController {
 
             case "8":
 
+                                financeExecutiveController.addFinanceExecutiveForAdmin();
+
+                                break;
+
+                        case "9":
+
                 reimbursementController.start();
 
                 break;
 
-            case "9":
+            case "10":
 
                 System.out.println(
                         "Admin logged out."
