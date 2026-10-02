@@ -22,10 +22,10 @@ public class JDBCUtil {
     private static final String DB_URL =
             "jdbc:mysql://localhost:3306/expense_reimbursement_system";
 
-    private static final String DB_USERNAME ="root";
+    private static final String DB_USERNAME =System.getenv("DB_USERNAME");
     //System.getenv("DB_USERNAME");
 
-    private static final String DB_PASSWORD ="Sreenath@7721";
+    private static final String DB_PASSWORD =System.getenv("DB_PASSWORD");
     //System.getenv("DB_PASSWORD");
 
     public static Connection getConnection() throws SQLException {
